@@ -199,12 +199,6 @@ in rec {
       python3 = super.python3Minimal;
 
       ninja = super.ninja.override { buildDocs = false; };
-
-      darwin = super.darwin // {
-        cctools = super.darwin.cctools.override {
-          enableTapiSupport = false;
-        };
-      };
     };
   in with prevStage; stageFun 1 prevStage {
     extraPreHook = "export NIX_CFLAGS_COMPILE+=\" -F${bootstrapTools}/Library/Frameworks\"";
@@ -306,7 +300,7 @@ in rec {
     persistent = self: super: with prevStage; {
       inherit
         gnumake gzip gnused bzip2 gawk ed xz patch bash python3
-        ncurses libffi zlib gmp pcre gnugrep
+        ncurses libffi zlib gmp pcre gnugrep cmake
         coreutils findutils diffutils patchutils ninja;
 
       # Hack to make sure we don't link ncurses in bootstrap tools. The proper
@@ -331,7 +325,6 @@ in rec {
       darwin = super.darwin // rec {
         inherit (darwin) dyld Libsystem libiconv locale;
 
-        cctools = super.darwin.cctools.override { enableTapiSupport = false; };
         libxml2-nopython = super.libxml2.override { pythonSupport = false; };
         CF = super.darwin.CF.override {
           libxml2 = libxml2-nopython;
@@ -421,7 +414,7 @@ in rec {
       curl.out openssl.out libssh2.out nghttp2.lib libkrb5
       cc.expand-response-params
     ]) ++ (with pkgs.darwin; [
-      dyld Libsystem CF cctools ICU libiconv locale libxml2-nopython.out
+      dyld Libsystem CF cctools ICU libiconv locale libtapi libxml2-nopython.out
     ]);
 
     overrides = lib.composeExtensions persistent (self: super: {
