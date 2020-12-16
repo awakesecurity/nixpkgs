@@ -122,6 +122,18 @@ sub runTests {
         $term->WriteHistory;
     }
 
+    # This directory is used to store the `journald` database minimally, but a
+    # test can add additional logs there for convenience, which we'll
+    # automatically include the final build output path.
+    my $logsDir = "/tmp/xchg/logs";
+
+    foreach my $vm (values %vms) {
+        next unless $vm->isUp();
+
+        $vm->mustSucceed("mkdir -p $logsDir");
+        $vm->mustSucceed("journalctl -o export | /run/current-system/sw/lib/systemd/systemd-journal-remote -o $logsDir/test.journal -");
+    }
+
     # Copy the kernel coverage data for each machine, if the kernel
     # has been compiled with coverage instrumentation.
     $log->nest("collecting coverage data", sub {
