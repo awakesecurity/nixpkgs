@@ -69,7 +69,9 @@ rec {
           mkdir -p "$out/logs"
           for directory in vm-state-*; do
             name="''${directory#vm-state-}"
-            mv "$directory/xchg/logs" "$out/logs/$name"
+            if [ -d "$directory/xchg/logs" ]; then
+              mv "$directory/xchg/logs" "$out/logs/$name"
+            fi
           done
         ''; # */
     };
