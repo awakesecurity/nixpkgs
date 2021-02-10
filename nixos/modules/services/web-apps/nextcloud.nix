@@ -593,6 +593,8 @@ in {
         timerConfig.Unit = "nextcloud-cron.service";
       };
 
+      systemd.tmpfiles.rules = ["d ${cfg.home} 0750 nextcloud nextcloud"];
+
       systemd.services = {
         # When upgrading the Nextcloud package, Nextcloud can report errors such as
         # "The files of the app [all apps in /var/lib/nextcloud/apps] were not replaced correctly"
@@ -714,8 +716,6 @@ in {
           before = [ "phpfpm-nextcloud.service" ];
           path = [ occ ];
           script = ''
-            chmod og+x ${cfg.home}
-
             ${optionalString (c.dbpassFile != null) ''
               if [ ! -r "${c.dbpassFile}" ]; then
                 echo "dbpassFile ${c.dbpassFile} is not readable by nextcloud:nextcloud! Aborting..."
@@ -808,7 +808,6 @@ in {
       users.users.nextcloud = {
         home = "${cfg.home}";
         group = "nextcloud";
-        createHome = true;
         isSystemUser = true;
       };
       users.groups.nextcloud.members = [ "nextcloud" config.services.nginx.user ];
