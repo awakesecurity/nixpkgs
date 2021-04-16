@@ -782,10 +782,6 @@ in
 
   config = {
 
-    warnings = concatLists (mapAttrsToList (name: service:
-      optional (service.serviceConfig.Type or "" == "oneshot" && service.serviceConfig.Restart or "no" != "no")
-        "Service ‘${name}.service’ with ‘Type=oneshot’ must have ‘Restart=no’") cfg.services);
-
     system.build.units = cfg.units;
 
     environment.systemPackages = [ systemd ];
