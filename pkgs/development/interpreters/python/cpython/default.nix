@@ -104,6 +104,8 @@ in with passthru; stdenv.mkDerivation {
   ] ++ optionals (isPy37 || isPy38) [
     # Fix darwin build https://bugs.python.org/issue34027
     ./3.7/darwin-libutil.patch
+  ] ++ optionals (isPy37 || isPy38 || isPy39) [
+    (./. + "/${sourceVersion.major}.${sourceVersion.minor}/big-sur.patch")
   ] ++ optionals (isPy3k && hasDistutilsCxxPatch) [
     # Fix for http://bugs.python.org/issue1222585
     # Upstream distutils is calling C compiler to compile C++ code, which
