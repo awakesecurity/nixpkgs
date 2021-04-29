@@ -40,6 +40,5 @@ stdenv.mkDerivation {
   meta = with lib; {
     license = licenses.apsl20;
     maintainers = with maintainers; [ matthewbauer ];
-    broken = true;
   };
 }
