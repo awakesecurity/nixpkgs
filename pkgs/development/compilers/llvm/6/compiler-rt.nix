@@ -10,7 +10,9 @@ stdenv.mkDerivation {
 
   configureFlags = [
     "-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON"
-  ] ++ stdenv.lib.optionals (stdenv.hostPlatform.isDarwin) [
+  ];
+
+  cmakeFlags = stdenv.lib.optionals (stdenv.hostPlatform.isDarwin) [
     # The compiler-rt build infrastructure sniffs supported platforms on Darwin
     # and finds i386;x86_64;x86_64h. We only build for x86_64, so linking fails
     # when it tries to use libc++ and libc++api for i386.
