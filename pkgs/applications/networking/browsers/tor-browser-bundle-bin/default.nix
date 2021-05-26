@@ -98,12 +98,12 @@ let
   srcs = {
     x86_64-linux = fetchurl {
       url = "https://dist.torproject.org/torbrowser/${version}/tor-browser-linux64-${version}_${lang}.tar.xz";
-      sha256 = "sha256-2Ye1+mhFnkZnAYQXgKZ5YIOiIVaiunTCyCOM+ZExw2I==";
+      sha256 = "0qn3668zk313r3179fm2aqhs50v0g6k805w405kld7j5d3xbb1yr";
     };
 
     i686-linux = fetchurl {
       url = "https://dist.torproject.org/torbrowser/${version}/tor-browser-linux32-${version}_${lang}.tar.xz";
-      sha256 = "sha256-B0WGkIt8KDtma/WGyenQ04ctKE7AantUtYnwsjAZZb0=";
+      sha256 = "1gb534qb5w49nma7nsn09ql2v1yks3lwk1pmddk3na3wif88ci87";
     };
   };
 in

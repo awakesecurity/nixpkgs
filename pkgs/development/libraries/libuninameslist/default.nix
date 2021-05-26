@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     owner = "fontforge";
     repo = pname;
     rev = version;
-    sha256 = "sha256:034c8clnskvqbwyiq7si4dad1kbngi3jmnrj064i39msqixmpdzb";
+    sha256 = "034c8clnskvqbwyiq7si4dad1kbngi3jmnrj064i39msqixmpdzb";
   };
 
   nativeBuildInputs = [

@@ -8,13 +8,13 @@ stdenv.mkDerivation {
     owner = "larsenwork";
     repo = "monoid";
     rev = "a331c7c5f402c449f623e0d0895bd2fd8dc30ccf";
-    sha256 = "sha256-RV6lxv5CjywTMcuPMj6rdjLKrap7zLJ7niaNeF//U1Y=";
+    sha256 = "0mjkzxgpi396krxv5k3vmanwlcknmcz353yb649jr3s2zv3aapj5";
   };
 
   patches = [
     (fetchpatch {
       url = "https://github.com/larsenwork/monoid/pull/233/commits/f84f2ed61301ee84dadd16351314394f22ebed2f.patch";
-      sha256 = "sha256-CxfFHlR7TB64pvrfzVfUDkPwuRO2UdGOhXwW98c+oQU=";
+      sha256 = "01d17v3zf5kwhn7d2ldn2fwz0hqfsibwvpzslsw1wk3vahgca5qb";
     })
   ];
 

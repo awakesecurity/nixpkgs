@@ -11,11 +11,11 @@
     inherit (localSystem) system;
     inherit sha256 executable;
   }; in {
-    sh      = fetch { file = "sh";    sha256 = "sha256-nbb4XEk3go7ttiWrQyKQMLzPr+qUnwnHkWMtVCZsMCs="; };
-    bzip2   = fetch { file = "bzip2"; sha256 = "sha256-ybnA+JWrKhXSfn20+GVKXkHFTp2Zt79hat8hAVmsUOc="; };
-    mkdir   = fetch { file = "mkdir"; sha256 = "sha256-nmvMxmfcY41/60Z/E8L9u0vgePW5l30Dqw1z+Nr02Hk="; };
-    cpio    = fetch { file = "cpio";  sha256 = "sha256-cB36rN3NLj19Tk37Kc5bodMFMO+mCpEQkKKo0AEMkaU="; };
-    tarball = fetch { file = "bootstrap-tools.cpio.bz2"; sha256 = "sha256-kh2vKmjCr/HvR06czZbxUxV5KDRxSF27M6nN3cyofRI="; executable = false; };
+    sh      = fetch { file = "sh";    sha256 = "0arhdhk58bb3j73hk7wlxapwzg1hj0i47ar5nvnqx0ip95fgidlx"; };
+    bzip2   = fetch { file = "bzip2"; sha256 = "1rshmich28fzd9hvzdwrkm7cahay99jzid3xgv91aambjpwc1ff9"; };
+    mkdir   = fetch { file = "mkdir"; sha256 = "0yfqykdghwqdmc1pv5xrymwf0jxvzp116zs6xdzqsqywcz3cqswy"; };
+    cpio    = fetch { file = "cpio";  sha256 = "19ci1h0x1a52j08922m6xwq0blx1bg72kysd9ryksbndvnngl7bh"; };
+    tarball = fetch { file = "bootstrap-tools.cpio.bz2"; sha256 = "04kxm36dvkd96fxmsj3i6hl7j5aky6bcv72f8zpz3by2d0may7cj"; executable = false; };
   }
 }:
 

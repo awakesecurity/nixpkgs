@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     owner  = "ximion";
     repo   = "appstream";
     rev    = "v${version}";
-    sha256 = "sha256-bCDyMwQdn9Csxs2hy4dm+LjtxK4+YBK6yDkAdhu1QVU=";
+    sha256 = "0ma1nldpc01rr2x14q1ymv2fvf7qcs3wp8fdqsnd17qx0hrz483c";
   };
 
   nativeBuildInputs = [

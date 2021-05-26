@@ -192,7 +192,7 @@ in rec {
       owner = "NixOS";
       repo = "nix";
       rev = "f15651303f8596bf34c67fc8d536b1e9e7843a87";
-      hash = "sha256-HqM3Z4DLdMrf+0PPZL9ysctGg+K+i3S/IHA1GsJj0Ro=";
+      sha256 = "06nicg11ldbh42zp92xywa1ldjxifazn9ks3zggwlx6bh1kkg8qy";
     };
 
     inherit storeDir stateDir confDir boehmgc;
