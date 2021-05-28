@@ -4,6 +4,7 @@
 , hiredis
 , iptables
 , jdk
+, lib
 , libatasmart
 , libdbi
 , libgcrypt
@@ -339,9 +340,9 @@ let
 
   buildInputs =
     if enabledPlugins == null
-    then builtins.concatMap pluginBuildInputs
+    then lib.concatMap pluginBuildInputs
       (builtins.attrNames plugins)
-    else builtins.concatMap pluginBuildInputs enabledPlugins;
+    else lib.concatMap pluginBuildInputs enabledPlugins;
 in {
   inherit configureFlags buildInputs;
 }
