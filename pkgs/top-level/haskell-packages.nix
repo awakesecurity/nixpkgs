@@ -86,6 +86,16 @@ in {
       buildLlvmPackages = buildPackages.llvmPackages_9;
       llvmPackages = pkgs.llvmPackages_9;
     };
+    ghc8106 = callPackage ../development/compilers/ghc/8.10.6.nix {
+      bootPkgs = packages.ghc863Binary;
+      inherit (buildPackages.python3Packages) sphinx;
+      # Need to use apple's patched xattr until
+      # https://github.com/xattr/xattr/issues/44 and
+      # https://github.com/xattr/xattr/issues/55 are solved.
+      inherit (buildPackages.darwin) xattr;
+      buildLlvmPackages = buildPackages.llvmPackages_9;
+      llvmPackages = pkgs.llvmPackages_9;
+    };
     ghcHEAD = callPackage ../development/compilers/ghc/head.nix {
       bootPkgs = packages.ghc863Binary;
       inherit (buildPackages.python3Packages) sphinx;
@@ -162,6 +172,26 @@ in {
     ghc8101 = callPackage ../development/haskell-modules {
       buildHaskellPackages = bh.packages.ghc8101;
       ghc = bh.compiler.ghc8101;
+      compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-8.10.x.nix { };
+    };
+    ghc8102 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc8102;
+      ghc = bh.compiler.ghc8102;
+      compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-8.10.x.nix { };
+    };
+    ghc8103 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc8103;
+      ghc = bh.compiler.ghc8103;
+      compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-8.10.x.nix { };
+    };
+    ghc8104 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc8104;
+      ghc = bh.compiler.ghc8104;
+      compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-8.10.x.nix { };
+    };
+    ghc8106 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc8106;
+      ghc = bh.compiler.ghc8106;
       compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-8.10.x.nix { };
     };
     ghcHEAD = callPackage ../development/haskell-modules {
