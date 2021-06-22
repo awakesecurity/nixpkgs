@@ -51,10 +51,9 @@ in rec {
         # TODO: copy user script part into this file (append)
 
         wrapProgram $out/bin/nixos-test-driver \
-          --prefix PATH : "${lib.makeBinPath [ qemu_test vde2 netpbm coreutils ]}" \
+          --prefix PATH : "${lib.makeBinPath [ qemu_test vde2 netpbm coreutils socat ]}" \
       '';
   };
-
 
   # Run an automated test suite in the given virtual network.
   # `driver' is the script that runs the network.
