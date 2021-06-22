@@ -57,7 +57,7 @@ rec {
           # TODO: copy user script part into this file (append)
 
           wrapProgram $out/bin/nixos-test-driver \
-            --prefix PATH : "${lib.makeBinPath [ qemu_pkg vde2 netpbm coreutils ]}" \
+            --prefix PATH : "${lib.makeBinPath [ qemu_test vde2 netpbm coreutils socat ]}" \
 
           install -m 0644 -vD driver-exports $out/nix-support/driver-exports
         '';
