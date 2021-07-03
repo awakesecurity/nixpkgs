@@ -5050,6 +5050,8 @@ in {
 
   phonenumbers = callPackage ../development/python-modules/phonenumbers { };
 
+  parameterizedtestcase = callPackage ../development/python-modules/parameterizedtestcase { };
+
   phonopy = callPackage ../development/python-modules/phonopy { };
 
   phpserialize = callPackage ../development/python-modules/phpserialize { };
