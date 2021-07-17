@@ -2171,6 +2171,8 @@ in {
 
   ed25519 = callPackage ../development/python-modules/ed25519 { };
 
+  editables = callPackage ../development/python-modules/editables { };
+
   editdistance = callPackage ../development/python-modules/editdistance { };
 
   editorconfig = callPackage ../development/python-modules/editorconfig { };
