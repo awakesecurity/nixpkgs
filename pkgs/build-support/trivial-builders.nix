@@ -283,7 +283,7 @@ rec {
         #!${runtimeShell}
         set -o errexit
         set -o nounset
-        set- o pipefail
+        set -o pipefail
 
         export PATH="${lib.makeBinPath runtimeInputs}:$PATH"
 
