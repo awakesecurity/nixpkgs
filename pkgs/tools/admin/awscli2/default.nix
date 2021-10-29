@@ -1,4 +1,4 @@
-{ lib, python3, groff, less, fetchFromGitHub, fetchpatch }:
+{ lib, python3, groff, less, fetchFromGitHub }:
 let
   py = python3.override {
     packageOverrides = self: super: {
@@ -48,13 +48,6 @@ with py.pkgs; buildPythonApplication rec {
     rev = version;
     sha256 = "sha256-C/NrU+1AixuN4T1N5Zs8xduUQiwuQWvXkitQRnPJdNw=";
   };
-
-  patches = [
-    (fetchpatch {
-      url = "https://github.com/mgorny/aws-cli/commit/85361123d2fa12eaedf912c046ffe39aebdd2bad.patch";
-      sha256 = "sha256-1Rb+/CY7ze1/DbJ6TfqHF01cfI2vixZ1dT91bmHTg/A=";
-    })
-  ];
 
   postPatch = ''
     substituteInPlace setup.cfg \
