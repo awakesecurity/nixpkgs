@@ -24,30 +24,13 @@ buildPythonPackage rec {
     sha256 = "sha256-q2ntj3y3GgXrw4v+yMvcqWFv4y/6YwunIj3bNzU9CH0=";
   };
 
-  patches = [
-    # FIXME: Remove patch after upstream has decided the proper solution.
-    #        https://github.com/python/mypy/pull/11143
-    (fetchpatch {
-      url = "https://github.com/python/mypy/commit/f1755259d54330cd087cae763cd5bbbff26e3e8a.patch";
-      sha256 = "sha256-5gPahX2X6+/qUaqDQIGJGvh9lQ2EDtks2cpQutgbOHk=";
-    })
-  ];
-
+  # remove pin with mypy>=0.920
   postPatch = ''
     substituteInPlace setup.py \
-      --replace "tomli>=1.1.0,<1.2.0" "tomli"
+      --replace "typed_ast >= 1.4.0, < 1.5.0" "typed_ast >= 1.4.0, < 2"
   '';
 
-  buildInputs = [
-    types-typed-ast
-  ];
-
-  propagatedBuildInputs = [
-    mypy-extensions
-    tomli
-    typed-ast
-    typing-extensions
-  ];
+  propagatedBuildInputs = [ typed-ast psutil mypy-extensions typing-extensions ];
 
   # Tests not included in pip package.
   doCheck = false;
