@@ -1,4 +1,4 @@
-{ lib, fetchFromGitHub, rustPlatform, nix }:
+{ lib, fetchFromGitHub, rustPlatform, nix_2_4 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "rnix-lsp";
@@ -13,7 +13,7 @@ rustPlatform.buildRustPackage rec {
 
   cargoSha256 = "sha256-71vH8oc8DmwbwM2PgxjGmWAbyC4AByx7waHxLsr2koI=";
 
-  checkInputs = [ nix ];
+  checkInputs = [ nix_2_4 ];
 
   meta = with lib; {
     description = "A work-in-progress language server for Nix, with syntax checking and basic completion";
