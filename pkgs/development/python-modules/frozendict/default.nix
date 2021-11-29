@@ -39,6 +39,10 @@ buildPythonPackage rec {
   disabledTests = [
     # TypeError: unsupported operand type(s) for |=: 'frozendict.frozendict' and 'dict'
     "test_union"
+    # non-standard assertions
+    "test_repr"
+    "test_format"
+    "test_str"
   ];
 
   disabledTestPaths = [
