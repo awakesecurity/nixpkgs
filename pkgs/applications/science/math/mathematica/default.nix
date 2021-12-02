@@ -101,10 +101,6 @@ stdenv.mkDerivation rec {
     # Install the desktop items
     export XDG_DATA_HOME="$out/share"
 
-    # Install the desktop items
-    sed -i -e 's/Executables\/Mathematica/..\/..\/bin\/mathematica/' MathInstaller
-    export XDG_DATA_HOME="$out/share"
-
     echo "=== Running MathInstaller ==="
     ./MathInstaller -auto -createdir=y -execdir=$out/bin -targetdir=$out/libexec/Mathematica -silent
 
