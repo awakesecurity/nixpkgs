@@ -1,8 +1,8 @@
 { lib, stdenv, fetchurl, fetchpatch, python, zlib, pkg-config, glib
 , perl, pixman, vde2, alsa-lib, texinfo, flex
 , bison, lzo, snappy, libaio, libtasn1, gnutls, nettle, curl, ninja, meson, sigtool
-, makeWrapper, autoPatchelfHook
-, attr, libcap, libcap_ng
+, makeWrapper, autoPatchelfHook, runtimeShell
+, attr, libcap, libcap_ng, socat ? null
 , CoreServices, Cocoa, Hypervisor, rez, setfile
 , numaSupport ? stdenv.isLinux && !stdenv.isAarch32, numactl
 , seccompSupport ? stdenv.isLinux, libseccomp
@@ -30,6 +30,8 @@
                           ++ ["${stdenv.hostPlatform.qemuArch}-softmmu"])
                     else null)
 , nixosTestRunner ? false
+, doCheck ? false
+, qemu  # for passthru.tests
 }:
 
 let
@@ -64,6 +66,7 @@ stdenv.mkDerivation rec {
     ++ lib.optionals stdenv.isDarwin [ CoreServices Cocoa Hypervisor rez setfile ]
     ++ lib.optionals seccompSupport [ libseccomp ]
     ++ lib.optionals numaSupport [ numactl ]
+    ++ lib.optionals alsaSupport [ alsa-lib ]
     ++ lib.optionals pulseSupport [ libpulseaudio ]
     ++ lib.optionals sdlSupport [ SDL2 SDL2_image ]
     ++ lib.optionals gtkSupport [ gtk3 gettext vte ]
@@ -71,7 +74,7 @@ stdenv.mkDerivation rec {
     ++ lib.optionals smartcardSupport [ libcacard ]
     ++ lib.optionals spiceSupport [ spice-protocol spice ]
     ++ lib.optionals usbredirSupport [ usbredir ]
-    ++ lib.optionals stdenv.isLinux [ alsa-lib libaio libcap_ng libcap attr ]
+    ++ lib.optionals stdenv.isLinux [ libaio libcap_ng libcap attr ]
     ++ lib.optionals xenSupport [ xen ]
     ++ lib.optionals cephSupport [ ceph ]
     ++ lib.optionals glusterfsSupport [ glusterfs libuuid ]
@@ -117,6 +120,12 @@ stdenv.mkDerivation rec {
       name = "qxl-fix-pre-save-logic.patch";
       url = "https://gitlab.com/qemu-project/qemu/-/commit/eb94846280df3f1e2a91b6179fc05f9890b7e384.patch";
       sha256 = "sha256-p31fd47RTSw928DOMrubQQybnzDAGm23z4Yhe+hGJQ8=";
+    })
+    # Fixes socket_sockaddr_to_address_unix assertion errors in some setups. Remove with next release.
+    (fetchpatch {
+      name = "fix-unix-socket-path-copy-again.patch";
+      url = "https://gitlab.com/qemu-project/qemu/-/commit/118d527f2e4baec5fe8060b22a6212468b8e4d3f.patch";
+      sha256 = "sha256-ox+JSpc0pqd3bMi5Ot7ljQyk70SX8g+BLufR06mZPps=";
     })
   ] ++ lib.optional nixosTestRunner ./force-uid0-on-9p.patch
     ++ lib.optionals stdenv.hostPlatform.isMusl [
@@ -178,6 +187,9 @@ stdenv.mkDerivation rec {
     "--enable-guest-agent"
     "--localstatedir=/var"
     "--sysconfdir=/etc"
+    # Always use our Meson, not the bundled version, which doesn't
+    # have our patches and will be subtly broken because of that.
+    "--meson=meson"
   ] ++ lib.optional numaSupport "--enable-numa"
     ++ lib.optional seccompSupport "--enable-seccomp"
     ++ lib.optional smartcardSupport "--enable-smartcard"
@@ -198,7 +210,6 @@ stdenv.mkDerivation rec {
     ++ lib.optional smbdSupport "--smbd=${samba}/bin/smbd"
     ++ lib.optional uringSupport "--enable-linux-io-uring";
 
-  doCheck = false; # tries to access /dev
   dontWrapGApps = true;
 
   # QEMU attaches entitlements with codesign and strip removes those,
@@ -222,21 +233,80 @@ stdenv.mkDerivation rec {
   '';
   preBuild = "cd build";
 
+  # tests can still timeout on slower systems
+  inherit doCheck;
+  checkInputs = [ socat ];
+  preCheck = ''
+    # time limits are a little meagre for a build machine that's
+    # potentially under load.
+    substituteInPlace ../tests/unit/meson.build \
+      --replace 'timeout: slow_tests' 'timeout: 50 * slow_tests'
+    substituteInPlace ../tests/qtest/meson.build \
+      --replace 'timeout: slow_qtests' 'timeout: 50 * slow_qtests'
+    substituteInPlace ../tests/fp/meson.build \
+      --replace 'timeout: 90)' 'timeout: 300)'
+
+    # point tests towards correct binaries
+    substituteInPlace ../tests/unit/test-qga.c \
+      --replace '/bin/echo' "$(type -P echo)"
+    substituteInPlace ../tests/unit/test-io-channel-command.c \
+      --replace '/bin/socat' "$(type -P socat)"
+
+    # combined with a long package name, some temp socket paths
+    # can end up exceeding max socket name len
+    substituteInPlace ../tests/qtest/bios-tables-test.c \
+      --replace 'qemu-test_acpi_%s_tcg_%s' '%s_%s'
+
+    # get-fsinfo attempts to access block devices, disallowed by sandbox
+    sed -i -e '/\/qga\/get-fsinfo/d' -e '/\/qga\/blacklist/d' \
+      ../tests/unit/test-qga.c
+  '' + lib.optionalString stdenv.isDarwin ''
+    # skip test that stalls on darwin, perhaps due to subtle differences
+    # in fifo behaviour
+    substituteInPlace ../tests/unit/meson.build \
+      --replace "'test-io-channel-command'" "#'test-io-channel-command'"
+  '';
+
   # Add a ‘qemu-kvm’ wrapper for compatibility/convenience.
   postInstall = ''
+    install -m755 -D $emitKvmWarningsPath $out/libexec/emit-kvm-warnings
     if [ -x $out/bin/qemu-system-${stdenv.hostPlatform.qemuArch} ]; then
       makeWrapper $out/bin/qemu-system-${stdenv.hostPlatform.qemuArch} \
                   $out/bin/qemu-kvm \
-                  --add-flags "\$([ -e /dev/kvm ] && echo -enable-kvm)"
+                  --run $out/libexec/emit-kvm-warnings \
+                  --add-flags "\$([ -r /dev/kvm -a -w /dev/kvm ] && echo -enable-kvm)"
     fi
   '';
 
   passthru = {
     qemu-system-i386 = "bin/qemu-system-i386";
+    tests = {
+      qemu-tests = qemu.override { doCheck = true; };
+    };
   };
 
   # Builds in ~3h with 2 cores, and ~20m with a big-parallel builder.
   requiredSystemFeatures = [ "big-parallel" ];
+
+  emitKvmWarnings = ''
+    #!${runtimeShell}
+    WARNCOL='\033[1;35m'
+    NEUTRALCOL='\033[0m'
+    WARNING="''${WARNCOL}warning:''${NEUTRALCOL}"
+    if [ ! -e /dev/kvm ]; then
+      echo -e "''${WARNING} KVM is not available - execution will be slow" >&2
+      echo "Consider installing KVM for hardware-accelerated execution." >&2
+      echo "If KVM is already installed make sure the kernel module is loaded." >&2
+    elif [ ! -r /dev/kvm -o ! -w /dev/kvm ]; then
+      echo -e "''${WARNING} /dev/kvm is not read-/writable - execution will be slow" >&2
+      echo "/dev/kvm needs to be read-/writable by the user executing QEMU." >&2
+      echo "" >&2
+      echo "For hardware-acceleration inside the nix build sandbox /dev/kvm" >&2
+      echo "must be world-read-/writable (rw-rw-rw-)." >&2
+    fi
+  '';
+
+  passAsFile = [ "emitKvmWarnings" ];
 
   meta = with lib; {
     homepage = "http://www.qemu.org/";
