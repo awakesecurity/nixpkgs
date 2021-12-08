@@ -7877,6 +7877,8 @@ with pkgs;
 
   modsecurity_standalone = callPackage ../tools/security/modsecurity { };
 
+  modsecurity-crs = callPackage ../tools/security/modsecurity-crs { };
+
   molly-guard = callPackage ../os-specific/linux/molly-guard { };
 
   molotov = callPackage ../applications/video/molotov {};
