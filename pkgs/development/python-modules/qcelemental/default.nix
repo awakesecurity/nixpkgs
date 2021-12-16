@@ -27,6 +27,8 @@ buildPythonPackage rec {
 
   doCheck = true;
 
+  disabledTestPaths = [ "qcelemental/tests/test_molparse_pubchem.py" ];
+
   meta = with lib; {
     broken = stdenv.isDarwin;
     description = "Periodic table, physical constants, and molecule parsing for quantum chemistry";
