@@ -273,6 +273,8 @@ with pkgs;
 
   corgi = callPackage ../development/tools/corgi { };
 
+  colmena = callPackage ../tools/admin/colmena { };
+
   colobot = callPackage ../games/colobot {};
 
   colorz = callPackage ../tools/misc/colorz { };
@@ -336,6 +338,8 @@ with pkgs;
   protoc-gen-go = callPackage ../development/tools/protoc-gen-go { };
 
   protoc-gen-go-grpc = callPackage ../development/tools/protoc-gen-go-grpc { };
+
+  protoc-gen-go-vtproto = callPackage ../development/tools/protoc-gen-go-vtproto { };
 
   protoc-gen-grpc-web = callPackage ../development/tools/protoc-gen-grpc-web { };
 
@@ -1263,7 +1267,8 @@ with pkgs;
 
   arduino-cli = callPackage ../development/embedded/arduino/arduino-cli { };
 
-  arduino-core = callPackage ../development/embedded/arduino/arduino-core { };
+  arduino-core = callPackage ../development/embedded/arduino/arduino-core/chrootenv.nix { };
+  arduino-core-unwrapped = callPackage ../development/embedded/arduino/arduino-core { };
 
   arduino-mk = callPackage ../development/embedded/arduino/arduino-mk {};
 
@@ -1474,7 +1479,7 @@ with pkgs;
   bic = callPackage ../development/interpreters/bic { };
 
   binance = callPackage ../applications/misc/binance {
-    electron = electron_12;
+    electron = electron_13;
   };
 
   bit = callPackage ../applications/version-management/git-and-tools/bit { };
@@ -2104,8 +2109,7 @@ with pkgs;
     filebeat7
     heartbeat7
     metricbeat7
-    packetbeat7
-    journalbeat7;
+    packetbeat7;
 
   filebeat = filebeat6;
   heartbeat = heartbeat6;
@@ -2455,6 +2459,8 @@ with pkgs;
 
   clickclack = callPackage ../tools/misc/clickclack { };
 
+  clickgen = with python3Packages; toPythonApplication clickgen;
+
   clog-cli = callPackage ../development/tools/clog-cli { };
 
   cloud-init = python3.pkgs.callPackage ../tools/virtualization/cloud-init { };
@@ -2544,6 +2550,8 @@ with pkgs;
   wdomirror = callPackage ../tools/wayland/wdomirror { };
 
   wl-clipboard = callPackage ../tools/wayland/wl-clipboard { };
+
+  wl-mirror = callPackage ../tools/wayland/wl-mirror { };
 
   wlogout = callPackage ../tools/wayland/wlogout { };
 
@@ -3458,7 +3466,7 @@ with pkgs;
   pn = callPackage ../tools/text/pn { };
 
   pocket-casts = callPackage ../applications/audio/pocket-casts {
-    electron = electron_12;
+    electron = electron_14;
   };
 
   poweralertd = callPackage ../tools/misc/poweralertd { };
@@ -4437,12 +4445,12 @@ with pkgs;
 
   debootstrap = callPackage ../tools/misc/debootstrap { };
 
-  debugedit-unstable = callPackage ../development/tools/misc/debugedit { };
+  debugedit = callPackage ../development/tools/misc/debugedit { };
 
   deer = callPackage ../shells/zsh/zsh-deer { };
 
   delta = callPackage ../applications/version-management/git-and-tools/delta {
-    inherit (darwin.apple_sdk.frameworks) Security;
+    inherit (darwin.apple_sdk.frameworks) DiskArbitration Foundation Security;
   };
 
   deno = callPackage ../development/web/deno {
@@ -4910,8 +4918,8 @@ with pkgs;
 
   # The latest version used by elasticsearch, logstash, kibana and the the beats from elastic.
   # When updating make sure to update all plugins or they will break!
-  elk6Version = "6.8.3";
-  elk7Version = "7.11.1";
+  elk6Version = "6.8.21";
+  elk7Version = "7.16.1";
 
   elasticsearch6 = callPackage ../servers/search/elasticsearch/6.x.nix {
     util-linux = util-linuxMinimal;
@@ -4988,7 +4996,9 @@ with pkgs;
 
   escrotum = callPackage ../tools/graphics/escrotum { };
 
-  etcher = callPackage ../tools/misc/etcher { };
+  etcher = callPackage ../tools/misc/etcher {
+    electron = electron_14;
+  };
 
   ethtool = callPackage ../tools/misc/ethtool { };
 
@@ -5728,9 +5738,7 @@ with pkgs;
 
   gitleaks = callPackage ../tools/security/gitleaks { };
 
-  gitaly = callPackage ../applications/version-management/gitlab/gitaly {
-    libgit2 = libgit2_1_1; # git2go only supports v1.1.x
-  };
+  gitaly = callPackage ../applications/version-management/gitlab/gitaly { };
 
   gitstats = callPackage ../applications/version-management/gitstats { };
 
@@ -5889,7 +5897,7 @@ with pkgs;
 
   google-clasp = callPackage ../development/misc/google-clasp { };
 
-  google-compute-engine = with python3.pkgs; toPythonApplication google-compute-engine;
+  google-compute-engine = with python38.pkgs; toPythonApplication google-compute-engine;
 
   google-compute-engine-oslogin = callPackage ../tools/virtualization/google-compute-engine-oslogin { };
 
@@ -5952,14 +5960,6 @@ with pkgs;
     withXorg = false;
     libdevil = libdevil-nox;
   };
-
-  /* Readded by Michael Raskin. There are programs in the wild
-   * that do want 2.32 but not 2.0 or 2.36. Please give a day's notice for
-   * objections before removal. The feature is libgraph.
-   */
-  graphviz_2_32 = (callPackage ../tools/graphics/graphviz/2.32.nix {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  }).overrideAttrs(x: { configureFlags = x.configureFlags ++ ["--with-cgraph=no"];});
 
   grin = callPackage ../tools/text/grin { };
 
@@ -8226,7 +8226,9 @@ with pkgs;
 
   openrgb = libsForQt5.callPackage ../applications/misc/openrgb { };
 
-  openrussian-cli = callPackage ../misc/openrussian-cli { };
+  openrussian-cli = callPackage ../misc/openrussian-cli {
+    luaPackages = lua53Packages;
+  };
 
   opensc = callPackage ../tools/security/opensc {
     inherit (darwin.apple_sdk.frameworks) Carbon PCSC;
@@ -9967,7 +9969,7 @@ with pkgs;
   thc-ipv6 = callPackage ../tools/security/thc-ipv6 { };
 
   thedesk = callPackage ../applications/misc/thedesk {
-    electron = electron_12;
+    electron = electron_14;
   };
 
   theharvester = callPackage ../tools/security/theharvester { };
@@ -12078,7 +12080,7 @@ with pkgs;
 
   pscid = nodePackages.pscid;
 
-  coreboot-toolchain = callPackages ../development/tools/misc/coreboot-toolchain { };
+  coreboot-toolchain = recurseIntoAttrs (callPackage ../development/tools/misc/coreboot-toolchain { });
 
   remarkable-toolchain = callPackage ../development/tools/misc/remarkable/remarkable-toolchain { };
 
@@ -12329,6 +12331,7 @@ with pkgs;
     });
   graalvm11-ce = graalvmCEPackages.graalvm11-ce;
   graalvm17-ce = graalvmCEPackages.graalvm17-ce;
+  buildGraalvmNativeImage = callPackage ../build-support/build-graalvm-native-image { };
 
   inherit (callPackages ../development/compilers/graalvm/enterprise-edition.nix { })
     graalvm8-ee
@@ -13420,8 +13423,6 @@ with pkgs;
   });
 
   ### End of CuboCore
-
-  lush2 = callPackage ../development/interpreters/lush {};
 
   maude = callPackage ../development/interpreters/maude {
     stdenv = if stdenv.cc.isClang then llvmPackages_5.stdenv else stdenv;
@@ -15933,6 +15934,8 @@ with pkgs;
   ctpp2 = callPackage ../development/libraries/ctpp2 { };
 
   ctpl = callPackage ../development/libraries/ctpl { };
+
+  cppe = callPackage ../development/libraries/science/chemistry/cppe { };
 
   cppdb = callPackage ../development/libraries/cppdb { };
 
@@ -20100,6 +20103,8 @@ with pkgs;
 
   wiredtiger = callPackage ../development/libraries/wiredtiger { };
 
+  wlr-protocols = callPackage ../development/libraries/wlroots/protocols.nix { };
+
   wt = wt4;
   inherit (callPackages ../development/libraries/wt {})
     wt3
@@ -20904,6 +20909,8 @@ with pkgs;
     inherit (darwin.apple_sdk.frameworks) DiskArbitration Foundation;
   };
 
+  matrix-alertmanager = callPackage ../servers/monitoring/matrix-alertmanager { };
+
   mattermost = callPackage ../servers/mattermost { };
   matterircd = callPackage ../servers/mattermost/matterircd.nix { };
   matterbridge = callPackage ../servers/matterbridge { };
@@ -21392,6 +21399,7 @@ with pkgs;
   prometheus-rabbitmq-exporter = callPackage ../servers/monitoring/prometheus/rabbitmq-exporter.nix { };
   prometheus-rtl_433-exporter = callPackage ../servers/monitoring/prometheus/rtl_433-exporter.nix { };
   prometheus-script-exporter = callPackage ../servers/monitoring/prometheus/script-exporter.nix { };
+  prometheus-smartctl-exporter = callPackage ../servers/monitoring/prometheus/smartctl-exporter { };
   prometheus-smokeping-prober = callPackage ../servers/monitoring/prometheus/smokeping-prober.nix { };
   prometheus-snmp-exporter = callPackage ../servers/monitoring/prometheus/snmp-exporter.nix { };
   prometheus-statsd-exporter = callPackage ../servers/monitoring/prometheus/statsd-exporter.nix { };
@@ -22000,6 +22008,8 @@ with pkgs;
     inherit (darwin) IOKit;
   };
 
+  htop-vim = callPackage ../tools/system/htop/htop-vim.nix { };
+
   btop = callPackage ../tools/system/btop {
     stdenv = gcc11Stdenv;
   };
@@ -22195,8 +22205,6 @@ with pkgs;
   linux_5_4_hardened = linuxKernel.kernels.linux_5_4_hardened;
   linuxPackages_5_10_hardened = linuxKernel.packages.linux_5_10_hardened;
   linux_5_10_hardened = linuxKernel.kernels.linux_5_10_hardened;
-  linuxPackages_5_14_hardened = linuxKernel.packages.linux_5_14_hardened;
-  linux_5_14_hardened = linuxKernel.kernels.linux_5_14_hardened;
   linuxPackages_5_15_hardened = linuxKernel.packages.linux_5_15_hardened;
   linux_5_15_hardened = linuxKernel.kernels.linux_5_15_hardened;
 
@@ -23538,7 +23546,7 @@ with pkgs;
   pop-gtk-theme = callPackage ../data/themes/pop-gtk { };
 
   pop-icon-theme = callPackage ../data/icons/pop-icon-theme {
-    inherit (plasma5Packages) breeze-icons;
+    inherit (gnome) adwaita-icon-theme;
   };
 
   powerline-fonts = callPackage ../data/fonts/powerline-fonts { };
@@ -25634,10 +25642,6 @@ with pkgs;
 
   guardian-agent = callPackage ../tools/networking/guardian-agent { };
 
-  guitone = callPackage ../applications/version-management/guitone {
-    graphviz = graphviz_2_32;
-  };
-
   gv = callPackage ../applications/misc/gv { };
 
   gvisor = callPackage ../applications/virtualization/gvisor {
@@ -25790,9 +25794,7 @@ with pkgs;
 
   indigenous-desktop = callPackage ../applications/networking/feedreaders/indigenous-desktop { };
 
-  jackline = callPackage ../applications/networking/instant-messengers/jackline {
-    ocamlPackages = ocaml-ng.ocamlPackages_4_08;
-  };
+  jackline = callPackage ../applications/networking/instant-messengers/jackline { };
 
   leftwm = callPackage ../applications/window-managers/leftwm { };
 
@@ -27477,6 +27479,10 @@ with pkgs;
     wxGTK = wxGTK30-gtk3;
   };
 
+  jpsxdec = callPackage ../tools/games/jpsxdec {
+    jdk = openjdk8;
+  };
+
   pdfslicer = callPackage ../applications/misc/pdfslicer { };
 
   pekwm = callPackage ../applications/window-managers/pekwm { };
@@ -28772,6 +28778,10 @@ with pkgs;
 
   vdpauinfo = callPackage ../tools/X11/vdpauinfo { };
 
+  vengi-tools = callPackage ../applications/graphics/vengi-tools {
+    inherit (darwin.apple_sdk.frameworks) Carbon OpenCL;
+  };
+
   verbiste = callPackage ../applications/misc/verbiste {
     inherit (gnome2) libgnomeui;
   };
@@ -29085,7 +29095,7 @@ with pkgs;
   weston = callPackage ../applications/window-managers/weston { pipewire = pipewire_0_2; };
 
   whalebird = callPackage ../applications/misc/whalebird {
-    electron = electron_12;
+    electron = electron_14;
   };
 
   wio = callPackage ../applications/window-managers/wio { };
@@ -29649,8 +29659,6 @@ with pkgs;
 
   dcrd = callPackage ../applications/blockchains/dcrd { };
   dcrwallet = callPackage ../applications/blockchains/dcrwallet { };
-
-  dero = callPackage ../applications/blockchains/dero { boost = boost165; };
 
   digibyte = libsForQt514.callPackage ../applications/blockchains/digibyte { withGui = true; };
   digibyted = callPackage ../applications/blockchains/digibyte { withGui = false; };
@@ -30903,7 +30911,9 @@ with pkgs;
   inherit (callPackage ../desktops/gnome/extensions { })
     gnomeExtensions
     gnome38Extensions
-    gnome40Extensions;
+    gnome40Extensions
+    gnome41Extensions
+  ;
 
   gnome-connections = callPackage ../desktops/gnome/apps/gnome-connections { };
 
@@ -31504,7 +31514,7 @@ with pkgs;
   cadical = callPackage ../applications/science/logic/cadical {};
 
   inherit (callPackage ./coq-packages.nix {
-    inherit (ocaml-ng) ocamlPackages_4_05 ocamlPackages_4_09 ocamlPackages_4_10;
+    inherit (ocaml-ng) ocamlPackages_4_05 ocamlPackages_4_09 ocamlPackages_4_10 ocamlPackages_4_12;
   }) mkCoqPackages
     coqPackages_8_5  coq_8_5
     coqPackages_8_6  coq_8_6
@@ -31810,7 +31820,9 @@ with pkgs;
   gap-full = lowPrio (gap.override { packageSet = "full"; });
 
   geogebra = callPackage ../applications/science/math/geogebra { };
-  geogebra6 = callPackage ../applications/science/math/geogebra/geogebra6.nix { };
+  geogebra6 = callPackage ../applications/science/math/geogebra/geogebra6.nix {
+    electron = electron_14;
+   };
 
   maxima = callPackage ../applications/science/math/maxima {
     ecl = null;
@@ -33755,6 +33767,8 @@ with pkgs;
   xcolor = callPackage ../tools/graphics/xcolor { };
 
   xcfun = callPackage ../development/libraries/science/chemistry/xcfun { };
+
+  xsos = callPackage ../os-specific/linux/xsos { };
 
   zesarux = callPackage ../misc/emulators/zesarux { };
 
