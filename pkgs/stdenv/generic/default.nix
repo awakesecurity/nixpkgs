@@ -168,6 +168,11 @@ let
       inherit overrides;
 
       inherit cc hasCC;
+
+      # Convenience for doing some very basic shell syntax checking by parsing a script
+      # without running any commands. Because this will also skip `shopt -s extglob`
+      # commands and extglob affects the Bash parser, we enable extglob always.
+      shellDryRun = "${stdenv.shell} -n -O extglob";
     }
 
     # Propagate any extra attributes.  For instance, we use this to
