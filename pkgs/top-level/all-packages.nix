@@ -30728,6 +30728,10 @@ with pkgs;
     lua = lua5_1;
   };
 
+  blightmud = callPackage ../games/blightmud { };
+
+  blightmud-tts = callPackage ../games/blightmud { withTTS = true; };
+
   n2048 = callPackage ../games/n2048 { };
 
   naev = callPackage ../games/naev { };
