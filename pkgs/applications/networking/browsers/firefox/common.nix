@@ -9,7 +9,7 @@
 , yasm, libGLU, libGL, sqlite, unzip, makeWrapper
 , hunspell, libevent, libstartup_notification
 , libvpx
-, icu69, libpng, glib, pciutils
+, icu70, libpng, glib, pciutils
 , autoconf213, which, gnused, rustPackages
 , rust-cbindgen, nodejs, nasm, fetchpatch
 , gnum4
@@ -131,13 +131,8 @@ buildStdenv.mkDerivation ({
   patches = [
   ] ++
   lib.optional (lib.versionAtLeast version "86") ./env_var_for_system_dir-ff86.patch ++
-  lib.optional (lib.versionAtLeast version "90") ./no-buildconfig-ffx90.patch ++
-  # This fixes a race condition causing deadlock.
-  # https://phabricator.services.mozilla.com/D128657
-  lib.optional (lib.versionAtLeast version "94") (fetchpatch {
-    url = "https://raw.githubusercontent.com/archlinux/svntogit-packages/9c7f25d45bb1dd6b1a865780bc249cdaa619aa83/trunk/0002-Bug-1735905-Upgrade-cubeb-pulse-to-fix-a-race-condit.patch";
-    sha256 = "l4bMK/YDXcDpIjPy9DPuUSFyDpzVQca201A4h9eav5g=";
-  }) ++
+  lib.optional (lib.versionAtLeast version "90" && lib.versionOlder version "95") ./no-buildconfig-ffx90.patch ++
+  lib.optional (lib.versionAtLeast version "96") ./no-buildconfig-ffx96.patch ++
   patches;
 
   # Ignore trivial whitespace changes in patches, this fixes compatibility of
@@ -153,9 +148,10 @@ buildStdenv.mkDerivation ({
     xorg.xorgproto
     xorg.libXdamage
     xorg.libXext
+    xorg.libXtst
     libevent libstartup_notification /* cairo */
     libpng glib
-    nasm icu69 libvpx
+    nasm icu70 libvpx
     # >= 66 requires nasm for the AV1 lib dav1d
     # yasm can potentially be removed in future versions
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1501796
@@ -296,6 +292,7 @@ buildStdenv.mkDerivation ({
   ++ lib.optionals enableDebugSymbols [ "--disable-strip" "--disable-install-strip" ]
 
   ++ lib.optional enableOfficialBranding "--enable-official-branding"
+  ++ lib.optional (lib.versionAtLeast version "95") "--without-wasm-sandboxed-libraries"
   ++ extraConfigureFlags;
 
   postConfigure = ''
