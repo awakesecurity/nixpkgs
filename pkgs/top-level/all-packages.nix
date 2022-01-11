@@ -9037,6 +9037,8 @@ with pkgs;
 
   qmk = callPackage ../tools/misc/qmk { };
 
+  qodem = callPackage ../tools/networking/qodem { };
+
   qosmic = libsForQt5.callPackage ../applications/graphics/qosmic { };
 
   qownnotes = libsForQt514.callPackage ../applications/office/qownnotes { };
