@@ -59,7 +59,7 @@ buildPythonPackage rec {
     email_validator
     flask
     flask-babel
-    flask_login
+    flask-jwt-extended
     flask-openid
     flask_sqlalchemy
     flask_wtf
