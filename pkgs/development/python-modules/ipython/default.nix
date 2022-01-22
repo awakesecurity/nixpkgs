@@ -2,6 +2,7 @@
 , stdenv
 , buildPythonPackage
 , fetchPypi
+, fetchpatch
 , pythonOlder
 # Build dependencies
 , glibcLocales
@@ -18,6 +19,7 @@
 , pexpect
 , appnope
 , backcall
+, pytest
 }:
 
 buildPythonPackage rec {
@@ -30,13 +32,21 @@ buildPythonPackage rec {
     sha256 = "4f69d7423a5a1972f6347ff233e38bbf4df6a150ef20fbb00c635442ac3060aa";
   };
 
+  patches = [
+    (fetchpatch {
+      name = "CVE-2022-21699.patch";
+      url = "https://github.com/ipython/ipython/commit/67ca2b3aa9039438e6f80e3fccca556f26100b4d.patch";
+      excludes = [ "docs/source/whatsnew/version7.rst" ];
+      sha256 = "1ybpgfqppkzaz4q15qgacvhicdxfsdacl89sgj2fd9llc5mvfl26";
+    })
+  ];
+
   prePatch = lib.optionalString stdenv.isDarwin ''
     substituteInPlace setup.py --replace "'gnureadline'" " "
   '';
 
   buildInputs = [ glibcLocales ];
 
-  checkInputs = [ nose pygments ];
 
   propagatedBuildInputs = [
     jedi
@@ -52,10 +62,12 @@ buildPythonPackage rec {
 
   LC_ALL="en_US.UTF-8";
 
-  doCheck = false; # Circular dependency with ipykernel
-
+  # full tests normally disabled due to a circular dependency with
+  # ipykernel, but we want to test the CVE-2022-21699 fix in this
+  # branch
+  checkInputs = [ pytest ];
   checkPhase = ''
-    nosetests
+    pytest IPython/tests/cve.py
   '';
 
   pythonImportsCheck = [
