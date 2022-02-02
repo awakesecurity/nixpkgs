@@ -27,6 +27,13 @@ let
       sha256 = "sha256-Bf0LSAOJyWVH9abHaekO4A8dE/esDUZeQKOBxs86VuI=";
     };
 
+    patches = [
+      (fetchpatch {
+        url = "https://www.mercurial-scm.org/repo/hg-stable/raw-rev/6d2ddea0721a";
+        sha256 = "sha256-yaD8iSCevpxKp6uCozA7vjMHvcV3al7yLJ79Qh1V+l0=";
+      })
+    ];
+
     format = "other";
 
     passthru = { inherit python; }; # pass it so that the same version can be used in hg2git
