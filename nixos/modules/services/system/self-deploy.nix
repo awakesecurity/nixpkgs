@@ -126,9 +126,9 @@ in
 
   config = lib.mkIf cfg.enable {
     systemd.services.self-deploy = {
-      wantedBy = [ "multi-user.target" ];
+      inherit (cfg) startAt;
 
-      startAt = cfg.startAt;
+      wantedBy = [ "multi-user.target" ];
 
       requires = lib.mkIf (!(isPathType cfg.repository)) [ "network-online.target" ];
 
@@ -142,8 +142,7 @@ in
         gnutar
         gzip
         nix
-        systemd
-      ];
+      ] ++ lib.optionals (cfg.switchCommand == "boot") [ systemd ];
 
       script = ''
         if [ ! -e ${repositoryDirectory} ]; then
