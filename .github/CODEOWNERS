@@ -12,7 +12,7 @@
 # permissions, you need to list all members of the team with commit access individually.
 
 # Release managers, release branch only
-/ @jonringer
+* @jonringer
 
 # This file
 /.github/CODEOWNERS @edolstra
