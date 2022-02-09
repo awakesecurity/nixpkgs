@@ -6705,6 +6705,8 @@ with pkgs;
 
   jl = haskellPackages.callPackage ../development/tools/jl { };
 
+  jless = callPackage ../development/tools/jless { };
+
   jmespath = callPackage ../development/tools/jmespath { };
 
   jmtpfs = callPackage ../tools/filesystems/jmtpfs { };
