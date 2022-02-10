@@ -29,7 +29,9 @@ in {
       extraConfig = mkOption {
         default = {};
         description = "Extra configuration options for telegraf";
-        type = types.attrs;
+        type = types.attrsOf (types.either
+          types.attrs
+          (types.attrsOf (types.listOf types.attrs)));
         example = {
           outputs = {
             influxdb = {
