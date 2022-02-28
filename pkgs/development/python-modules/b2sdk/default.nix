@@ -50,7 +50,8 @@ buildPythonPackage rec {
     substituteInPlace setup.py \
       --replace 'setuptools_scm<6.0' 'setuptools_scm'
     substituteInPlace requirements.txt \
-      --replace 'arrow>=0.8.0,<1.0.0' 'arrow'
+      --replace 'arrow>=0.8.0,<1.0.0' 'arrow' \
+      --replace 'arrow>=1.0.2,<2.0.0' 'arrow'
   '';
 
   disabledTestPaths = [
