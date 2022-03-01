@@ -30,13 +30,13 @@
 
 stdenv.mkDerivation rec {
   pname = "elementary-greeter";
-  version = "6.0.1";
+  version = "6.0.2";
 
   src = fetchFromGitHub {
     owner = "elementary";
     repo = "greeter";
     rev = version;
-    sha256 = "1f606ds56sp1c58q8dblfpaq9pwwkqw9i4gkwksw45m2xkwlbflq";
+    sha256 = "sha256-0chBM8JuCYgZXHneiSxSICZwBVm2Vgx+bas9wUjbnyg=";
   };
 
   passthru = {
@@ -90,9 +90,6 @@ stdenv.mkDerivation rec {
       src = ./hardcode-fallback-background.patch;
       default_wallpaper = "${nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath}";
     })
-    # https://github.com/NixOS/nixpkgs/issues/151609
-    # https://github.com/elementary/greeter/issues/578#issuecomment-1030746697
-    ./fix-crash.patch
   ];
 
   preFixup = ''
