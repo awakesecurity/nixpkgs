@@ -2,13 +2,13 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "icingaweb2";
-  version = "2.9.4";
+  version = "2.9.6";
 
   src = fetchFromGitHub {
     owner = "Icinga";
     repo = "icingaweb2";
     rev = "v${version}";
-    sha256 = "sha256:1fd5d2vhiq3s7qr4hnvnh9vv4ns7dvqwq8s67av89hjf3sqgw13j";
+    sha256 = "sha256:1kcn1kkhm8fkwhjqmpysd2hvnrvh6bka8r67yq8d58m117l9wnpq";
   };
 
   nativeBuildInputs = [ makeWrapper ];
