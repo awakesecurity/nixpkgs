@@ -16,7 +16,7 @@
 , enablePython ? true
 
 # for determining the latest compatible linuxPackages
-, linuxPackages_5_14 ? pkgs.linuxKernel.packages.linux_5_14
+, linuxPackages_5_16 ? pkgs.linuxKernel.packages.linux_5_16
 }:
 
 with lib;
@@ -46,7 +46,7 @@ let
       name = "zfs-${configFile}-${version}${optionalString buildKernel "-${kernel.version}"}";
 
       src = fetchFromGitHub {
-        owner = "zfsonlinux";
+        owner = "openzfs";
         repo = "zfs";
         inherit rev sha256;
       };
@@ -215,28 +215,28 @@ in {
   # to be adapted
   zfsStable = common {
     # check the release notes for compatible kernels
-    kernelCompatible = kernel.kernelAtLeast "3.10" && kernel.kernelOlder "5.15";
-    latestCompatibleLinuxPackages = linuxPackages_5_14;
+    kernelCompatible = kernel.kernelAtLeast "3.10" && kernel.kernelOlder "5.17";
+    latestCompatibleLinuxPackages = linuxPackages_5_16;
 
     # this package should point to the latest release.
-    version = "2.1.1";
+    version = "2.1.3";
 
-    sha256 = "sha256-UUuJa5w/GsEvsgH/BnXFsP/dsOt9wwmPqKzDxLPrhiY=";
+    sha256 = "10p9s835wj5msspqwnqbfbnh8jmcazzd2v0gj4hn7vvni4p48gfl";
   };
 
   zfsUnstable = common {
     # check the release notes for compatible kernels
-    kernelCompatible = kernel.kernelAtLeast "3.10" && kernel.kernelOlder "5.15";
-    latestCompatibleLinuxPackages = linuxPackages_5_14;
+    kernelCompatible = kernel.kernelAtLeast "3.10" && kernel.kernelOlder "5.17";
+    latestCompatibleLinuxPackages = linuxPackages_5_16;
 
     # this package should point to a version / git revision compatible with the latest kernel release
     # IMPORTANT: Always use a tagged release candidate or commits from the
     # zfs-<version>-staging branch, because this is tested by the OpenZFS
     # maintainers.
-    version = "2.1.1";
+    version = "2.1.3";
     # rev = "0000000000000000000000000000000000000000";
 
-    sha256 = "sha256-UUuJa5w/GsEvsgH/BnXFsP/dsOt9wwmPqKzDxLPrhiY=";
+    sha256 = "10p9s835wj5msspqwnqbfbnh8jmcazzd2v0gj4hn7vvni4p48gfl";
 
     isUnstable = true;
   };
