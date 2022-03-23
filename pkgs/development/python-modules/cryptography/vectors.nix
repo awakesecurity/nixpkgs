@@ -1,13 +1,14 @@
 { buildPythonPackage, fetchPypi, lib, cryptography }:
 
 buildPythonPackage rec {
-  pname = "cryptography_vectors";
-  # The test vectors must have the same version as the cryptography package:
-  version = cryptography.version;
+  pname = "cryptography-vectors";
+  # The test vectors must have the same version as the cryptography package
+  inherit (cryptography) version;
 
   src = fetchPypi {
-    inherit pname version;
-    sha256 = "1wl0ynh3lzhc6q59g8mybvijmnp195x7fjxlb3h3sgcraw14312c";
+    pname = "cryptography_vectors";
+    inherit version;
+    sha256 = "sha256-TIRBAleZPT3gWLRLd3pJ4doq416+opcKNgx+OqD1gPI=";
   };
 
   # No tests included
