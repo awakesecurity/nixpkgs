@@ -31,6 +31,11 @@ buildPythonPackage rec {
       hash = "sha256-v+E3Ckwxb42mpGzi2C3ka96wHvurRNODMU3xLxDoVZI=";
       name = "fix_impossible_test.patch";
     })
+    (fetchpatch {
+      # Fix failing test: https://github.com/python-metar/python-metar/issues/165
+      url = "https://github.com/python-metar/python-metar/commit/a4f9a4764b99bb0313876366d30728169db2770b.patch";
+      sha256 = "sha256-sURHUb4gCKVMqEWFklTsxF0kr0SxC02Yr0287rZIvC0=";
+    })
   ];
 
   checkInputs = [ pytestCheckHook ];
