@@ -6,9 +6,8 @@ from xml.sax.saxutils import XMLGenerator
 from colorama import Style
 import queue
 import io
-import _thread
+import threading
 import argparse
-import atexit
 import base64
 import codecs
 import os
@@ -811,7 +810,8 @@ class Machine:
                 self.last_lines.put(line)
                 self.log_serial(line)
 
-        _thread.start_new_thread(process_serial_output, ())
+        self.serial_thread = threading.Thread(target=process_serial_output)
+        self.serial_thread.start()
 
         self.wait_for_monitor_prompt()
 
@@ -1000,19 +1000,24 @@ if __name__ == "__main__":
     ]
     exec("\n".join(machine_eval))
 
-    @atexit.register
     def clean_up() -> None:
         with log.nested("cleaning up"):
             for machine in machines:
                 if machine.pid is None:
                     continue
                 log.log("killing {} (pid {})".format(machine.name, machine.pid))
+                machine.send_monitor_command("quit")
                 machine.process.kill()
+            for machine in machines:
+                machine.serial_thread.join()
             for _, _, process, _ in vde_sockets:
                 process.terminate()
         log.close()
 
-    tic = time.time()
-    run_tests()
-    toc = time.time()
-    print("test script finished in {:.2f}s".format(toc - tic))
+    try:
+        tic = time.time()
+        run_tests()
+        toc = time.time()
+        print("test script finished in {:.2f}s".format(toc - tic))
+    finally:
+        clean_up()
