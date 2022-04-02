@@ -3888,7 +3888,8 @@ let
       EOF
     '';
 
-    doCheck = !stdenv.isDarwin;
+    # Temporarily disabled?  https://github.com/pmqs/Compress-Raw-Zlib/issues/7
+    doCheck = false && !stdenv.isDarwin;
 
     meta = {
       description = "Low-Level Interface to zlib or zlib-ng compression library";
