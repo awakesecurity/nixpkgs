@@ -3322,6 +3322,8 @@ with pkgs;
 
   easycrypt = callPackage ../applications/science/logic/easycrypt { };
 
+  easycrypt-runtest = callPackage ../applications/science/logic/easycrypt/runtest.nix { };
+
   EBTKS = callPackage ../development/libraries/science/biology/EBTKS { };
 
   ecasound = callPackage ../applications/audio/ecasound { };
