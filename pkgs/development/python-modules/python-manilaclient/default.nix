@@ -1,7 +1,9 @@
 { lib
 , buildPythonApplication
 , fetchPypi
+, installShellFiles
 , pbr
+, openstackdocstheme
 , oslo-config
 , oslo-log
 , oslo-serialization
@@ -9,7 +11,9 @@
 , prettytable
 , requests
 , simplejson
-, Babel
+, sphinx
+, sphinxcontrib-programoutput
+, babel
 , osc-lib
 , python-keystoneclient
 , debtcollector
@@ -18,12 +22,19 @@
 
 buildPythonApplication rec {
   pname = "python-manilaclient";
-  version = "3.0.0";
+  version = "3.3.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "2d90af35c5beccc53fa6b0f5a3c4b330a065e86924c33c42b017f18943ab2b05";
+    sha256 = "sha256-JFfkbJHmDQFbiWXw0Wp+0xSLyXowIHnsw7+5irZwhXo=";
   };
+
+  nativeBuildInputs = [
+    installShellFiles
+    openstackdocstheme
+    sphinx
+    sphinxcontrib-programoutput
+  ];
 
   propagatedBuildInputs = [
     pbr
@@ -34,11 +45,17 @@ buildPythonApplication rec {
     prettytable
     requests
     simplejson
-    Babel
+    babel
     osc-lib
     python-keystoneclient
     debtcollector
   ];
+
+  postInstall = ''
+    export PATH=$out/bin:$PATH
+    sphinx-build -a -E -d doc/build/doctrees -b man doc/source doc/build/man
+    installManPage doc/build/man/python-manilaclient.1
+  '';
 
   # Checks moved to 'passthru.tests' to workaround infinite recursion
   doCheck = false;
