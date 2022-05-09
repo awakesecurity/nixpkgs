@@ -22,5 +22,6 @@ buildGoModule rec {
     maintainers = with maintainers; [ willibutz ];
     mainProgram = "nextcloud-exporter";
     platforms = platforms.unix;
+    knownVulnerabilities = ["CVE-2022-21698"];
   };
 }
