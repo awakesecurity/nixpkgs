@@ -6,14 +6,14 @@
 
 buildPythonPackage rec {
   pname = "nbclient";
-  version = "0.6.2";
+  version = "0.6.3";
   format = "setuptools";
 
   disabled = pythonOlder "3.7";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-i0dVPxztB3zXxFN/1dcB1G92gfJLKCdeXMHTR+fJtGs=";
+    hash = "sha256-uAcm/B+4mg6Pi+HnfijQAmsejtkLwUPIoMdiLk+M3Z4=";
   };
 
   inherit doCheck;
