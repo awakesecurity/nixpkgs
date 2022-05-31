@@ -130,16 +130,6 @@ in {
     venvShellHook
     wheelUnpackHook;
 
-  # Not all packages are compatible with the latest pytest yet.
-  # We need to override the hook to select an older pytest, however,
-  # it should not override the version of pytest that is used for say
-  # Python 2. This is an ugly hack that is needed now because the hook
-  # propagates the package.
-  pytestCheckHook_6_1 = if isPy3k then
-    self.pytestCheckHook.override { pytest = self.pytest_6_1; }
-  else
-    self.pytestCheckHook;
-
   # helpers
 
   # We use build packages because we are making a setup hook to be used as a
@@ -263,9 +253,7 @@ in {
 
   aiohomekit = callPackage ../development/python-modules/aiohomekit { };
 
-  aiohttp = callPackage ../development/python-modules/aiohttp {
-    pytestCheckHook = self.pytestCheckHook_6_1;
-  };
+  aiohttp = callPackage ../development/python-modules/aiohttp { };
 
   aiohttp-cors = callPackage ../development/python-modules/aiohttp-cors { };
 
@@ -332,6 +320,8 @@ in {
   aiorun = callPackage ../development/python-modules/aiorun { };
 
   aioshelly = callPackage ../development/python-modules/aioshelly { };
+
+  aiosignal = callPackage ../development/python-modules/aiosignal { };
 
   aiosmb = callPackage ../development/python-modules/aiosmb { };
 
@@ -450,6 +440,7 @@ in {
   apipkg = callPackage ../development/python-modules/apipkg { };
 
   apispec = callPackage ../development/python-modules/apispec { };
+  apispec_3 = callPackage ../development/python-modules/apispec/3.nix { };
 
   aplpy = callPackage ../development/python-modules/aplpy { };
 
@@ -573,9 +564,7 @@ in {
 
   async-timeout = callPackage ../development/python-modules/async_timeout { };
 
-  async-upnp-client = callPackage ../development/python-modules/async-upnp-client {
-    pytestCheckHook = self.pytestCheckHook_6_1;
-  };
+  async-upnp-client = callPackage ../development/python-modules/async-upnp-client { };
 
   asyncwhois = callPackage ../development/python-modules/asyncwhois { };
 
@@ -1335,6 +1324,8 @@ in {
 
   chardet = callPackage ../development/python-modules/chardet { };
 
+  charset-normalizer = callPackage ../development/python-modules/charset-normalizer { };
+
   chart-studio = callPackage ../development/python-modules/chart-studio { };
 
   check-manifest = callPackage ../development/python-modules/check-manifest { };
@@ -1512,6 +1503,7 @@ in {
   colorful = callPackage ../development/python-modules/colorful { };
 
   colorlog = callPackage ../development/python-modules/colorlog { };
+  colorlog_4 = callPackage ../development/python-modules/colorlog/4.nix { };
 
   colorlover = callPackage ../development/python-modules/colorlover { };
 
@@ -1615,6 +1607,8 @@ in {
   credstash = callPackage ../development/python-modules/credstash { };
 
   criticality-score = callPackage ../development/python-modules/criticality-score { };
+
+  cron-descriptor = callPackage ../development/python-modules/cron-descriptor { };
 
   croniter = callPackage ../development/python-modules/croniter { };
 
@@ -2492,10 +2486,12 @@ in {
   flask-httpauth = callPackage ../development/python-modules/flask-httpauth { };
 
   flask-jwt-extended = callPackage ../development/python-modules/flask-jwt-extended { };
+  flask-jwt-extended_3 = callPackage ../development/python-modules/flask-jwt-extended/3.nix { };
 
   flask-limiter = callPackage ../development/python-modules/flask-limiter { };
 
   flask_login = callPackage ../development/python-modules/flask-login { };
+  flask-login_0_4 = callPackage ../development/python-modules/flask-login/0_4.nix { };
 
   flask_mail = callPackage ../development/python-modules/flask-mail { };
 
@@ -2524,6 +2520,8 @@ in {
   flask_script = callPackage ../development/python-modules/flask-script { };
 
   flask-seasurf = callPackage ../development/python-modules/flask-seasurf { };
+
+  flask-session = callPackage ../development/python-modules/flask-session { };
 
   flask-silk = callPackage ../development/python-modules/flask-silk { };
 
@@ -2622,6 +2620,8 @@ in {
   fritzconnection = callPackage ../development/python-modules/fritzconnection { };
 
   frozendict = callPackage ../development/python-modules/frozendict { };
+
+  frozenlist = callPackage ../development/python-modules/frozenlist { };
 
   fs = callPackage ../development/python-modules/fs { };
 
@@ -4151,6 +4151,8 @@ in {
 
   marshmallow-enum = callPackage ../development/python-modules/marshmallow-enum { };
 
+  marshmallow-oneofschema = callPackage ../development/python-modules/marshmallow-oneofschema { };
+
   marshmallow-polyfield = callPackage ../development/python-modules/marshmallow-polyfield { };
 
   marshmallow-sqlalchemy = callPackage ../development/python-modules/marshmallow-sqlalchemy { };
@@ -5130,6 +5132,8 @@ in {
 
   python-csxcad = callPackage ../development/python-modules/python-csxcad { };
 
+  python-nvd3 = callPackage ../development/python-modules/python-nvd3 { };
+
   python-openems = callPackage ../development/python-modules/python-openems { };
 
   python-openzwave-mqtt = callPackage ../development/python-modules/python-openzwave-mqtt { };
@@ -5158,7 +5162,8 @@ in {
 
   plotly = callPackage ../development/python-modules/plotly { };
 
-  pluggy = callPackage ../development/python-modules/pluggy { };
+  pluggy = callPackage ../development/python-modules/pluggy/default.nix { };
+  pluggy_0 = callPackage ../development/python-modules/pluggy/0.nix { };
 
   plugincode = callPackage ../development/python-modules/plugincode { };
 
@@ -6407,14 +6412,6 @@ in {
         doCheck = false;
       };
     };
-
-  pytest_6_1 = self.pytest_6.overridePythonAttrs (oldAttrs: rec {
-    version = "6.1.2";
-    src = oldAttrs.src.override {
-      inherit version;
-      sha256 = "c0a7e94a8cdbc5422a51ccdad8e6f1024795939cc89159a0ae7f0b316ad3823e";
-    };
-  });
 
   pytest-aiohttp = callPackage ../development/python-modules/pytest-aiohttp { };
 
@@ -7914,6 +7911,8 @@ in {
 
   SQLAlchemy-ImageAttach = callPackage ../development/python-modules/sqlalchemy-imageattach { };
 
+  sqlalchemy-jsonfield = callPackage ../development/python-modules/sqlalchemy-jsonfield { };
+
   sqlalchemy_migrate = callPackage ../development/python-modules/sqlalchemy-migrate { };
 
   sqlalchemy-utils = callPackage ../development/python-modules/sqlalchemy-utils { };
@@ -8389,9 +8388,7 @@ in {
 
   trimesh = callPackage ../development/python-modules/trimesh { };
 
-  trio = callPackage ../development/python-modules/trio {
-    pytestCheckHook = self.pytestCheckHook_6_1;
-  };
+  trio = callPackage ../development/python-modules/trio { };
 
   trueskill = callPackage ../development/python-modules/trueskill { };
 
@@ -8591,9 +8588,7 @@ in {
 
   urlgrabber = callPackage ../development/python-modules/urlgrabber { };
 
-  urllib3 = callPackage ../development/python-modules/urllib3 {
-    pytestCheckHook = self.pytestCheckHook_6_1;
-  };
+  urllib3 = callPackage ../development/python-modules/urllib3 { };
 
   urlpy = callPackage ../development/python-modules/urlpy { };
 
@@ -8805,9 +8800,7 @@ in {
 
   webthing = callPackage ../development/python-modules/webthing { };
 
-  werkzeug = callPackage ../development/python-modules/werkzeug {
-    pytestCheckHook = self.pytestCheckHook_6_1;
-  };
+  werkzeug = callPackage ../development/python-modules/werkzeug { };
 
   west = callPackage ../development/python-modules/west { };
 

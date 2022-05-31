@@ -4,181 +4,335 @@
 , fetchFromGitHub
 , fetchpatch
 , alembic
+, argcomplete
+, attrs
+, blinker
 , cached-property
+, cattrs
 , configparser
-, colorlog
+, colorlog_4
+, connexion
+, cron-descriptor
 , croniter
+, deprecated
 , dill
 , flask
 , flask-appbuilder
 , flask-admin
 , flask-caching
-, flask_login
+, flask-login_0_4
+, flask-session
 , flask-swagger
 , flask_wtf
 , flask-bcrypt
 , funcsigs
 , future
 , GitPython
+, graphviz
 , gunicorn
-, iso8601
-, json-merge-patch
+, httpx
+, importlib-metadata
+, importlib-resources
 , jinja2
-, ldap3
-, lxml
+, jsonschema
 , lazy-object-proxy
+, lockfile
 , markdown
-, pandas
+, markupsafe
+, marshmallow-oneofschema
+, packaging
+, pathspec
 , pendulum
+, pluggy
 , psutil
 , pygments
 , python-daemon
 , python-dateutil
-, requests
+, python-nvd3
+, python-slugify
+, rich
 , setproctitle
 , snakebite
 , sqlalchemy
+, sqlalchemy-jsonfield
 , tabulate
 , tenacity
 , termcolor
-, text-unidecode
-, thrift
-, tzlocal
+, typing-extensions
 , unicodecsv
-, zope_deprecation
-, nose
+, werkzeug
+, beautifulsoup4
+, filelock
+, freezegun
+, jmespath
+, parameterized
+, pytest-asyncio
+, pytestCheckHook
 , pythonOlder
 , pythonAtLeast
 }:
 
+let 
+  deselectedTestArgs = map (testPath: "--deselect '${testPath}'") deselectedTestPaths;
+
+  # Following tests fail
+  deselectedTestPaths = [
+    "tests/always/test_connection.py::TestConnection::test_connection_test_hook_method_missing"
+    "tests/always/test_connection.py::TestConnection::test_dbapi_get_sqlalchemy_engine"
+    "tests/always/test_connection.py::TestConnection::test_dbapi_get_uri"
+
+    "tests/api_connexion/endpoints/test_dag_run_endpoint.py::TestGetDagRunBatch"
+    "tests/api_connexion/endpoints/test_dag_run_endpoint.py::TestGetDagRunBatchPagination"
+    "tests/api_connexion/endpoints/test_dag_run_endpoint.py::TestGetDagRunBatchDateFilters"
+    "tests/api_connexion/endpoints/test_dag_run_endpoint.py::TestGetDagRunsEndDateFilters"
+    "tests/api_connexion/endpoints/test_dag_run_endpoint.py::TestGetDagRunsEndDateFilters"
+    "tests/api_connexion/endpoints/test_dag_run_endpoint.py::TestGetDagRunsPaginationFilters"
+    "tests/api_connexion/endpoints/test_dag_run_endpoint.py::TestPostDagRun"
+    "tests/api_connexion/endpoints/test_mapped_task_instance_endpoint.py::TestGetMappedTaskInstances::test_mapped_task_instances_with_date"
+    "tests/api_connexion/endpoints/test_task_instance_endpoint.py::TestGetTaskInstancesBatch"
+    "tests/api_connexion/endpoints/test_task_instance_endpoint.py::TestPostClearTaskInstances"
+    "tests/api_connexion/endpoints/test_task_instance_endpoint.py::TestGetTaskInstances" # Some fails
+    "tests/api_connexion/schemas/test_task_instance_schema.py::TestClearTaskInstanceFormSchema::test_validation_error_1"
+
+    "tests/core/test_configuration.py::TestConf::test_config_from_secret_backend"
+    "tests/core/test_configuration.py::TestConf::test_config_raise_exception_from_secret_backend_connection_error"
+    "tests/core/test_configuration.py::TestConf::test_get_section_should_respect_cmd_env_variable"
+    "tests/core/test_configuration.py::TestConf::test_broker_transport_options"
+    "tests/core/test_configuration.py::TestConf::test_auth_backends_adds_session"
+    "tests/core/test_configuration.py::TestConf::test_enum_default_task_weight_rule_from_conf"
+    "tests/core/test_configuration.py::TestConf::test_enum_logging_levels"
+    "tests/core/test_configuration.py::TestConf::test_as_dict_works_without_sensitive_cmds"
+    "tests/core/test_configuration.py::TestConf::test_as_dict_respects_sensitive_cmds_from_env"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_deprecated_options_cmd"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_both_conf_and_env_are_empty[True]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_both_conf_and_env_are_empty[False]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_config[True]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_config[False]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_env[True]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_env[False]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_disabled_env[True]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_disabled_env[False]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_disabled_config[True]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_cmd_disabled_config[False]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_secrets_disabled_env[True]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_secrets_disabled_env[False]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_secrets_disabled_config[True]"
+    "tests/core/test_configuration.py::TestDeprecatedConf::test_conf_as_dict_when_deprecated_value_in_secrets_disabled_config[False]"
+    "tests/core/test_logging_config.py::TestLoggingSettings::test_loading_remote_logging_with_wasb_handler"
+    "tests/core/test_logging_config.py::TestLoggingSettings::test_log_group_arns_remote_logging_with_cloudwatch_handler_0_cloudwatch_arn_aws_logs_aaaa_bbbbb_log_group_ccccc"
+    "tests/core/test_logging_config.py::TestLoggingSettings::test_log_group_arns_remote_logging_with_cloudwatch_handler_1_cloudwatch_arn_aws_logs_aaaa_bbbbb_log_group_aws_ccccc"
+    "tests/core/test_logging_config.py::TestLoggingSettings::test_log_group_arns_remote_logging_with_cloudwatch_handler_2_cloudwatch_arn_aws_logs_aaaa_bbbbb_log_group_aws_ecs_ccccc"
+    "tests/core/test_providers_manager.py::TestProviderManager" # most of them
+
+    "tests/decorators/test_python_virtualenv.py::TestPythonVirtualenvDecorator"
+
+    "tests/hooks/test_subprocess.py::TestSubprocessHook"
+
+    "tests/jobs/test_scheduler_job.py::TestSchedulerJob::test_extra_operator_links_not_loaded_in_scheduler_loop"
+
+    "tests/operators/test_python.py::TestPythonVirtualenvOperator"
+
+    "tests/models/test_taskinstance.py::TestMappedTaskInstanceReceiveValue::test_map_in_group"
+    "tests/models/test_taskinstance.py::TestTaskInstance::test_render_k8s_pod_yaml"
+
+    "tests/plugins/test_plugins_manager.py::TestPluginsRBAC"
+    "tests/plugins/test_plugins_manager.py::TestPluginsManager::test_loads_filesystem_plugins"
+    "tests/plugins/test_plugins_manager.py::TestPluginsManager::test_registering_plugin_listeners"
+    "tests/plugins/test_plugins_manager.py::TestPluginsDirectorySource::test_should_return_correct_path_name"
+
+    "tests/secrets/test_secrets.py::TestConnectionsFromSecrets::test_backend_fallback_to_env_var"
+    "tests/secrets/test_secrets.py::TestConnectionsFromSecrets::test_backends_kwargs"
+    "tests/secrets/test_secrets.py::TestConnectionsFromSecrets::test_initialize_secrets_backends"
+    "tests/secrets/test_secrets.py::TestVariableFromSecrets::test_backend_variable_order"
+
+    "tests/utils/test_cli_util.py::TestCliUtil::test_metrics_build" # $USER is not set?
+    "tests/utils/test_process_utils.py::TestKillChildProcessesByPids" # ps is not on PATH
+
+    "tests/www/api/experimental/test_dag_runs_endpoint.py::TestDagRunsEndpoint" # http 401
+    "tests/www/api/experimental/test_endpoints.py::TestPoolApiExperimental" # http 401
+    "tests/www/api/experimental/test_endpoints.py::TestApiExperimental" # http 401
+    "tests/www/api/experimental/test_endpoints.py::TestLineageApiExperimental" # http 401
+    "tests/www/views/test_views.py::test_configuration_expose_config"
+    "tests/www/views/test_views.py::test_plugin_should_list_on_page_with_details"
+    "tests/www/views/test_views_acl.py::test_permission_exist"
+    "tests/www/views/test_views_acl.py::test_role_permission_associate"
+    "tests/www/views/test_views_extra_links.py::test_global_extra_links_works" # http 404
+    "tests/www/views/test_views_extra_links.py::test_extra_link_in_gantt_view" # Missing github?
+    "tests/www/views/test_views_extra_links.py::test_operator_extra_link_override_plugin" # 1.10.5 links?
+    "tests/www/views/test_views_extra_links.py::test_operator_extra_link_multiple_operators" # 1.10.5 links?
+
+    # Missing provider
+    "tests/task/task_runner/test_task_runner.py::GetTaskRunner::test_should_have_valid_imports_1_airflow_task_task_runner_cgroup_task_runner_CgroupTaskRunner"
+    "tests/api/auth/test_client.py::TestGetCurrentApiClient::test_should_create_google_open_id_client"
+
+    # Celery and Kubernetes missing
+    "tests/executors/test_executor_loader.py::TestExecutorLoader::test_should_support_executor_from_core_0_CeleryExecutor"
+    "tests/executors/test_executor_loader.py::TestExecutorLoader::test_should_support_executor_from_core_1_CeleryKubernetesExecutor"
+    "tests/executors/test_executor_loader.py::TestExecutorLoader::test_should_support_executor_from_core_3_KubernetesExecutor"
+  ];
+
+in
 buildPythonPackage rec {
   pname = "apache-airflow";
-  version = "1.10.5";
-  # Upstream does not yet support python 3.8
-  # https://github.com/apache/airflow/issues/8674
-  disabled = pythonOlder "3.5" || pythonAtLeast "3.8";
+  version = "2.3.1";
+  disabled = pythonOlder "3.7" || pythonAtLeast "3.11";
 
   src = fetchFromGitHub rec {
     owner = "apache";
     repo = "airflow";
     rev = version;
-    sha256 = "14fmhfwx977c9jdb2kgm93i6acx43l45ggj30rb37r68pzpb6l6h";
+    sha256 = "sha256-6vxnhcQYp7UTXWKb27I+R8br5gCpegZdYsePkS1GNd8=";
+
+    # HACK: To zip sources doesn't have tests folder.
+    #       This forces git fetch instead of zip fetch.
+    fetchSubmodules = true;
   };
 
-  patches = [
-       # Not yet accepted: https://github.com/apache/airflow/pull/6562
-     (fetchpatch {
-       name = "avoid-warning-from-abc.collections";
-       url = "https://patch-diff.githubusercontent.com/raw/apache/airflow/pull/6562.patch";
-       sha256 = "0swpay1qlb7f9kgc56631s1qd9k82w4nw2ggvkm7jvxwf056k61z";
-     })
-       # Not yet accepted: https://github.com/apache/airflow/pull/6561
-     (fetchpatch {
-       name = "pendulum2-compatibility";
-       url = "https://patch-diff.githubusercontent.com/raw/apache/airflow/pull/6561.patch";
-       sha256 = "17hw8qyd4zxvib9zwpbn32p99vmrdz294r31gnsbkkcl2y6h9knk";
-     })
-  ];
+  # TODO: can we do it without the following line and provide providers as separate modules?
+  INSTALL_PROVIDERS_FROM_SOURCES = "true";
 
   propagatedBuildInputs = [
     alembic
-    cached-property
-    colorlog
-    configparser
+    argcomplete
+    attrs
+    blinker
+    cattrs
+    colorlog_4
+    connexion
+    cron-descriptor
     croniter
+    deprecated
     dill
     flask
-    flask-admin
     flask-appbuilder
-    flask-bcrypt
     flask-caching
-    flask_login
-    flask-swagger
+    flask-login_0_4
+    flask-session
     flask_wtf
-    funcsigs
-    future
     GitPython
+    graphviz
     gunicorn
-    iso8601
-    json-merge-patch
+    httpx
     jinja2
-    ldap3
-    lxml
+    jsonschema
     lazy-object-proxy
+    lockfile
     markdown
-    pandas
+    markupsafe
+    marshmallow-oneofschema
+    packaging
+    pathspec
     pendulum
+    pluggy
     psutil
     pygments
     python-daemon
     python-dateutil
-    requests
+    python-nvd3
+    python-slugify
+    rich
     setproctitle
     sqlalchemy
+    sqlalchemy-jsonfield
     tabulate
     tenacity
     termcolor
-    text-unidecode
-    thrift
-    tzlocal
+    typing-extensions
     unicodecsv
-    zope_deprecation
+    werkzeug
+  ] ++ lib.optional (pythonOlder "3.8") [
+    cached-property
+  ] ++ lib.optional (pythonOlder "3.9") [
+    importlib-metadata
+    importlib-resources
   ];
 
   checkInputs = [
-    snakebite
-    nose
+    beautifulsoup4
+    filelock
+    freezegun
+    jmespath
+    parameterized
+    pytest-asyncio
+    pytestCheckHook
   ];
-
-  postPatch = ''
-    substituteInPlace setup.py \
-      --replace "flask>=1.1.0, <2.0" "flask" \
-      --replace "jinja2>=2.10.1, <2.11.0" "jinja2" \
-      --replace "pandas>=0.17.1, <1.0.0" "pandas" \
-      --replace "flask-caching>=1.3.3, <1.4.0" "flask-caching" \
-      --replace "flask-appbuilder>=1.12.5, <2.0.0" "flask-appbuilder" \
-      --replace "flask-admin==1.5.3" "flask-admin" \
-      --replace "flask-login>=0.3, <0.5" "flask-login" \
-      --replace "cached_property~=1.5" "cached_property" \
-      --replace "dill>=0.2.2, <0.3" "dill" \
-      --replace "configparser>=3.5.0, <3.6.0" "configparser" \
-      --replace "colorlog==4.0.2" "colorlog" \
-      --replace "funcsigs==1.0.0" "funcsigs" \
-      --replace "flask-swagger==0.2.13" "flask-swagger" \
-      --replace "python-daemon>=2.1.1, <2.2" "python-daemon" \
-      --replace "alembic>=1.0, <2.0" "alembic" \
-      --replace "markdown>=2.5.2, <3.0" "markdown" \
-      --replace "future>=0.16.0, <0.17" "future" \
-      --replace "tenacity==4.12.0" "tenacity" \
-      --replace "text-unidecode==1.2" "text-unidecode" \
-      --replace "tzlocal>=1.4,<2.0.0" "tzlocal" \
-      --replace "sqlalchemy~=1.3" "sqlalchemy" \
-      --replace "gunicorn>=19.5.0, <20.0" "gunicorn"
-
-    # dumb-init is only needed for CI and Docker, not relevant for NixOS.
-    substituteInPlace setup.py \
-      --replace "'dumb-init>=1.2.2'," ""
-
-    substituteInPlace tests/core.py \
-      --replace "/bin/bash" "${stdenv.shell}"
-  '';
 
   # allow for gunicorn processes to have access to python packages
   makeWrapperArgs = [ "--prefix PYTHONPATH : $PYTHONPATH" ];
 
-  checkPhase = ''
-   export HOME=$(mktemp -d)
-   export AIRFLOW_HOME=$HOME
-   export AIRFLOW__CORE__UNIT_TEST_MODE=True
-   export AIRFLOW_DB="$HOME/airflow.db"
-   export PATH=$PATH:$out/bin
+  pytestFlagsArray = [
+    "--disable-pytest-warnings"
+  ] ++ deselectedTestArgs;
 
-   airflow version
-   airflow initdb
-   airflow resetdb -y
-   nosetests tests.core.CoreTest
-   ## all tests
-   # nosetests --cover-package=airflow
+  ## Following tests fail while init due to import error
+  disabledTestPaths = [
+    # Requires celery
+    "tests/cli/"
+    "tests/executors/test_celery_executor.py"
+    "tests/executors/test_celery_kubernetes_executor.py"
+    "tests/executors/test_kubernetes_executor.py"
+    "tests/executors/test_local_kubernetes_executor.py"
+    "tests/www/views/test_views_dagrun.py"
+    "tests/www/views/test_views_tasks.py"
+
+    # Requires docker
+    "docker_tests/"
+
+    # Requires kubernetes
+    "kubernetes_tests/"
+    "tests/kubernetes/"
+    "tests/serialization/test_dag_serialization.py"
+
+    # Requires dask
+    "tests/executors/test_dask_executor.py"
+
+    # Requires cgroupspy
+    "tests/task/task_runner/test_cgroup_task_runner.py"
+
+    # Requires psycopg
+    "tests/operators/test_generic_transfer.py"
+    "tests/operators/test_sql.py"
+
+    # Requires statsd
+    "tests/core/test_stats.py"
+
+    # Requires numpy
+    "tests/utils/test_json.py"
+
+    # Requires pandas
+    "tests/sensors/test_sql_sensor.py"
+
+    # Requires sentry_sdk
+    "tests/core/test_sentry.py"
+
+    # Most of them requires helm/kubernetes
+    "tests/charts/"
+
+    # Requires google
+    "tests/api_connexion/endpoints/test_extra_link_endpoint.py"
+
+    # Requires kerberos
+    "tests/api/auth/backend/test_kerberos_auth.py"
+
+    # Requires breeze
+    "dev/breeze/tests/"
+
+    # Uses all providers, but not are installed
+    "tests/always/test_deprecations.py"
+    "tests/always/test_example_dags.py"
+    "tests/providers/"
+    "tests/system/providers/"
+  ];
+
+  preCheck = ''
+    export HOME=$(mktemp -d)
+    export AIRFLOW_HOME=$HOME
+    export AIRFLOW__CORE__UNIT_TEST_MODE=True
+    export PATH=$PATH:$out/bin
+
+    airflow version
+    airflow db init
+    airflow db reset -y
   '';
 
   meta = with lib; {

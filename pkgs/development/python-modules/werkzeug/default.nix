@@ -21,6 +21,8 @@ buildPythonPackage rec {
     "test_get_machine_id"
   ];
 
+  pytestFlagsArray = [ "-p no:unraisableexception" ];
+
   meta = with lib; {
     homepage = "https://palletsprojects.com/p/werkzeug/";
     description = "A WSGI utility library for Python";

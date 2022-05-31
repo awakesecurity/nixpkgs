@@ -1,4 +1,4 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27
+{ lib, buildPythonPackage, fetchPypi, pythonOlder
 , coverage
 , mock
 , pytest
@@ -8,22 +8,22 @@
 
 buildPythonPackage rec {
   pname = "gunicorn";
-  version = "20.0.4";
-  disabled = isPy27;
+  version = "20.1.0";
+  disabled = pythonOlder "3.5";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1904bb2b8a43658807108d59c3f3d56c2b6121a701161de0ddf9ad140073c626";
+    sha256 = "sha256-4KlotboV+KMo/f16sfy1r0RwwoqvflXfAqmbwTE45ug=";
   };
 
   propagatedBuildInputs = [ setuptools ];
 
   checkInputs = [ pytest mock pytestcov coverage ];
 
-  prePatch = ''
+  /*prePatch = ''
     substituteInPlace requirements_test.txt --replace "==" ">=" \
       --replace "coverage>=4.0,<4.4" "coverage"
-  '';
+  '';*/
 
   # better than no tests
   checkPhase = ''

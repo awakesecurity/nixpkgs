@@ -827,7 +827,7 @@ in
 
   airfield = callPackage ../tools/networking/airfield { };
 
-  apache-airflow = with python37.pkgs; toPythonApplication apache-airflow;
+  apache-airflow = with python39.pkgs; toPythonApplication apache-airflow;
 
   airsonic = callPackage ../servers/misc/airsonic { };
 

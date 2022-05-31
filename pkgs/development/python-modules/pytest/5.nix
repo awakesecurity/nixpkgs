@@ -7,7 +7,7 @@
 , more-itertools
 , packaging
 , pathlib2
-, pluggy
+, pluggy_0
 , py
 , pygments
 , python
@@ -37,7 +37,7 @@ buildPythonPackage rec {
     attrs
     more-itertools
     packaging
-    pluggy
+    pluggy_0
     py
     setuptools
     six
