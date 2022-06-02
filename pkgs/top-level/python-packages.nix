@@ -1865,6 +1865,8 @@ in {
 
   criticality-score = callPackage ../development/python-modules/criticality-score { };
 
+  cron-descriptor = callPackage ../development/python-modules/cron-descriptor { };
+
   croniter = callPackage ../development/python-modules/croniter { };
 
   crownstone-cloud = callPackage ../development/python-modules/crownstone-cloud { };
