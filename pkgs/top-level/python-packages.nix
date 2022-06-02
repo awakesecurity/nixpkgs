@@ -436,6 +436,10 @@ in {
   };
 
   apache-airflow = callPackage ../development/python-modules/apache-airflow { };
+  apache-airflow-providers-ftp = callPackage ../development/python-modules/apache-airflow/providers/ftp.nix { };
+  apache-airflow-providers-http = callPackage ../development/python-modules/apache-airflow/providers/http.nix { };
+  apache-airflow-providers-imap = callPackage ../development/python-modules/apache-airflow/providers/imap.nix { };
+  apache-airflow-providers-sqlite = callPackage ../development/python-modules/apache-airflow/providers/sqlite.nix { };
 
   apipkg = callPackage ../development/python-modules/apipkg { };
 
@@ -1134,6 +1138,10 @@ in {
   brother = callPackage ../development/python-modules/brother { };
 
   brotli = callPackage ../development/python-modules/brotli { };
+
+  brotlicffi = callPackage ../development/python-modules/brotlicffi {
+    inherit (pkgs) brotli;
+  };
 
   brotlipy = callPackage ../development/python-modules/brotlipy { };
 

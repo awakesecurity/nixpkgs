@@ -3,6 +3,10 @@
 , buildPythonPackage
 , fetchFromGitHub
 , fetchpatch
+, apache-airflow-providers-ftp
+, apache-airflow-providers-http
+, apache-airflow-providers-imap
+, apache-airflow-providers-sqlite
 , alembic
 , argcomplete
 , attrs
@@ -189,9 +193,14 @@ buildPythonPackage rec {
   };
 
   # TODO: can we do it without the following line and provide providers as separate modules?
-  INSTALL_PROVIDERS_FROM_SOURCES = "true";
+  # INSTALL_PROVIDERS_FROM_SOURCES = "true";
 
   propagatedBuildInputs = [
+    apache-airflow-providers-ftp
+    apache-airflow-providers-http
+    apache-airflow-providers-imap
+    apache-airflow-providers-sqlite
+
     alembic
     argcomplete
     attrs
