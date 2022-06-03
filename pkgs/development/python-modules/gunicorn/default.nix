@@ -20,11 +20,6 @@ buildPythonPackage rec {
 
   checkInputs = [ pytest mock pytestcov coverage ];
 
-  /*prePatch = ''
-    substituteInPlace requirements_test.txt --replace "==" ">=" \
-      --replace "coverage>=4.0,<4.4" "coverage"
-  '';*/
-
   # better than no tests
   checkPhase = ''
     $out/bin/gunicorn --help > /dev/null
