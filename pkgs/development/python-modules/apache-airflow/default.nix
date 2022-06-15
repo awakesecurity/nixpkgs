@@ -1,12 +1,19 @@
 { lib
 , stdenv
 , buildPythonPackage
+, callPackage
 , fetchFromGitHub
 , fetchpatch
+, mkYarnPackage
+, python
+, pythonOlder
+, pythonAtLeast
+
 , apache-airflow-providers-ftp
 , apache-airflow-providers-http
 , apache-airflow-providers-imap
 , apache-airflow-providers-sqlite
+
 , alembic
 , argcomplete
 , attrs
@@ -65,6 +72,7 @@
 , typing-extensions
 , unicodecsv
 , werkzeug
+
 , beautifulsoup4
 , filelock
 , freezegun
@@ -72,8 +80,6 @@
 , parameterized
 , pytest-asyncio
 , pytestCheckHook
-, pythonOlder
-, pythonAtLeast
 }:
 
 let 
@@ -363,6 +369,15 @@ buildPythonPackage rec {
     airflow db init
     airflow db reset -y
   '';
+
+  postInstall = let
+    frontend = callPackage ./frontend.nix {
+      inherit mkYarnPackage;
+      src = "${src}/airflow/www";
+    };
+    in ''
+      cp -rv ${frontend}/static/dist $out/${python.sitePackages}/airflow/www/static
+    '';
 
   meta = with lib; {
     description = "Programmatically author, schedule and monitor data pipelines";
