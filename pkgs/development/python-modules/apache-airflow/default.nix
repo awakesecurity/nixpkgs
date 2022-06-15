@@ -164,6 +164,7 @@ let
     "tests/www/api/experimental/test_endpoints.py::TestLineageApiExperimental" # http 401
     "tests/www/views/test_views.py::test_configuration_expose_config"
     "tests/www/views/test_views.py::test_plugin_should_list_on_page_with_details"
+    "tests/www/views/test_views_acl.py::test_dag_autocomplete_success"
     "tests/www/views/test_views_acl.py::test_permission_exist"
     "tests/www/views/test_views_acl.py::test_role_permission_associate"
     "tests/www/views/test_views_extra_links.py::test_global_extra_links_works" # http 404
@@ -207,14 +208,14 @@ let
 in
 buildPythonPackage rec {
   pname = "apache-airflow";
-  version = "2.3.1";
+  version = "2.3.2";
   disabled = pythonOlder "3.7" || pythonAtLeast "3.11";
 
   src = fetchFromGitHub rec {
     owner = "apache";
     repo = "airflow";
     rev = version;
-    sha256 = "sha256-6vxnhcQYp7UTXWKb27I+R8br5gCpegZdYsePkS1GNd8=";
+    sha256 = "sha256-tI6dX2JVviEFDNKxDHRulE+kOFr/X2lakk0M3z1CRjs=";
 
     # HACK: To zip sources doesn't have tests folder.
     #       This forces git fetch instead of zip fetch.
