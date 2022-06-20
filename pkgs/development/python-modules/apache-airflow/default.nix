@@ -222,6 +222,13 @@ buildPythonPackage rec {
     fetchSubmodules = true;
   };
 
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/apache/airflow/pull/24585.patch";
+      sha256 = "sha256-YpdPo0kDNkiASyX3GpKoSk/zSKuez/5/oc3BXrOCyLE=";
+    })
+  ];
+
   propagatedBuildInputs = [
     apache-airflow-providers-ftp
     apache-airflow-providers-http
