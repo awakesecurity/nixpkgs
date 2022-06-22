@@ -10,7 +10,7 @@
 , cachetools
 , click
 , dnspython
-, email_validator
+, email-validator
 , flask
 , flask-babel
 , flask-cors
@@ -76,7 +76,7 @@ buildPythonPackage rec {
     cachetools
     click
     dnspython
-    email_validator
+    email-validator
     flask
     flask-babel
     flask-cors

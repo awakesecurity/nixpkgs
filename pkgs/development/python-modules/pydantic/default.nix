@@ -1,6 +1,6 @@
 { lib
 , buildPythonPackage
-, email_validator
+, email-validator
 , fetchFromGitHub
 , pytest-mock
 , pytestCheckHook
@@ -23,7 +23,7 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    email_validator
+    email-validator
     python-dotenv
     typing-extensions
     ujson
