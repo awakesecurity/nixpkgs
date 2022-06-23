@@ -169,12 +169,7 @@ in {
 
     linux_5_16 = throw "linux 5.16 was removed because it has reached its end of life upstream";
 
-    linux_5_17 = callPackage ../os-specific/linux/kernel/linux-5.17.nix {
-      kernelPatches = [
-        kernelPatches.bridge_stp_helper
-        kernelPatches.request_key_helper
-      ];
-    };
+    linux_5_17 = throw "linux 5.17 was removed because it has reached its end of life upstream";
 
     linux_testing = let
       testing = callPackage ../os-specific/linux/kernel/linux-testing.nix {
@@ -189,7 +184,7 @@ in {
        else testing;
 
     linux_testing_bcachefs = callPackage ../os-specific/linux/kernel/linux-testing-bcachefs.nix rec {
-      kernel = linux_5_17;
+      kernel = linux_5_15;
       kernelPatches = kernel.kernelPatches;
    };
 
@@ -234,7 +229,6 @@ in {
     linux_5_10_hardened = hardenedKernelFor kernels.linux_5_10 { };
     linux_5_14_hardened = hardenedKernelFor kernels.linux_5_14 { };
     linux_5_15_hardened = hardenedKernelFor kernels.linux_5_15 { };
-    linux_5_17_hardened = hardenedKernelFor kernels.linux_5_17 { };
 
   }));
   /*  Linux kernel modules are inherently tied to a specific kernel.  So
@@ -479,7 +473,7 @@ in {
     linux_5_14 = recurseIntoAttrs (packagesFor kernels.linux_5_14);
     linux_5_15 = recurseIntoAttrs (packagesFor kernels.linux_5_15);
     linux_5_16 = throw "linux 5.16 was removed because it reached its end of life upstream"; # Added 2022-04-23
-    linux_5_17 = recurseIntoAttrs (packagesFor kernels.linux_5_17);
+    linux_5_17 = throw "linux 5.17 was removed because it reached its end of life upstream"; # Added 2022-06-23
   };
 
   rtPackages = {
@@ -519,7 +513,6 @@ in {
     linux_5_10_hardened = recurseIntoAttrs (hardenedPackagesFor kernels.linux_5_10 { });
     linux_5_14_hardened = recurseIntoAttrs (hardenedPackagesFor kernels.linux_5_14 { });
     linux_5_15_hardened = recurseIntoAttrs (hardenedPackagesFor kernels.linux_5_15 { });
-    linux_5_17_hardened = recurseIntoAttrs (hardenedPackagesFor kernels.linux_5_17 { });
 
     linux_zen = recurseIntoAttrs (packagesFor kernels.linux_zen);
     linux_lqx = recurseIntoAttrs (packagesFor kernels.linux_lqx);
