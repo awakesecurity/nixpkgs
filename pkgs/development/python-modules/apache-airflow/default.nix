@@ -224,8 +224,8 @@ buildPythonPackage rec {
 
   patches = [
     (fetchpatch {
-      url = "https://github.com/apache/airflow/pull/24585.patch";
-      sha256 = "sha256-YpdPo0kDNkiASyX3GpKoSk/zSKuez/5/oc3BXrOCyLE=";
+      url = "https://github.com/apache/airflow/commit/9f58e823329d525c0e2b3950ada7e0e047ee7cfd.patch";
+      sha256 = "sha256-RrqFuFvLSNX+30kKsWrNW/BaRi3+g+P6STlKaMhWKng=";
     })
   ];
 
