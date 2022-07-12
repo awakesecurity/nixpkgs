@@ -71,6 +71,8 @@ stdenv.mkDerivation rec {
     gobject-introspection
   ];
 
+  buildInputs = [ gobject-introspection ];
+
   propagatedBuildInputs = [
     glib
     libtiff

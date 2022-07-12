@@ -44,6 +44,8 @@ stdenv.mkDerivation rec {
     gi-docgen
   ];
 
+  buildInputs = [ gobject-introspection ];
+
   propagatedBuildInputs = [
     glib
   ];
