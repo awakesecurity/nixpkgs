@@ -57,6 +57,7 @@ stdenv.mkDerivation rec {
                     # whether tests are enabled
 
   buildInputs = [
+    gobject-introspection
     glib
     libxml2
     sqlite

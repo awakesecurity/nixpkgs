@@ -44,6 +44,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     python3
+    gobject-introspection
     sqlite
     libpsl
     glib.out
