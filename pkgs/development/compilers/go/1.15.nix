@@ -7,7 +7,7 @@
 
 let
 
-  inherit (stdenv.lib) optionals optionalString;
+  inherit (stdenv.lib) optional optionals optionalString;
 
   goBootstrap = runCommand "go-bootstrap" {} ''
     mkdir $out
@@ -47,6 +47,9 @@ stdenv.mkDerivation rec {
   depsTargetTargetPropagated = optionals stdenv.isDarwin [ Security Foundation ];
 
   hardeningDisable = [ "all" ];
+
+  requiredSystemFeatures =
+    optional (stdenv.isDarwin && stdenv.isx86_64) "big-sur";
 
   prePatch = ''
     patchShebangs ./ # replace /bin/bash
