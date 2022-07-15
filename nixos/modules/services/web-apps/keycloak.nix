@@ -633,6 +633,8 @@ in
 
         mkdir -p {deployments,ssl}
 
+        trap "kill 0" EXIT
+
         standalone.sh&
 
         attempt=1
