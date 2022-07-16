@@ -172,7 +172,8 @@ in stdenv.mkDerivation rec {
 
   setupHooks = ./setup-hook.sh;
 
-  requiredSystemFeatures = [ "big-parallel" ];
+  requiredSystemFeatures = [ "big-parallel" ]
+    ++ lib.optional (stdenv.isDarwin && stdenv.isx86_64) "big-sur";
 
   passthru.llvm = llvmShared;
 

@@ -54,6 +54,9 @@ rustPlatform.buildRustPackage {
   # Disable check phase as there are failures (4 tests fail)
   doCheck = false;
 
+  requiredSystemFeatures =
+    lib.optional (stdenv.isDarwin && stdenv.isx86_64) "big-sur";
+
   meta = with lib; {
     homepage = "https://crates.io";
     description = "Downloads your Rust project's dependencies and builds your project";
