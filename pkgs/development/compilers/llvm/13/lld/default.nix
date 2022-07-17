@@ -16,6 +16,7 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./gnu-install-dirs.patch
+    ./lld-include-dir.patch
   ];
 
   nativeBuildInputs = [ cmake ];
@@ -23,6 +24,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DLLVM_CONFIG_PATH=${libllvm.dev}/bin/llvm-config${lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) "-native"}"
+    "-DLLVM_MAIN_SRC_DIR=${libllvm.src}"
   ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     "-DLLVM_TABLEGEN_EXE=${buildLlvmTools.llvm}/bin/llvm-tblgen"
   ];
