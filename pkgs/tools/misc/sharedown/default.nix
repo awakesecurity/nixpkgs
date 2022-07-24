@@ -51,9 +51,7 @@ stdenvNoCC.mkDerivation rec {
         name = "${pname}-modules-${version}";
         inherit pname version;
 
-        yarnFlags = yarn2nix-moretea.defaultYarnFlags ++ [
-          "--production"
-        ];
+        yarnFlags = [ "--production" ];
 
         packageJSON = "${src}/package.json";
         yarnLock = ./yarn.lock;
