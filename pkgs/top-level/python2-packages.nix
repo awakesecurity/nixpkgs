@@ -5,6 +5,7 @@
 self: super:
 
 with self; with super; {
+  attrs = callPackage ../development/python2-modules/attrs { };
 
   boto3 = callPackage ../development/python-modules/boto3/1_17.nix {};
 
