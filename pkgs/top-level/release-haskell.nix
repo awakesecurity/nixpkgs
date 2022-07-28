@@ -52,7 +52,7 @@ let
     ghc884
     ghc8107
     ghc902
-    ghc923
+    ghc924
   ];
 
   # packagePlatforms applied to `haskell.packages.*`
@@ -330,8 +330,8 @@ let
               ;
             };
 
-            haskell.packages.native-bignum.ghc923 = {
-              inherit (packagePlatforms pkgs.pkgsStatic.haskell.packages.native-bignum.ghc923)
+            haskell.packages.native-bignum.ghc924 = {
+              inherit (packagePlatforms pkgs.pkgsStatic.haskell.packages.native-bignum.ghc924)
                 hello
                 lens
                 random
@@ -381,7 +381,7 @@ let
       weeder = [
         compilerNames.ghc8107
         compilerNames.ghc902
-        compilerNames.ghc923
+        compilerNames.ghc924
       ];
       purescript = [
         compilerNames.ghc8107
@@ -458,11 +458,11 @@ let
           jobs.pkgsMusl.haskell.compiler.ghc884
           jobs.pkgsMusl.haskell.compiler.ghc8107
           jobs.pkgsMusl.haskell.compiler.ghc902
-          jobs.pkgsMusl.haskell.compiler.ghc923
+          jobs.pkgsMusl.haskell.compiler.ghc924
           jobs.pkgsMusl.haskell.compiler.ghcHEAD
           jobs.pkgsMusl.haskell.compiler.integer-simple.ghc8107
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc902
-          jobs.pkgsMusl.haskell.compiler.native-bignum.ghc923
+          jobs.pkgsMusl.haskell.compiler.native-bignum.ghc924
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghcHEAD
         ];
       };
@@ -478,7 +478,7 @@ let
         };
         constituents = accumulateDerivations [
           jobs.pkgsStatic.haskellPackages
-          jobs.pkgsStatic.haskell.packages.native-bignum.ghc923
+          jobs.pkgsStatic.haskell.packages.native-bignum.ghc924
         ];
       };
     }
