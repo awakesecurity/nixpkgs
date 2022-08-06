@@ -664,7 +664,81 @@ roughly translates to:
 However, this is done in it's own phase, and not dependent on whether `doCheck = true;`
 
 This can also be useful in verifying that the package doesn't assume commonly
-present packages (e.g. `setuptools`)
+present packages (e.g. `setuptools`).
+
+#### Using pythonRelaxDepsHook {#using-pythonrelaxdepshook}
+
+It is common for upstream to specify a range of versions for its package
+dependencies. This makes sense, since it ensures that the package will be built
+with a subset of packages that is well tested. However, this commonly causes
+issues when packaging in Nixpkgs, because the dependencies that this package
+may need are too new or old for the package to build correctly. We also cannot
+package multiple versions of the same package since this may cause conflicts
+in `PYTHONPATH`.
+
+One way to side step this issue is to relax the dependencies. This can be done
+by either removing the package version range or by removing the package
+declaration entirely. This can be done using the `pythonRelaxDepsHook` hook. For
+example, given the following `requirements.txt` file:
+
+```
+pkg1<1.0
+pkg2
+pkg3>=1.0,<=2.0
+```
+
+we can do:
+
+```
+  nativeBuildInputs = [ pythonRelaxDepsHook ];
+  pythonRelaxDeps = [ "pkg1" "pkg3" ];
+  pythonRemoveDeps = [ "pkg2" ];
+```
+
+which would result in the following `requirements.txt` file:
+
+```
+pkg1
+pkg3
+```
+
+Another option is to pass `true`, that will relax/remove all dependencies, for
+example:
+
+```
+  nativeBuildInputs = [ pythonRelaxDepsHook ];
+  pythonRelaxDeps = true;
+```
+
+which would result in the following `requirements.txt` file:
+
+```
+pkg1
+pkg2
+pkg3
+```
+
+In general you should always use `pythonRelaxDeps`, because `pythonRemoveDeps`
+will convert build errors into runtime errors. However `pythonRemoveDeps` may
+still be useful in exceptional cases, and also to remove dependencies wrongly
+declared by upstream (for example, declaring `black` as a runtime dependency
+instead of a dev dependency).
+
+Keep in mind that while the examples above are done with `requirements.txt`,
+`pythonRelaxDepsHook` works by modifying the resulting wheel file, so it should
+work in any of the formats supported by `buildPythonPackage` currently,
+with the exception of `other` (see `format` in
+[`buildPythonPackage` parameters](#buildpythonpackage-parameters) for more details).
+
+### Using unittestCheckHook {#using-unittestcheckhook}
+
+`unittestCheckHook` is a hook which will substitute the setuptools `test` command for a `checkPhase` which runs `python -m unittest discover`:
+
+```
+  checkInputs = [ unittestCheckHook ];
+
+  unittestFlags = [ "-s" "tests" "-v" ];
+```
 
 #### Using pythonRelaxDepsHook {#using-pythonrelaxdepshook}
 
