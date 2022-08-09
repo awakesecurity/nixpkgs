@@ -195,6 +195,13 @@ in
       buildMachines = mkOption {
         type = types.listOf (types.submodule ({
           options = {
+            protocol = mkOption {
+              type = types.enum [ "ssh" "ssh-ng" ];
+              default = "ssh";
+              description = ''
+                The store protocol to use to connect to the builder.
+              '';
+            };
             hostName = mkOption {
               type = types.str;
               example = "nixbuilder.example.org";
@@ -522,7 +529,7 @@ in
       { enable = cfg.buildMachines != [];
         text =
           concatMapStrings (machine:
-            "${if machine.sshUser != null then "${machine.sshUser}@" else ""}${machine.hostName} "
+            "${machine.protocol}://${if machine.sshUser != null then "${machine.sshUser}@" else ""}${machine.hostName} "
             + (if machine.system != null then machine.system else concatStringsSep "," machine.systems)
             + " ${if machine.sshKey != null then machine.sshKey else "-"} ${toString machine.maxJobs} "
             + toString (machine.speedFactor)
