@@ -20,5 +20,7 @@ buildPythonPackage rec {
     description = "converts a markdown file including reST markups to a valid reST format";
     license = licenses.mit;
     maintainers = [ ];
+    # https://github.com/miyakogi/m2r/issues/66
+    broken = versionAtLeast mistune.version "2";
   };
 }
