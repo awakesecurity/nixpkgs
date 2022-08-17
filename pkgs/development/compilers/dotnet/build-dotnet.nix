@@ -11,7 +11,7 @@ assert builtins.elem type [ "aspnetcore" "runtime" "sdk"];
 , fetchurl
 , writeText
 , libunwind
-, openssl
+, openssl_1_1
 , libuuid
 , zlib
 , curl
@@ -42,7 +42,7 @@ in stdenv.mkDerivation rec {
     icu
     libunwind
     libuuid
-    openssl
+    openssl_1_1
   ] ++ lib.optionals stdenv.isLinux [
     lttng-ust_2_12
   ]);
