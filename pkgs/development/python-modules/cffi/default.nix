@@ -18,6 +18,18 @@ if isPyPy then null else buildPythonPackage rec {
   propagatedBuildInputs = [ pycparser ];
 
   patches =
+    #
+    # Trusts the libffi library inside of nixpkgs on Apple devices.
+    #
+    # Based on some analysis I did:
+    #
+    #   https://groups.google.com/g/python-cffi/c/xU0Usa8dvhk
+    #
+    # I believe that libffi already contains the code from Apple's fork that is
+    # deemed safe to trust in cffi.
+    #
+
+    ./darwin-use-libffi-closures.diff
     # Fix test that failed because python seems to have changed the exception format in the
     # final release. This patch should be included in the next version and can be removed when
     # it is released.
@@ -40,9 +52,7 @@ if isPyPy then null else buildPythonPackage rec {
   NIX_CFLAGS_COMPILE = lib.optionalString stdenv.cc.isClang
     "-Wno-unused-command-line-argument -Wno-unreachable-code -Wno-c++11-narrowing";
 
-  # Lots of tests fail on aarch64-darwin due to "Cannot allocate write+execute memory":
-  # * https://cffi.readthedocs.io/en/latest/using.html#callbacks
-  doCheck = !stdenv.hostPlatform.isMusl && !(stdenv.isDarwin && stdenv.isAarch64);
+  doCheck = !stdenv.hostPlatform.isMusl;
 
   checkInputs = [ pytestCheckHook ];
 
