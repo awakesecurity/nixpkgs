@@ -136,6 +136,7 @@ in
       path = with pkgs; [
         git
         gnutar
+        gzip
         nix
         systemd
       ];
