@@ -1,6 +1,6 @@
 { lib, stdenv, fetchurl, pkg-config, perl, nixosTests
 , brotliSupport ? false, brotli
-, c-aresSupport ? false, c-ares
+, c-aresSupport ? false, c-aresMinimal
 , gnutlsSupport ? false, gnutls
 , gsaslSupport ? false, gsasl
 , patchNetrcRegression ? false
@@ -48,20 +48,21 @@ assert !(opensslSupport && wolfsslSupport);
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "curl";
-  version = "7.84.0";
+  version = "7.85.0";
 
   src = fetchurl {
     urls = [
       "https://curl.haxx.se/download/curl-${finalAttrs.version}.tar.bz2"
       "https://github.com/curl/curl/releases/download/curl-${finalAttrs.version}/curl-${finalAttrs.version}.tar.bz2"
     ];
-    sha256 = "sha256-cC+ybnMZCjvXcHGqFG9Qe5gXzE384hjSq4fwDNO8BZ0=";
+    sha256 = "sha256-IafoNijulhZKwrNv9r+Z1GfHsLYhwffjF9jw2WARU5w=";
   };
 
   patches = [
     ./7.79.1-darwin-no-systemconfiguration.patch
-    ./sched.patch
-    ./atomic.patch
+    # quiche: support ca-fallback
+    # https://github.com/curl/curl/commit/fdb5e21b4dd171a96cf7c002ee77bb08f8e58021
+    ./7.83.1-quiche-support-ca-fallback.patch
   ] ++ lib.optional patchNetrcRegression ./netrc-regression.patch;
 
   outputs = [ "bin" "dev" "out" "man" "devdoc" ];
@@ -78,7 +79,7 @@ stdenv.mkDerivation (finalAttrs: {
   # applications that use Curl.
   propagatedBuildInputs = with lib;
     optional brotliSupport brotli ++
-    optional c-aresSupport c-ares ++
+    optional c-aresSupport c-aresMinimal ++
     optional gnutlsSupport gnutls ++
     optional gsaslSupport gsasl ++
     optional gssSupport libkrb5 ++
