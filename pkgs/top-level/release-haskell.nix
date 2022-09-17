@@ -55,6 +55,7 @@ let
     ghc924
     ghc925
     ghc928
+    ghc942
     ghc945
     ghc946
   ];
