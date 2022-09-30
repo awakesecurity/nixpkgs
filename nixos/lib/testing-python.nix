@@ -54,11 +54,11 @@ rec {
 
   # Run an automated test suite in the given virtual network.
   # `driver' is the script that runs the network.
-  runTests = driver:
+  runTests = requiredSystemFeatures: driver:
     stdenv.mkDerivation {
       name = "vm-test-run-${driver.testName}";
 
-      requiredSystemFeatures = [ "kvm" "nixos-test" ];
+      requiredSystemFeatures = [ "kvm" "nixos-test" ] ++ requiredSystemFeatures;
 
       buildCommand =
         ''
@@ -75,6 +75,7 @@ rec {
     , name ? "unnamed"
     # Skip linting (mainly intended for faster dev cycles)
     , skipLint ? false
+    , requiredSystemFeatures ? []
     , ...
     } @ t:
 
@@ -148,7 +149,7 @@ rec {
         meta = (drv.meta or {}) // t.meta;
       };
 
-      test = passMeta (runTests driver);
+      test = passMeta (runTests requiredSystemFeatures driver);
 
       nodeNames = builtins.attrNames nodes;
       invalidNodeNames = lib.filter
