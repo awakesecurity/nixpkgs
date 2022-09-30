@@ -70,11 +70,12 @@ rec {
     # a source position in the format of builtins.unsafeGetAttrPos
     # for meta.position
     pos,
+    requiredSystemFeatures
   }:
     stdenv.mkDerivation {
       name = "vm-test-run-${driver.testName}";
 
-      requiredSystemFeatures = [ "kvm" "nixos-test" ];
+      requiredSystemFeatures = [ "kvm" "nixos-test" ] ++ requiredSystemFeatures;
 
       buildCommand =
         ''
@@ -103,6 +104,7 @@ rec {
         (if t.meta.description or null != null
           then builtins.unsafeGetAttrPos "description" t.meta
           else builtins.unsafeGetAttrPos "testScript" t)
+    , requiredSystemFeatures ? []
     , ...
     } @ t:
     let
@@ -201,7 +203,7 @@ rec {
       driver = mkDriver null;
       driverInteractive = mkDriver pkgs.qemu;
 
-      test = passMeta (runTests { inherit driver pos; });
+      test = passMeta (runTests { inherit driver pos requiredSystemFeatures; });
 
       nodeNames = builtins.attrNames driver.nodes;
       invalidNodeNames = lib.filter
