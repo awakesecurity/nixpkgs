@@ -1,6 +1,5 @@
 { lib, stdenv, fetchurl, buildPackages, perl, coreutils
 , withCryptodev ? false, cryptodev
-, withZlib ? false, zlib
 , enableSSL2 ? false
 , enableSSL3 ? false
 , static ? stdenv.hostPlatform.isStatic
@@ -17,14 +16,14 @@
 # files.
 
 let
-  common = { version, hash, patches ? [], withDocs ? false, extraMeta ? {} }:
+  common = { version, sha256, patches ? [], withDocs ? false, extraMeta ? {} }:
    stdenv.mkDerivation rec {
     pname = "openssl";
     inherit version;
 
     src = fetchurl {
       url = "https://www.openssl.org/source/${pname}-${version}.tar.gz";
-      inherit hash;
+      inherit sha256;
     };
 
     inherit patches;
@@ -73,8 +72,7 @@ let
     buildInputs = lib.optional withCryptodev cryptodev
       # perl is included to allow the interpreter path fixup hook to set the
       # correct interpreter in c_rehash.
-      ++ lib.optional withPerl perl
-      ++ lib.optional withZlib zlib;
+      ++ lib.optional withPerl perl;
 
     # TODO(@Ericson2314): Improve with mass rebuild
     configurePlatforms = [];
@@ -87,7 +85,6 @@ let
         x86_64-linux = "./Configure linux-x86_64";
         x86_64-solaris = "./Configure solaris64-x86_64-gcc";
         riscv64-linux = "./Configure linux64-riscv64";
-        mipsel-linux = "./Configure linux-mips32";
         mips64el-linux =
           if stdenv.hostPlatform.isMips64n64
           then "./Configure linux64-mips64"
@@ -143,7 +140,6 @@ let
       # This introduces a reference to the CTLOG_FILE which is undesired when
       # trying to build binaries statically.
       ++ lib.optional static "no-ct"
-      ++ lib.optional withZlib "zlib"
       ;
 
     makeFlags = [
@@ -217,8 +213,8 @@ in {
 
 
   openssl_1_1 = common rec {
-    version = "1.1.1q";
-    hash = "sha256-15Oc5hQCnN/wtsIPDi5XAxWKSJpyslB7i9Ub+Mj9EMo=";
+    version = "1.1.1r";
+    sha256 = "sha256-44k1KuPVrk04WXv4pU8dy2+zyLUPT+WKlLsb9/hdgqA=";
     patches = [
       ./1.1/nix-ssl-cert-file.patch
 
@@ -232,8 +228,8 @@ in {
   };
 
   openssl_3 = common {
-    version = "3.0.6";
-    hash = "sha256-5KEKKYaUXj8aHy69aKx4BEmhdzuWtqF0/fZQ1ryWEfE=";
+    version = "3.0.5";
+    sha256 = "sha256-qn2Nm+9xrWUlxVuhHl9Dl4ic5Jwsk0nc6m0+TwsCSno=";
     patches = [
       ./3.0/nix-ssl-cert-file.patch
 
