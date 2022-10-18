@@ -203,6 +203,7 @@ let
     "tests/jobs/test_scheduler_job.py::TestSchedulerJob::test_retry_still_in_executor"
     "tests/operators/test_bash.py::TestBashOperator::test_bash_operator_kill"
     "tests/utils/test_process_utils.py::TestCheckIfPidfileProcessIsRunning::test_remove_if_no_process"
+    "tests/utils/test_dates.py::TestDates::test_days_ago"
   ];
 
 in
