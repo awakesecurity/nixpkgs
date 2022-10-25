@@ -117,7 +117,6 @@ rec {
     , meta ? { }
     }:
     runCommand name
-      { inherit text executable;
       { inherit text executable checkPhase meta;
         passAsFile = [ "text" ];
         # Pointless to do this on a remote machine.
