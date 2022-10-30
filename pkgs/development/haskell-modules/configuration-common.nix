@@ -2578,7 +2578,7 @@ in {
   purescript =
     lib.pipe
       (super.purescript.overrideScope purescriptOverlay)
-      [
+      ([
         # PureScript uses nodejs to run tests, so the tests have been disabled
         # for now.  If someone is interested in figuring out how to get this
         # working, it seems like it might be possible.
@@ -2591,7 +2591,10 @@ in {
         (generateOptparseApplicativeCompletion "purs")
 
         purescriptBrokenFlag
-      ];
+      ] ++ lib.optionals (lib.versions.majorMinor self.ghc.version == "9.2") [
+        markUnbroken
+        doDistribute
+      ]);
 
   purescript-cst = purescriptBrokenFlag (super.purescript-cst.overrideScope purescriptOverlay);
 
