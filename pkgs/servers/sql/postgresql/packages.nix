@@ -57,6 +57,8 @@ self: super: {
     timescaledb = super.callPackage ./ext/timescaledb.nix { };
     timescaledb-apache = super.callPackage ./ext/timescaledb.nix { enableUnfree = false; };
 
+    timescaledb_toolkit = super.callPackage ./ext/timescaledb_toolkit.nix { };
+
     tsearch_extras = super.callPackage ./ext/tsearch_extras.nix { };
 
     tds_fdw = super.callPackage ./ext/tds_fdw.nix { };
