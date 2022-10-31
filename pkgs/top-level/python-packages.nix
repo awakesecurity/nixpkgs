@@ -2030,6 +2030,8 @@ in {
 
   conda = callPackage ../development/python-modules/conda { };
 
+  confection = callPackage ../development/python-modules/confection { };
+
   configargparse = callPackage ../development/python-modules/configargparse { };
 
   configclass = callPackage ../development/python-modules/configclass { };
