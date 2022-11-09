@@ -17,6 +17,7 @@ let
     "ghc902"
     "ghc923"
     "ghc928"
+    "ghc942"
     "ghc943"
     "ghcHEAD"
   ];
@@ -25,6 +26,7 @@ let
     "ghc902"
     "ghc923"
     "ghc928"
+    "ghc942"
     "ghc943"
     "ghcHEAD"
   ];
@@ -169,6 +171,30 @@ in {
       buildTargetLlvmPackages = pkgsBuildTarget.llvmPackages_12;
       llvmPackages = pkgs.llvmPackages_12;
     };
+    ghc942 = callPackage ../development/compilers/ghc/9.4.2.nix {
+      bootPkgs =
+        # Building with 9.2 is broken due to
+        # https://gitlab.haskell.org/ghc/ghc/-/issues/21914
+        # Use 8.10 as a workaround where possible to keep bootstrap path short.
+
+        # On ARM text won't build with GHC 8.10.*
+        if stdenv.hostPlatform.isAarch then
+          # TODO(@sternenseemann): package bindist
+          packages.ghc902
+        # No suitable bindists for powerpc64le
+        else if stdenv.hostPlatform.isPower64 && stdenv.hostPlatform.isLittleEndian then
+          packages.ghc902
+        else
+          packages.ghc8107Binary;
+      inherit (buildPackages.python3Packages) sphinx;
+      # Need to use apple's patched xattr until
+      # https://github.com/xattr/xattr/issues/44 and
+      # https://github.com/xattr/xattr/issues/55 are solved.
+      inherit (buildPackages.darwin) xattr autoSignDarwinBinariesHook;
+      # Support range >= 10 && < 14
+      buildTargetLlvmPackages = pkgsBuildTarget.llvmPackages_12;
+      llvmPackages = pkgs.llvmPackages_12;
+    };
     ghc943 = callPackage ../development/compilers/ghc/9.4.3.nix {
       bootPkgs =
         # Building with 9.2 is broken due to
@@ -305,6 +331,11 @@ in {
       buildHaskellPackages = bh.packages.ghc928;
       ghc = bh.compiler.ghc928;
       compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-9.2.x.nix { };
+    };
+    ghc942 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc942;
+      ghc = bh.compiler.ghc942;
+      compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-9.4.x.nix { };
     };
     ghc943 = callPackage ../development/haskell-modules {
       buildHaskellPackages = bh.packages.ghc943;
