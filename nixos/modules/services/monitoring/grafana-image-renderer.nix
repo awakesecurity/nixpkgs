@@ -111,6 +111,8 @@ in {
       callback_url = "http://localhost:${toString config.services.grafana.port}";
     };
 
+    systemd.services.grafana.before = [ "grafana-image-renderer.service" ];
+
     services.grafana-image-renderer.chromium = mkDefault pkgs.chromium;
 
     services.grafana-image-renderer.settings = {
