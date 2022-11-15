@@ -202,6 +202,8 @@ in
       callback_url = "http://${config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
     };
 
+    systemd.services.grafana.before = [ "grafana-image-renderer.service" ];
+
     services.grafana-image-renderer.settings = {
       browser.timezone = lib.mkIf (config.time.timeZone != null) (lib.mkDefault config.time.timeZone);
     };
