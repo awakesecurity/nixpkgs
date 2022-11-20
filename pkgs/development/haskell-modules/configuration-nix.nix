@@ -925,11 +925,11 @@ self: super: builtins.intersectAttrs super {
   }) super.procex;
 
   # Test suite wants to run main executable
-  fourmolu_0_9_0_0 = overrideCabal (drv: {
+  fourmolu = overrideCabal (drv: {
     preCheck = drv.preCheck or "" + ''
       export PATH="$PWD/dist/build/fourmolu:$PATH"
     '';
-  }) super.fourmolu_0_9_0_0;
+  }) super.fourmolu;
 
   # Apply a patch which hardcodes the store path of graphviz instead of using
   # whatever graphviz is in PATH.

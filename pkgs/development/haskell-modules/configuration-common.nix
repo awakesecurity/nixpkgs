@@ -1033,6 +1033,8 @@ self: super: {
           (super.stack.overrideScope (self: super: {
             # stack 2.7.5 requires aeson <= 1.6.
             aeson = self.aeson_1_5_6_0;
+            # Needs Cabal-3.6
+            Cabal = self.Cabal_3_6_3_0;
           }))
       ));
 
@@ -1545,24 +1547,16 @@ self: super: {
     dontCheck
     (disableCabalFlag "stan") # Sorry stan is totally unmaintained and terrible to get to run. It only works on ghc 8.8 or 8.10 anyways …
   ]).overrideScope (lself: lsuper: {
-    ormolu = doJailbreak lself.ormolu_0_5_0_1;
-    fourmolu = doJailbreak lself.fourmolu_0_8_2_0;
-    hlint = enableCabalFlag "ghc-lib" lself.hlint_3_4_1;
-    ghc-lib-parser-ex = self.ghc-lib-parser-ex_9_2_0_4;
-    ghc-lib-parser = lself.ghc-lib-parser_9_2_4_20220729;
+    hlint = enableCabalFlag "ghc-lib" lsuper.hlint;
   });
 
   hls-hlint-plugin = super.hls-hlint-plugin.overrideScope (lself: lsuper: {
     # For "ghc-lib" flag see https://github.com/haskell/haskell-language-server/issues/3185#issuecomment-1250264515
-    hlint = enableCabalFlag "ghc-lib" lself.hlint_3_4_1;
-    ghc-lib-parser-ex = self.ghc-lib-parser-ex_9_2_0_4;
-    ghc-lib-parser = lself.ghc-lib-parser_9_2_4_20220729;
+    hlint = enableCabalFlag "ghc-lib" lsuper.hlint;
   });
 
   # For -f-auto see cabal.project in haskell-language-server.
-  ghc-lib-parser-ex_9_2_0_4 = disableCabalFlag "auto" (super.ghc-lib-parser-ex_9_2_0_4.override {
-    ghc-lib-parser = self.ghc-lib-parser_9_2_4_20220729;
-  });
+  ghc-lib-parser-ex = disableCabalFlag "auto" super.ghc-lib-parser-ex;
 
   # 2021-05-08: Tests fail: https://github.com/haskell/haskell-language-server/issues/1809
   hls-eval-plugin = dontCheck super.hls-eval-plugin;
@@ -1786,9 +1780,9 @@ self: super: {
   # https://github.com/jaspervdj/profiteur/issues/33
   profiteur = doJailbreak super.profiteur;
 
-  # Test suite has overly strict bounds on tasty.
+  # Test suite has overly strict bounds on tasty, jailbreaking fails.
   # https://github.com/input-output-hk/nothunks/issues/9
-  nothunks = doJailbreak super.nothunks;
+  nothunks = dontCheck super.nothunks;
 
   # Allow building with recent versions of tasty.
   lukko = doJailbreak super.lukko;
@@ -2142,12 +2136,6 @@ self: super: {
     Cabal = self.Cabal_3_6_3_0;
   }));
 
-  # 2022-03-21: Newest stylish-haskell needs ghc-lib-parser-9_2
-  stylish-haskell = (super.stylish-haskell.override {
-    ghc-lib-parser = self.ghc-lib-parser_9_2_4_20220729;
-    ghc-lib-parser-ex = self.ghc-lib-parser-ex_9_2_0_4;
-  });
-
   # To strict bound on hspec
   # https://github.com/dagit/zenc/issues/5
   zenc = doJailbreak super.zenc;
@@ -2159,7 +2147,7 @@ self: super: {
     assert super.graphql.version == "1.0.3.0";
     appendConfigureFlags [
       "-f-json"
-    ] (lib.warnIf (lib.versionAtLeast self.hspec.version "2.9.0") "@NixOS/haskell: Remove jailbreak for graphql" doJailbreak super.graphql);
+    ] super.graphql;
 
   # https://github.com/ajscholl/basic-cpuid/pull/1
   basic-cpuid = appendPatch (fetchpatch {

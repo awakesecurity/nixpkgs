@@ -286,9 +286,14 @@ self: super: ({
   # https://github.com/haskell-crypto/cryptonite/issues/360
   cryptonite = appendPatch ./patches/cryptonite-remove-argon2.patch super.cryptonite;
 
-  fourmolu_0_9_0_0 = overrideCabal (drv: {
+  # Build segfaults unless `fixity-th` is disabled.
+  # https://github.com/tweag/ormolu/issues/927
+  ormolu = overrideCabal (drv: {
     libraryHaskellDepends = drv.libraryHaskellDepends ++ [ self.file-embed ];
-  }) (disableCabalFlag "fixity-th" super.fourmolu_0_9_0_0);
+  }) (disableCabalFlag "fixity-th" super.ormolu);
+  fourmolu = overrideCabal (drv: {
+    libraryHaskellDepends = drv.libraryHaskellDepends ++ [ self.file-embed ];
+  }) (disableCabalFlag "fixity-th" super.fourmolu);
 
 } // lib.optionalAttrs pkgs.stdenv.isx86_64 {  # x86_64-darwin
 
