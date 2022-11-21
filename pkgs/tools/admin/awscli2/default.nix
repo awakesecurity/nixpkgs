@@ -5,6 +5,8 @@
 , less
 , fetchFromGitHub
 , nix-update-script
+, testers
+, awscli2
 }:
 
 let
@@ -36,14 +38,14 @@ let
 in
 with py.pkgs; buildPythonApplication rec {
   pname = "awscli2";
-  version = "2.8.12"; # N.B: if you change this, check if overrides are still up-to-date
+  version = "2.9.0"; # N.B: if you change this, check if overrides are still up-to-date
   format = "pyproject";
 
   src = fetchFromGitHub {
     owner = "aws";
     repo = "aws-cli";
     rev = version;
-    sha256 = "sha256-OeOSSB0WgVJEszmkXmMkmJNq37sPID7HFaTbXkBUwlI=";
+    sha256 = "sha256-kPMoGOn6ws4DjA9fR9gci7vHPIqOSsgMXa1wCiwN8yU=";
   };
 
   nativeBuildInputs = [
@@ -125,6 +127,11 @@ with py.pkgs; buildPythonApplication rec {
     updateScript = nix-update-script {
       attrPath = pname;
     };
+    tests.version = testers.testVersion {
+      package = awscli2;
+      command = "aws --version";
+      version = version;
+    };
   };
 
   meta = with lib; {
@@ -133,5 +140,6 @@ with py.pkgs; buildPythonApplication rec {
     description = "Unified tool to manage your AWS services";
     license = licenses.asl20;
     maintainers = with maintainers; [ bhipple davegallant bryanasdev000 devusb anthonyroussel ];
+    mainProgram = "aws";
   };
 }
