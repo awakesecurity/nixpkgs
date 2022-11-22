@@ -61,7 +61,6 @@ in {
   # 0.30 introduced support for GHC 9.2.
   cryptonite = doDistribute self.cryptonite_0_30;
 
-  doctest = self.doctest_0_20_1;
   # consequences of doctest breakage follow:
 
   double-conversion = markBroken super.double-conversion;
