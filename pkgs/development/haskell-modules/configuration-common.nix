@@ -142,7 +142,7 @@ self: super: {
     hash = "sha256-sBuqSmgCQSgbXV6KPEZcIP09wbx81q5xjSg7/slH2HQ=";
   }) super.hls-test-utils;
 
-  hls-rename-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal 
+  hls-rename-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal
     (drv: {
       prePatch = drv.prePatch or "" + ''
         "${pkgs.buildPackages.dos2unix}/bin/dos2unix" *.cabal
@@ -155,7 +155,7 @@ self: super: {
       hash = "sha256-WPhCQmn3rjCOiQFJz23QQ84zfm43FNll0BfsNK5pkG0=";
     }) super.hls-rename-plugin) else super.hls-rename-plugin;
 
-  hls-floskell-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal 
+  hls-floskell-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal
     (drv: {
       prePatch = drv.prePatch or "" + ''
         "${pkgs.buildPackages.dos2unix}/bin/dos2unix" *.cabal
@@ -168,7 +168,7 @@ self: super: {
       hash = "sha256-n2vuzGbdvhW6I8c7Q22SuNIKSX2LwGNBTVyLLHJIsiU=";
     }) super.hls-floskell-plugin) else super.hls-floskell-plugin;
 
-  hls-stylish-haskell-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal 
+  hls-stylish-haskell-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal
     (drv: {
       prePatch = drv.prePatch or "" + ''
         "${pkgs.buildPackages.dos2unix}/bin/dos2unix" *.cabal
@@ -413,10 +413,17 @@ self: super: {
   digit = doJailbreak super.digit;
 
   # 2020-06-05: HACK: does not pass own build suite - `dontCheck`
-  hnix = generateOptparseApplicativeCompletion "hnix" (dontCheck super.hnix);
-  # Too strict bounds on algebraic-graphs
+  # 2022-11-24: jailbreak as it has too strict bounds on a bunch of things
+  hnix = dontCheck (doJailbreak super.hnix);
+
+  # Too strict bounds on algebraic-graphs and bytestring
   # https://github.com/haskell-nix/hnix-store/issues/180
   hnix-store-core = doJailbreak super.hnix-store-core;
+  hnix-store-core_0_6_1_0 = doDistribute (doJailbreak super.hnix-store-core_0_6_1_0);
+
+  # Too strict upper bound on bytestring
+  # https://github.com/wangbj/hashing/issues/3
+  hashing = doJailbreak super.hashing;
 
   # Fails for non-obvious reasons while attempting to use doctest.
   focuslist = dontCheck super.focuslist;
