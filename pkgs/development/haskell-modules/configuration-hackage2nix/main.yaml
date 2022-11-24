@@ -78,9 +78,6 @@ default-package-overrides:
   - ghc-bignum == 1.0
   # 1.2.0.0: “Dropped support for GHC <9.2 (might readd it later)”
   - retrie < 1.2.0.0
-  # On the recommendation of hnix author:
-  # https://github.com/NixOS/nixpkgs/pull/154461#issuecomment-1015511883
-  - hnix < 0.15
   # needs http-client >= 0.7.11 which isn't part of Stackage LTS 18
   - http-client-restricted < 0.0.5
   # Needs dhall 1.41.*, Stackage LTS 19 has 1.40
@@ -94,6 +91,9 @@ default-package-overrides:
   # Its dependency brick >= 1.0 is not yet in stackage
   - brick-skylighting < 1.0
   - rope-utf16-splay < 0.4.0.0
+  # hnix < 0.17 (unreleased) needs hnix-store-* 0.5.*
+  - hnix-store-core == 0.5.0.0            # 2022-06-17: Until hnix 0.17
+  - hnix-store-remote == 0.5.0.0        # 2022-06-17: Until hnix 0.17
 
 extra-packages:
   - Cabal == 2.2.*                      # required for jailbreak-cabal etc.
