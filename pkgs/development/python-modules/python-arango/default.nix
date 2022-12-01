@@ -10,12 +10,12 @@
 
 buildPythonPackage rec {
   pname = "python-arango";
-  version = "7.5.0";
+  version = "7.5.3";
   disabled = pythonOlder "3.7";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1qnvnyrb6djzq2hhr7473cbqj57cxkyyfc9qlv5rgc572fwh3nkd";
+    sha256 = "0rgybg4jvqq3p52gv98pazalzhriczkdz9fhfvmgi978hl4vz2gl";
   };
 
   propagatedBuildInputs = [
