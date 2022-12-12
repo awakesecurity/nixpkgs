@@ -6917,6 +6917,8 @@ in {
 
   msgraph-core = callPackage ../development/python-modules/msgraph-core { };
 
+  multipart = callPackage ../development/python-modules/multipart { };
+
   netmap = callPackage ../development/python-modules/netmap { };
 
   onetimepad = callPackage ../development/python-modules/onetimepad { };
