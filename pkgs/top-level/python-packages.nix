@@ -6359,6 +6359,8 @@ in {
 
   micloud = callPackage ../development/python-modules/micloud { };
 
+  multipart = callPackage ../development/python-modules/multipart { };
+
   netmap = callPackage ../development/python-modules/netmap { };
 
   openai = callPackage ../development/python-modules/openai { };
