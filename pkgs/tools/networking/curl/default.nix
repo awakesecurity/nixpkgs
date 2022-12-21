@@ -60,11 +60,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   patches = [
     ./7.79.1-darwin-no-systemconfiguration.patch
-
-    # quiche: support ca-fallback
-    # https://github.com/curl/curl/commit/fdb5e21b4dd171a96cf7c002ee77bb08f8e58021
-    ./7.83.1-quiche-support-ca-fallback.patch
-  ] ++ lib.optional patchNetrcRegression ./netrc-regression.patch;
+    ./CVE-2022-43551.patch
+    ./CVE-2022-43552.patch
+  ];
 
   outputs = [ "bin" "dev" "out" "man" "devdoc" ];
   separateDebugInfo = stdenv.isLinux;
