@@ -1,5 +1,5 @@
 { lib, stdenv, buildPythonPackage, isPyPy, fetchPypi, pytestCheckHook,
-  libffi, pkg-config, pycparser, python, fetchpatch
+  libffi, pkg-config, pycparser, pythonAtLeast, fetchpatch
 }:
 
 if isPyPy then null else buildPythonPackage rec {
@@ -17,7 +17,7 @@ if isPyPy then null else buildPythonPackage rec {
 
   propagatedBuildInputs = [ pycparser ];
 
-  patches =
+  patches = [
     #
     # Trusts the libffi library inside of nixpkgs on Apple devices.
     #
@@ -30,10 +30,29 @@ if isPyPy then null else buildPythonPackage rec {
     #
 
     ./darwin-use-libffi-closures.diff
+
+    (fetchpatch {
+      # Drop py.code usage from tests, no longer depend on the deprecated py package
+      url = "https://foss.heptapod.net/pypy/cffi/-/commit/9c7d865e17ec16a847090a3e0d1498b698b99756.patch";
+      excludes = [
+        "README.md"
+        "requirements.txt"
+      ];
+      hash = "sha256-HSuLLIYXXGGCPccMNLV7o1G3ppn2P0FGCrPjqDv2e7k=";
+    })
+    (fetchpatch {
+      #  Replace py.test usage with pytest
+      url = "https://foss.heptapod.net/pypy/cffi/-/commit/bd02e1b122612baa74a126e428bacebc7889e897.patch";
+      excludes = [
+        "README.md"
+        "requirements.txt"
+      ];
+      hash = "sha256-+2daRTvxtyrCPimOEAmVbiVm1Bso9hxGbaAbd03E+ws=";
+    })
+  ] ++  lib.optionals (pythonAtLeast "3.11") [
     # Fix test that failed because python seems to have changed the exception format in the
     # final release. This patch should be included in the next version and can be removed when
     # it is released.
-    lib.optionals (python.pythonVersion == "3.11") [
       (fetchpatch {
         url = "https://foss.heptapod.net/pypy/cffi/-/commit/8a3c2c816d789639b49d3ae867213393ed7abdff.diff";
         sha256 = "sha256-3wpZeBqN4D8IP+47QDGK7qh/9Z0Ag4lAe+H0R5xCb1E=";
