@@ -1,19 +1,11 @@
 { src, mkYarnPackage }:
 
-let
-  # HACK: these fields are missing in upstream package.json, but are required by mkYarnPackage
-  additionalFields = {
-    name = "airflow-frontend";
-    version = "1.0.0";
-  };
-  packageJSON = builtins.fromJSON (builtins.readFile "${src}/package.json");
-  patchedPackageJSON = builtins.toFile "package.json" (builtins.toJSON (packageJSON // additionalFields));
-in
 mkYarnPackage {
   name = "airflow-frontend";
   inherit src;
-  packageJSON = patchedPackageJSON;
-  packageResolutions = packageJSON.resolutions;
+  packageJSON = ./package.json;
+  yarnLock = ./yarn.lock;
+  yarnNix = ./yarn.nix;
   doDist = false;
 
   configurePhase = ''
