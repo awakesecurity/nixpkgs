@@ -8,6 +8,12 @@ mkYarnPackage {
   yarnNix = ./yarn.nix;
   doDist = false;
 
+  # The webpack license plugin tries to create /licenses when given the
+  # original relative path
+  postPatch = ''
+    sed -i 's!../../../../licenses/LICENSES-ui.txt!licenses/LICENSES-ui.txt!' webpack.config.js
+  '';
+
   configurePhase = ''
     cp -r $node_modules node_modules
   '';
