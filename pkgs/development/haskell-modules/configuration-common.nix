@@ -1547,13 +1547,24 @@ self: super: {
     dontCheck
     (disableCabalFlag "stan") # Sorry stan is totally unmaintained and terrible to get to run. It only works on ghc 8.8 or 8.10 anyways …
   ]).overrideScope (lself: lsuper: {
-    hlint = enableCabalFlag "ghc-lib" lsuper.hlint;
+    hls-call-hierarchy-plugin = null;
+    # For most ghc versions, we overrideScope Cabal in the configuration-ghc-???.nix,
+    # because some packages, like ormolu, need a newer Cabal version.
+    # ghc-paths is special because it depends on Cabal for building
+    # its Setup.hs, and therefor declares a Cabal dependency, but does
+    # not actually use it as a build dependency.
+    # That means ghc-paths can just use the ghc included Cabal version,
+    # without causing package-db incoherence and we should do that because
+    # otherwise we have different versions of ghc-paths
+    # around with have the same abi-hash, which can lead to confusions and conflicts.
+    ghc-paths = lsuper.ghc-paths.override { Cabal = null; };
   });
 
-  hls-hlint-plugin = super.hls-hlint-plugin.overrideScope (lself: lsuper: {
+  hls-hlint-plugin = super.hls-hlint-plugin.override {
     # For "ghc-lib" flag see https://github.com/haskell/haskell-language-server/issues/3185#issuecomment-1250264515
-    hlint = enableCabalFlag "ghc-lib" lsuper.hlint;
-  });
+    hlint = enableCabalFlag "ghc-lib" super.hlint;
+    apply-refact = self.apply-refact_0_11_0_0;
+  };
 
   # For -f-auto see cabal.project in haskell-language-server.
   ghc-lib-parser-ex = disableCabalFlag "auto" super.ghc-lib-parser-ex;
@@ -1563,9 +1574,6 @@ self: super: {
 
   # 2021-06-20: Tests fail: https://github.com/haskell/haskell-language-server/issues/1949
   hls-refine-imports-plugin = dontCheck super.hls-refine-imports-plugin;
-
-  # 2021-09-14: Tests are broken because of undeterministic variable names
-  hls-tactics-plugin = dontCheck super.hls-tactics-plugin;
 
   # 2021-11-20: https://github.com/haskell/haskell-language-server/pull/2373
   hls-explicit-imports-plugin = dontCheck super.hls-explicit-imports-plugin;
@@ -2172,6 +2180,9 @@ self: super: {
   # Necesssary .txt files are not included in sdist.
   # https://github.com/haskell/haskell-language-server/pull/2887
   hls-change-type-signature-plugin = dontCheck super.hls-change-type-signature-plugin;
+
+  # 2022-12-30: Restrictive upper bound on optparse-applicative
+  retrie = doJailbreak super.retrie;
 
   # Too strict bounds on hspec
   # https://github.com/haskell-works/hw-hspec-hedgehog/issues/62

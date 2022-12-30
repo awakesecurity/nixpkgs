@@ -73,14 +73,12 @@ default-package-overrides:
   # reflex-dom-pandoc is only used by neuron which needs a version < 1.0.0.0
   - reflex-dom-pandoc < 1.0.0.0
   # 2022-02-18: pin to our current GHC version
-  - ghc-api-compat == 9.0.*
   # 2021-11-09: ghc-bignum is bundled starting with 9.0.1; only 1.0 builds with GHCs prior to 9.2.1
   - ghc-bignum == 1.0
-  # 1.2.0.0: “Dropped support for GHC <9.2 (might readd it later)”
-  - retrie < 1.2.0.0
   # On the recommendation of hnix author:
   # https://github.com/NixOS/nixpkgs/pull/154461#issuecomment-1015511883
   - hnix < 0.15
+c versions)
   # needs http-client >= 0.7.11 which isn't part of Stackage LTS 18
   - http-client-restricted < 0.0.5
   # Needs dhall 1.41.*, Stackage LTS 19 has 1.40
@@ -127,6 +125,9 @@ extra-packages:
   - ShellCheck == 0.7.2                 # 2022-02-20: haskell-ci 0.14 needs this
   - weeder == 2.2.*                     # 2022-02-21: preserve for GHC 8.10.7
   - weeder == 2.3.*                     # 2022-05-31: preserve for GHC 9.0.2
+  - commonmark-extensions < 0.2.3.3     # 2022-12-17: required by emanote 1.0.0.0 (to avoid a bug in 0.2.3.3)
+  - ShellCheck == 0.8.0                 # 2022-12-28: required by haskell-ci 0.14.3
+  - retrie < 1.2.0.0                    # 2022-12-30: required for hls on ghc < 9.2
   - attoparsec == 0.13.*                # 2022-02-23: Needed to compile elm for now
   - relude == 0.7.0.0                   # 2022-02-25: Needed for ema 0.6
   - clay < 0.14                         # 2022-03-20: Needed for neuron 1.0.0.0

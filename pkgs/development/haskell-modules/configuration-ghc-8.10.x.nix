@@ -96,13 +96,30 @@ self: super: {
       executableHaskellDepends = drv.executableToolDepends or [] ++ [ self.repline ];
     }) super.hnix);
 
-  haskell-language-server = addBuildDepend self.hls-brittany-plugin (super.haskell-language-server.overrideScope (lself: lsuper: {
+  haskell-language-server = let
+    # These aren't included in hackage-packages.nix because hackage2nix is configured for GHC 9.2, under which these plugins aren't supported.
+    # See https://github.com/NixOS/nixpkgs/pull/205902 for why we use `self.<package>.scope`
+    additionalDeps = with self.haskell-language-server.scope; [
+      hls-brittany-plugin
+      hls-haddock-comments-plugin
+      (unmarkBroken hls-splice-plugin)
+      hls-tactics-plugin
+    ];
+  in addBuildDepends additionalDeps (super.haskell-language-server.overrideScope (lself: lsuper: {
     Cabal = lself.Cabal_3_6_3_0;
     aeson = lself.aeson_1_5_6_0;
     lsp-types = doJailbreak lsuper.lsp-types; # Checks require aeson >= 2.0
   }));
 
-  hls-brittany-plugin = super.hls-brittany-plugin.overrideScope (lself: lsuper: {
+  hls-tactics-plugin = unmarkBroken (addBuildDepends (with self.hls-tactics-plugin.scope; [
+    aeson extra fingertree generic-lens ghc-exactprint ghc-source-gen ghcide
+    hls-graph hls-plugin-api hls-refactor-plugin hyphenation lens lsp megaparsec
+    parser-combinators prettyprinter refinery retrie syb unagi-chan unordered-containers
+  ]) super.hls-tactics-plugin);
+
+  hls-brittany-plugin =  unmarkBroken (addBuildDepends (with self.hls-brittany-plugin.scope; [
+    brittany czipwith extra ghc-exactprint ghcide hls-plugin-api hls-test-utils lens lsp-types
+    ]) (super.hls-brittany-plugin.overrideScope (lself: lsuper: {
     brittany = doJailbreak lself.brittany_0_13_1_2;
     aeson = lself.aeson_1_5_6_0;
     lsp-types = doJailbreak lsuper.lsp-types; # Checks require aeson >= 2.0
@@ -138,4 +155,25 @@ self: super: {
   # Not possible to build in the main GHC 9.0 package set
   # https://github.com/awakesecurity/spectacle/issues/49
   spectacle = doDistribute (markUnbroken super.spectacle);
+
+  # doctest-parallel dependency requires newer Cabal
+  regex-tdfa = dontCheck super.regex-tdfa;
+
+  # Unnecessarily strict lower bound on base
+  # https://github.com/mrkkrp/megaparsec/pull/485#issuecomment-1250051823
+  megaparsec = doJailbreak super.megaparsec;
+
+  retrie = dontCheck self.retrie_1_1_0_0; 
+
+  # Later versions only support GHC >= 9.2
+  ghc-exactprint = self.ghc-exactprint_0_6_4;
+
+  apply-refact = self.apply-refact_0_9_3_0;
+
+  hls-hlint-plugin = super.hls-hlint-plugin.override {
+    inherit (self) apply-refact;
+  };
+
+  # Needs OneTuple for ghc < 9.2
+  binary-orphans = addBuildDepends [ self.OneTuple ] super.binary-orphans;
 }

@@ -140,17 +140,7 @@ self: super: {
 
   mime-string = disableOptimization super.mime-string;
 
-  haskell-language-server = addBuildDepend self.hls-brittany-plugin (super.haskell-language-server.overrideScope (lself: lsuper: {
-    ghc-lib-parser = lself.ghc-lib-parser_8_10_7_20220219;
-    ghc-lib-parser-ex = addBuildDepend lself.ghc-lib-parser lself.ghc-lib-parser-ex_8_10_0_24;
-    # Pick old ormolu and fourmolu because ghc-lib-parser is not compatible
-    ormolu = doJailbreak lself.ormolu_0_1_4_1;
-    fourmolu = doJailbreak lself.fourmolu_0_3_0_0;
-    hlint = lself.hlint_3_2_8;
-    aeson = lself.aeson_1_5_6_0;
-    stylish-haskell = lself.stylish-haskell_0_13_0_0;
-    lsp-types = doJailbreak lsuper.lsp-types;
-  }));
+  haskell-language-server =  throw "haskell-language-server dropped support for ghc 8.8 in version 1.9.0.0 please use a newer ghc version or an older nixpkgs version";
 
   hls-hlint-plugin = super.hls-hlint-plugin.overrideScope (lself: lsuper: {
     # For "ghc-lib" flag see https://github.com/haskell/haskell-language-server/issues/3185#issuecomment-1250264515
@@ -159,11 +149,11 @@ self: super: {
     ghc-lib-parser-ex = addBuildDepend lself.ghc-lib-parser lself.ghc-lib-parser-ex_8_10_0_24;
   });
 
-  hls-brittany-plugin = super.hls-brittany-plugin.overrideScope (lself: lsuper: {
-    brittany = doJailbreak lself.brittany_0_13_1_2;
-    aeson = lself.aeson_1_5_6_0;
-    lsp-types = doJailbreak lsuper.lsp-types;
-  });
+  ghc-lib-parser = self.ghc-lib-parser_8_10_7_20220219;
+
+  # ghc versions which don‘t match the ghc-lib-parser-ex version need the
+  # additional dependency to compile successfully.
+  ghc-lib-parser-ex = addBuildDepend self.ghc-lib-parser self.ghc-lib-parser-ex_8_10_0_24;
 
   # has a restrictive lower bound on Cabal
   fourmolu = doJailbreak super.fourmolu;

@@ -99,11 +99,25 @@ self: super: {
     sha256 = "0rgzrq0513nlc1vw7nw4km4bcwn4ivxcgi33jly4a7n3c1r32v1f";
   }) (doJailbreak super.language-haskell-extract);
 
-  haskell-language-server = super.haskell-language-server.overrideScope (lself: lsuper: {
+  haskell-language-server = let
+    # These aren't included in hackage-packages.nix because hackage2nix is configured for GHC 9.2, under which these plugins aren't supported.
+    # See https://github.com/NixOS/nixpkgs/pull/205902 for why we use `self.<package>.scope`
+    additionalDeps = with self.haskell-language-server.scope; [
+      hls-haddock-comments-plugin
+      (unmarkBroken hls-splice-plugin)
+      hls-tactics-plugin
+    ];
+  in addBuildDepends additionalDeps (super.haskell-language-server.overrideScope (lself: lsuper: {
     # Needed for modern ormolu and fourmolu.
     # Apply this here and not in common, because other ghc versions offer different Cabal versions.
     Cabal = lself.Cabal_3_6_3_0;
   });
+
+  hls-tactics-plugin = unmarkBroken (addBuildDepends (with self.hls-tactics-plugin.scope; [
+    aeson extra fingertree generic-lens ghc-exactprint ghc-source-gen ghcide
+    hls-graph hls-plugin-api hls-refactor-plugin hyphenation lens lsp megaparsec
+    parser-combinators prettyprinter refinery retrie syb unagi-chan unordered-containers
+  ]) super.hls-tactics-plugin);
 
   # The test suite depends on ChasingBottoms, which is broken with ghc-9.0.x.
   unordered-containers = dontCheck super.unordered-containers;
@@ -147,4 +161,21 @@ self: super: {
 
   # 2022-05-31: weeder 2.3.0 requires GHC 9.2
   weeder = doDistribute self.weeder_2_3_1;
+
+  # Restrictive upper bound on base and containers
+  sv2v = doJailbreak super.sv2v;
+
+  # Later versions only support GHC >= 9.2
+  ghc-exactprint = self.ghc-exactprint_0_6_4;
+
+  retrie = dontCheck self.retrie_1_1_0_0; 
+
+  apply-refact = self.apply-refact_0_9_3_0;
+
+  hls-hlint-plugin = super.hls-hlint-plugin.override {
+    inherit (self) apply-refact;
+  };
+
+  # Needs OneTuple for ghc < 9.2
+  binary-orphans = addBuildDepends [ self.OneTuple ] super.binary-orphans;
 }

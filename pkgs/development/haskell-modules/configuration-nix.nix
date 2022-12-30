@@ -892,6 +892,26 @@ self: super: builtins.intersectAttrs super {
     '';
   }) super.fourmolu;
 
+  # Test suite wants to run main executable
+  fourmolu_0_10_1_0 = overrideCabal (drv: {
+    preCheck = drv.preCheck or "" + ''
+      export PATH="$PWD/dist/build/fourmolu:$PATH"
+    '';
+  }) super.fourmolu_0_10_1_0;
+
+  # Test suite needs to execute 'disco' binary
+  disco = overrideCabal (drv: {
+    preCheck = drv.preCheck or "" + ''
+      export PATH="$PWD/dist/build/disco:$PATH"
+    '';
+    testFlags = drv.testFlags or [] ++ [
+      # Needs network access
+      "-p" "!/oeis/"
+    ];
+    # disco-examples needs network access
+    testTarget = "disco-tests";
+  }) super.disco;
+
   # Apply a patch which hardcodes the store path of graphviz instead of using
   # whatever graphviz is in PATH.
   graphviz = overrideCabal (drv: {
