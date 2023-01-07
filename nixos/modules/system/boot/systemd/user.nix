@@ -105,6 +105,13 @@ in {
   };
 
   config = {
+    assertions = mapAttrsToList
+      (name: service: {
+        assertion = service.enable && !(service?ExecStart || service?ExecStop || service?SuccessAction || service.script != "");
+        message = "Service `${name}' is enabled and missing a `script' or one of ExecStart, ExecStop or SuccessAction.";
+      })
+      cfg.services;
+
     systemd.additionalUpstreamSystemUnits = [
       "user.slice"
     ];
