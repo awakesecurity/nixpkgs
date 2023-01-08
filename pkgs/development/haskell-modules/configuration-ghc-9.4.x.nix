@@ -179,6 +179,11 @@ in {
   # 2022-10-06: https://gitlab.haskell.org/ghc/ghc/-/issues/22260
   ghc-check = dontHaddock super.ghc-check;
 
+  ghc-exactprint = overrideCabal (drv: {
+    libraryHaskellDepends = with self; [ HUnit data-default fail filemanip free ghc-paths ordered-containers silently syb Diff ];
+  })
+    self.ghc-exactprint_1_6_1_1;
+
   # 2022-11-06: Override override from common, because Cabal-syntax is included since ghc 9.4.
   implicit-hie = super.implicit-hie.override {
     Cabal-syntax = null;
