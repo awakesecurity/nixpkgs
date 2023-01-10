@@ -15120,6 +15120,8 @@ with pkgs;
     inherit (darwin.apple_sdk.frameworks) Security SystemConfiguration;
   };
 
+  waagent = callPackage ../applications/networking/cluster/waagent { };
+
   wasm = ocamlPackages.wasm;
 
   wasm3 = callPackage ../development/interpreters/wasm3 { };
