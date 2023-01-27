@@ -4777,6 +4777,10 @@ self: super: with self; {
 
   itemloaders = callPackage ../development/python-modules/itemloaders { };
 
+  iteration-utilities = callPackage ../development/python-modules/iteration-utilities { };
+
+  iterative-telemetry = callPackage ../development/python-modules/iterative-telemetry { };
+
   iterm2 = callPackage ../development/python-modules/iterm2 { };
 
   itsdangerous = callPackage ../development/python-modules/itsdangerous { };
