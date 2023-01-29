@@ -2928,6 +2928,8 @@ self: super: with self; {
 
   durus = callPackage ../development/python-modules/durus {  };
 
+  dvc-azure = callPackage ../development/python-modules/dvc-azure {  };
+
   dvc-data = callPackage ../development/python-modules/dvc-data {  };
 
   dvc-objects = callPackage ../development/python-modules/dvc-objects {  };
