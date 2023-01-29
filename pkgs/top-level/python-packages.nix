@@ -10995,6 +10995,8 @@ self: super: with self; {
 
   ssh-mitm = callPackage ../development/python-modules/ssh-mitm { };
 
+  sshfs = callPackage ../development/python-modules/sshfs { };
+
   sshpubkeys = callPackage ../development/python-modules/sshpubkeys { };
 
   sshtunnel = callPackage ../development/python-modules/sshtunnel { };
