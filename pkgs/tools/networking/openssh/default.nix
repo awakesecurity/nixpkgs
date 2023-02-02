@@ -46,6 +46,13 @@ in
         includes = [ "channels.c" ];
         sha256 = "sha256-pDLUbjv5XIyByEbiRAXC3WMUPKmn15af1stVmcvr7fE=";
       })
+
+      (fetchpatch {
+        name = "CVE-2023-25136.patch";
+        url = "https://ftp.openbsd.org/pub/OpenBSD/patches/7.2/common/017_sshd.patch.sig";
+        stripLen = 1;
+        hash = "sha256-ol/YXXb2gJNBfvg9JKmIEdwGK8RaDfW53aKKT6HU++M=";
+      })
     ];
 
     extraNativeBuildInputs = [ autoreconfHook ];
