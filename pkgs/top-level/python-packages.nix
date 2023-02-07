@@ -10120,6 +10120,8 @@ self: super: with self; {
     inherit (pkgs) sentencepiece;
   };
 
+  sentence-transformers = callPackage ../development/python-modules/sentence-transformers { };
+
   sentinel = callPackage ../development/python-modules/sentinel { };
 
   sentinels = callPackage ../development/python-modules/sentinels { };
