@@ -8636,6 +8636,8 @@ self: super: with self; {
 
   pyramid_multiauth = callPackage ../development/python-modules/pyramid_multiauth { };
 
+  pyrate-limiter = callPackage ../development/python-modules/pyrate-limiter { };
+
   pyreadstat = callPackage ../development/python-modules/pyreadstat {
     inherit (pkgs.darwin) libiconv;
   };
