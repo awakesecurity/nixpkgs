@@ -113,6 +113,15 @@ self: super: {
     Cabal = lself.Cabal_3_6_3_0;
   });
 
+  # Needs to use ghc-lib due to incompatible GHC
+  ghc-tags = doDistribute (addBuildDepend self.ghc-lib self.ghc-tags_1_5);
+
+  # This package is marked as unbuildable on GHC 9.2, so hackage2nix doesn't include any dependencies.
+  # See https://github.com/NixOS/nixpkgs/pull/205902 for why we use `self.<package>.scope`
+  hls-haddock-comments-plugin = unmarkBroken (addBuildDepends (with self.hls-haddock-comments-plugin.scope; [
+    ghc-exactprint ghcide hls-plugin-api hls-refactor-plugin lsp-types unordered-containers
+  ]) super.hls-haddock-comments-plugin);
+
   hls-tactics-plugin = unmarkBroken (addBuildDepends (with self.hls-tactics-plugin.scope; [
     aeson extra fingertree generic-lens ghc-exactprint ghc-source-gen ghcide
     hls-graph hls-plugin-api hls-refactor-plugin hyphenation lens lsp megaparsec

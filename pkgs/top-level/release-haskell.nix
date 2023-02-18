@@ -390,6 +390,14 @@ let
       ghc-lib = released;
       ghc-lib-parser = released;
       ghc-lib-parser-ex = released;
+      ghc-tags = [
+        compilerNames.ghc8107
+        compilerNames.ghc902
+        compilerNames.ghc924
+        compilerNames.ghc925
+        compilerNames.ghc926
+        compilerNames.ghc944
+      ];
       spectacle = [
         compilerNames.ghc8107
       ];
