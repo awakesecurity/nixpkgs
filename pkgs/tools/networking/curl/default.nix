@@ -63,6 +63,8 @@ stdenv.mkDerivation (finalAttrs: {
 
     ./CVE-2022-43551.patch
     ./CVE-2022-43552.patch
+    ./CVE-2023-23915.patch # also fixes CVE-2023-23914
+    ./CVE-2023-23916.patch
   ] ++ lib.optional patchNetrcRegression ./netrc-regression.patch;
 
   outputs = [ "bin" "dev" "out" "man" "devdoc" ];
