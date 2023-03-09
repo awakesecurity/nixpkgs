@@ -82,7 +82,6 @@ in runCommand name
     pkgs = builtins.toJSON chosenOutputs;
     extraPathsFrom = lib.optional includeClosures (writeClosure pathsForClosure);
     preferLocalBuild = true;
-    allowSubstitutes = false;
     # XXX: The size is somewhat arbitrary
     passAsFile = if builtins.stringLength pkgs >= 128*1024 then [ "pkgs" ] else [ ];
   }
