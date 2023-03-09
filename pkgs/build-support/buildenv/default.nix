@@ -71,7 +71,6 @@ runCommand name
       priority = drv.meta.priority or lib.meta.defaultPriority;
     }) paths);
     preferLocalBuild = true;
-    allowSubstitutes = false;
     # XXX: The size is somewhat arbitrary
     passAsFile = if builtins.stringLength pkgs >= 128*1024 then [ "pkgs" ] else [ ];
   }
