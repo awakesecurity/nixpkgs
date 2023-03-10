@@ -397,7 +397,7 @@ rec {
         postBuild = ''
           ln -s $out/bin/${gvimExecutableName} $out/bin/gvi
         '';
-      });;
+      });
     in
       buildEnv {
         inherit name;
