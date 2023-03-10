@@ -415,7 +415,7 @@ rec {
     gvimrcFile ? null,
     vimExecutableName,
     gvimExecutableName,
-  }:
+  }: assert (lib.assertMsg (lib.versionAtLeast "21.11" lib.trivial.release) "Time to remove the vimWrapperScript overrides that symlink `vi -> vim`!");
     let
       rcOption = o: file: lib.optionalString (file != null) "-${o} ${file}";
       vimWrapperScript = writeScriptBin vimExecutableName ''
