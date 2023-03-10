@@ -371,14 +371,33 @@ rec {
   }:
     let
       rcOption = o: file: lib.optionalString (file != null) "-${o} ${file}";
-      vimWrapperScript = writeScriptBin vimExecutableName ''
+      vimWrapperScript = (writeScriptBin vimExecutableName ''
         #!${runtimeShell}
         exec ${vimExecutable} ${rcOption "u" vimrcFile} ${rcOption "U" gvimrcFile} "$@"
-      '';
-      gvimWrapperScript = writeScriptBin gvimExecutableName ''
+      '').overrideAttrs (oldAttrs: {
+        buildCommand = ''
+          ${oldAttrs.buildCommand}
+          eval "$postBuild"
+        '';
+
+        postBuild = ''
+          ln -s $out/bin/${vimExecutableName} $out/bin/vi
+        '';
+      });
+
+      gvimWrapperScript = (writeScriptBin gvimExecutableName ''
         #!${stdenv.shell}
         exec ${gvimExecutable} ${rcOption "u" vimrcFile} ${rcOption "U" gvimrcFile} "$@"
-      '';
+      '').overrideAttrs (oldAttrs: {
+        buildCommand = ''
+          ${oldAttrs.buildCommand}
+          eval "$postBuild"
+        '';
+
+        postBuild = ''
+          ln -s $out/bin/${gvimExecutableName} $out/bin/gvi
+        '';
+      });;
     in
       buildEnv {
         inherit name;
