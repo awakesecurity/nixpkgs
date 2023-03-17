@@ -17023,7 +17023,19 @@ with pkgs;
   c-blosc = callPackage ../development/libraries/c-blosc { };
 
   # justStaticExecutables is needed due to https://github.com/NixOS/nix/issues/2990
-  cachix = haskell.lib.compose.justStaticExecutables haskellPackages.cachix;
+  cachix = (haskell.lib.compose.justStaticExecutables haskell.packages.ghc94.cachix).overrideAttrs(o: {
+    passthru = o.passthru or {} // {
+      tests = o.passthru.tests or {} // {
+        inherit hci;
+      };
+    };
+  });
+
+  calcium = callPackage ../development/libraries/calcium { };
+
+  cubeb = callPackage ../development/libraries/audio/cubeb {
+    inherit (darwin.apple_sdk.frameworks) AudioUnit CoreAudio CoreServices;
+  };
 
   hercules-ci-agent = callPackage ../development/tools/continuous-integration/hercules-ci-agent { };
 
