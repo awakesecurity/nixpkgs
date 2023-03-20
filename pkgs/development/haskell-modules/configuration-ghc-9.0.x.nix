@@ -73,7 +73,7 @@ self: super: {
   split = doJailbreak super.split;
   tar = doJailbreak super.tar;
   time-compat = doJailbreak super.time-compat;
-  vector = doJailbreak (dontCheck super.vector);
+  tuple = addBuildDepend self.base-orphans super.tuple;
   vector-binary-instances = doJailbreak super.vector-binary-instances;
   vector-th-unbox = doJailbreak super.vector-th-unbox;
   zlib = doJailbreak super.zlib;
