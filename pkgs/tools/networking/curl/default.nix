@@ -60,6 +60,14 @@ stdenv.mkDerivation (finalAttrs: {
 
   patches = [
     ./7.79.1-darwin-no-systemconfiguration.patch
+
+    # curl 8.0.0 fixes
+    ./CVE-2023-27533.patch
+    ./CVE-2023-27534.patch
+    ./CVE-2023-27535.patch
+    ./CVE-2023-27536.patch
+    ./CVE-2023-27537.patch
+    ./CVE-2023-27538.patch
   ];
 
   outputs = [ "bin" "dev" "out" "man" "devdoc" ];
