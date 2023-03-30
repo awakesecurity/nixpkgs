@@ -195,7 +195,6 @@ in {
   haskell-language-server = super.haskell-language-server.override {
     hls-class-plugin = null;
     hls-eval-plugin = null;
-    hls-fourmolu-plugin = null;
     hls-gadt-plugin = null;
     hls-hlint-plugin = null;
     hls-ormolu-plugin = null;     # This plugin is supposed to work, but fails to compile.
@@ -231,7 +230,7 @@ in {
   ormolu = doDistribute self.ormolu_0_5_3_0;
   fourmolu = overrideCabal (drv: {
     libraryHaskellDepends = drv.libraryHaskellDepends ++ [ self.file-embed ];
-  }) (disableCabalFlag "fixity-th" super.fourmolu);
+  }) (disableCabalFlag "fixity-th" super.fourmolu_0_11_0_0);
 
   # Apply workaround for Cabal 3.8 bug https://github.com/haskell/cabal/issues/8455
   # by making `pkg-config --static` happy. Note: Cabal 3.9 is also affected, so
