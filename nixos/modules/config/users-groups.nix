@@ -673,6 +673,12 @@ in {
         else null
       ));
 
+    systemd.tmpfiles.rules = lib.concatLists (lib.mapAttrsToList
+      (_: user:
+        lib.optionals user.createHome [
+          "d ${lib.escapeShellArg user.home} 0700 ${user.name} ${user.group}"
+        ])
+      config.users.users);
   };
 
 }
