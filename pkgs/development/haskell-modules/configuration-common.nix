@@ -20,21 +20,51 @@ with haskellLib;
 
 self: super: {
 
+  # Make sure that Cabal 3.10.* can be built as-is
+  Cabal_3_10_1_0 = doDistribute (super.Cabal_3_10_1_0.override ({
+    Cabal-syntax = self.Cabal-syntax_3_10_1_0;
+  } // lib.optionalAttrs (lib.versionOlder self.ghc.version "9.2.5") {
+    # Use process core package when possible
+    process = self.process_1_6_17_0;
+  }));
+
   # cabal-install needs most recent versions of Cabal and Cabal-syntax,
   # so we need to put some extra work for non-latest GHCs
   inherit (
     let
       # !!! Use cself/csuper inside for the actual overrides
       cabalInstallOverlay = cself: csuper:
-        lib.optionalAttrs (lib.versionOlder self.ghc.version "9.4") {
-          Cabal = cself.Cabal_3_8_1_0;
-          Cabal-syntax = cself.Cabal-syntax_3_8_1_0;
-        } // lib.optionalAttrs (lib.versionOlder self.ghc.version "9.2.5") {
-          # GHC 9.2.5 starts shipping 1.6.16.0
+        lib.optionalAttrs (lib.versionOlder self.ghc.version "9.6") {
+          Cabal = cself.Cabal_3_10_1_0;
+          Cabal-syntax = cself.Cabal-syntax_3_10_1_0;
+        } // lib.optionalAttrs (lib.versionOlder self.ghc.version "9.4") {
+          # We need at least directory >= 1.3.7.0. Using the latest version
+          # 1.3.8.* is not an option since it causes very annoying dependencies
+          # on newer versions of unix and filepath than GHC 9.2 ships
+          directory = cself.directory_1_3_7_1;
+          # GHC 9.2.5 starts shipping 1.6.16.0 which is required by
+          # cabal-install, but we need to recompile process even if the correct
+          # version is available to prevent inconsistent dependencies:
+          # process depends on directory.
           process = cself.process_1_6_17_0;
-        } // lib.optionalAttrs (lib.versions.majorMinor self.ghc.version == "8.10") {
+
+          # hspec < 2.10 depends on ghc (the library) directly which in turn
+          # depends on directory, causing a dependency conflict which is practically
+          # not solvable short of recompiling GHC. Instead of adding
+          # allowInconsistentDependencies for all reverse dependencies of hspec-core,
+          # just upgrade to an hspec version without the offending dependency.
+          hspec-core = cself.hspec-core_2_10_10;
+          hspec-discover = cself.hspec-discover_2_10_10;
+          hspec = cself.hspec_2_10_10;
+
+          # hspec-discover and hspec-core depend on hspec-meta for testing which
+          # we need to avoid since it depends on ghc as well. Since hspec*_2_10*
+          # are overridden to take the versioned attributes as inputs, we need
+          # to make sure to override the versioned attribute with this fix.
+          hspec-discover_2_10_10 = dontCheck csuper.hspec-discover_2_10_10;
+
           # Prevent dependency on doctest which causes an inconsistent dependency
-          # due to depending on ghc-8.10.7 (with bundled process) vs. process 1.6.16.0
+          # due to depending on ghc which depends on directory etc.
           vector = dontCheck csuper.vector;
         };
     in
@@ -62,6 +92,105 @@ self: super: {
     guardian
   ;
 
+  #######################################
+  ### HASKELL-LANGUAGE-SERVER SECTION ###
+  #######################################
+
+  haskell-language-server = (lib.pipe super.haskell-language-server [
+    dontCheck
+    (disableCabalFlag "stan") # Sorry stan is totally unmaintained and terrible to get to run. It only works on ghc 8.8 or 8.10 anyways …
+  ]).overrideScope (lself: lsuper: {
+    # For most ghc versions, we overrideScope Cabal in the configuration-ghc-???.nix,
+    # because some packages, like ormolu, need a newer Cabal version.
+    # ghc-paths is special because it depends on Cabal for building
+    # its Setup.hs, and therefor declares a Cabal dependency, but does
+    # not actually use it as a build dependency.
+    # That means ghc-paths can just use the ghc included Cabal version,
+    # without causing package-db incoherence and we should do that because
+    # otherwise we have different versions of ghc-paths
+    # around which have the same abi-hash, which can lead to confusions and conflicts.
+    ghc-paths = lsuper.ghc-paths.override { Cabal = null; };
+  });
+
+  # 2023-04-03: https://github.com/haskell/haskell-language-server/issues/3546#issuecomment-1494139751
+  # There will probably be a new revision soon.
+  hls-brittany-plugin = assert super.hls-brittany-plugin.version == "1.1.0.0"; doJailbreak super.hls-brittany-plugin;
+
+  hls-hlint-plugin = super.hls-hlint-plugin.override {
+    # For "ghc-lib" flag see https://github.com/haskell/haskell-language-server/issues/3185#issuecomment-1250264515
+    hlint = enableCabalFlag "ghc-lib" super.hlint;
+    apply-refact = self.apply-refact_0_11_0_0;
+  };
+
+  hls-test-utils = appendPatch (fetchpatch {
+    name = "hls-test-utils-ghcide-1.10-compat.patch";
+    url = "https://github.com/haskell/haskell-language-server/commit/014c8f90249f11a8dfa1286e67d452ccfb42b2d0.patch";
+    relative = "hls-test-utils";
+    hash = "sha256-sBuqSmgCQSgbXV6KPEZcIP09wbx81q5xjSg7/slH2HQ=";
+  }) super.hls-test-utils;
+
+  hls-rename-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal
+    (drv: {
+      prePatch = drv.prePatch or "" + ''
+        "${pkgs.buildPackages.dos2unix}/bin/dos2unix" *.cabal
+      '';
+    })
+    (appendPatch (fetchpatch {
+      name = "hls-rename-ghc-9.4-compat.patch";
+      url = "https://github.com/haskell/haskell-language-server/commit/472947cdb9e711f6ef889bba3b83b0dd44a1b6bc.patch";
+      relative = "plugins/hls-rename-plugin";
+      hash = "sha256-WPhCQmn3rjCOiQFJz23QQ84zfm43FNll0BfsNK5pkG0=";
+    }) super.hls-rename-plugin) else super.hls-rename-plugin;
+
+  hls-floskell-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal
+    (drv: {
+      prePatch = drv.prePatch or "" + ''
+        "${pkgs.buildPackages.dos2unix}/bin/dos2unix" *.cabal
+      '';
+    })
+    (appendPatch (fetchpatch {
+      name = "hls-floskell-ghc-9.4-compat.patch";
+      url = "https://github.com/haskell/haskell-language-server/commit/ddc67b2d4d719623b657aa54db20bf58c58a5d4a.patch";
+      relative = "plugins/hls-floskell-plugin";
+      hash = "sha256-n2vuzGbdvhW6I8c7Q22SuNIKSX2LwGNBTVyLLHJIsiU=";
+    }) super.hls-floskell-plugin) else super.hls-floskell-plugin;
+
+  hls-stylish-haskell-plugin = if lib.versionAtLeast super.ghc.version "9.4" then overrideCabal
+    (drv: {
+      prePatch = drv.prePatch or "" + ''
+        "${pkgs.buildPackages.dos2unix}/bin/dos2unix" *.cabal
+      '';
+    })
+    (appendPatch (fetchpatch {
+      name = "hls-stylish-haskell-ghc-9.4-compat.patch";
+      url = "https://github.com/haskell/haskell-language-server/commit/ddc67b2d4d719623b657aa54db20bf58c58a5d4a.patch";
+      relative = "plugins/hls-stylish-haskell-plugin";
+      hash = "sha256-GtN9t5zMOROCDSLiscLZ5GmqDV+ql9R2z/+W++C2h2Q=";
+    }) super.hls-stylish-haskell-plugin) else super.hls-stylish-haskell-plugin;
+  # For -f-auto see cabal.project in haskell-language-server.
+  ghc-lib-parser-ex = addBuildDepend self.ghc-lib-parser (disableCabalFlag "auto" super.ghc-lib-parser-ex);
+
+  # For -fghc-lib see cabal.project in haskell-language-server.
+  stylish-haskell = if lib.versionAtLeast super.ghc.version "9.2"
+    then enableCabalFlag "ghc-lib"
+      (if lib.versionAtLeast super.ghc.version "9.4"
+       then super.stylish-haskell_0_14_4_0
+       else super.stylish-haskell)
+    else super.stylish-haskell;
+
+  ###########################################
+  ### END HASKELL-LANGUAGE-SERVER SECTION ###
+  ###########################################
+
+  vector = overrideCabal (old: {
+    # Too strict bounds on doctest which isn't used, but is part of the configuration
+    jailbreak = true;
+    # vector-doctest seems to be broken when executed via ./Setup test
+    testTarget = lib.concatStringsSep " " [
+      "vector-tests-O0"
+      "vector-tests-O2"
+    ];
+  }) super.vector;
 
   # There are numerical tests on random data, that may fail occasionally
   lapack = dontCheck super.lapack;
@@ -191,10 +320,6 @@ self: super: {
   ABList = dontCheck super.ABList;
 
   pandoc-cli = throwIfNot (versionOlder super.pandoc.version "3.0.0") "pandoc-cli contains the pandoc executable starting with 3.0, this needs to be considered now." (markBroken (dontDistribute super.pandoc-cli));
-
-  # sse2 flag due to https://github.com/haskell/vector/issues/47.
-  # Jailbreak is necessary for QuickCheck dependency.
-  vector = doJailbreak (if pkgs.stdenv.isi686 then appendConfigureFlag "--ghc-options=-msse2" super.vector else super.vector);
 
   inline-c-cpp = overrideCabal (drv: {
     patches = drv.patches or [] ++ [
@@ -1467,56 +1592,6 @@ self: super: {
     })
   ] super.binary-strict;
 
-  haskell-language-server = (lib.pipe super.haskell-language-server [
-    dontCheck
-    (disableCabalFlag "stan") # Sorry stan is totally unmaintained and terrible to get to run. It only works on ghc 8.8 or 8.10 anyways …
-    # Allow hls-call-hierarchy >= 1.2 which requires only a bound adjustment
-    (appendPatch (fetchpatch {
-      name = "hls-allow-hls-call-hierarchy-1.2.patch";
-      url = "https://github.com/haskell/haskell-language-server/commit/05b248dfacc307c3397b334635cb38298aee9563.patch";
-      includes = [ "haskell-language-server.cabal" ];
-      sha256 = "1v0zi1lv92p6xq54yw9swzaf24dxsi9lpk10sngg3ka654ikm7j5";
-    }))
-  ]).overrideScope (lself: lsuper: {
-    # For most ghc versions, we overrideScope Cabal in the configuration-ghc-???.nix,
-    # because some packages, like ormolu, need a newer Cabal version.
-    # ghc-paths is special because it depends on Cabal for building
-    # its Setup.hs, and therefor declares a Cabal dependency, but does
-    # not actually use it as a build dependency.
-    # That means ghc-paths can just use the ghc included Cabal version,
-    # without causing package-db incoherence and we should do that because
-    # otherwise we have different versions of ghc-paths
-    # around with have the same abi-hash, which can lead to confusions and conflicts.
-    ghc-paths = lsuper.ghc-paths.override { Cabal = null; };
-  });
-
-  hls-hlint-plugin = super.hls-hlint-plugin.override {
-    # For "ghc-lib" flag see https://github.com/haskell/haskell-language-server/issues/3185#issuecomment-1250264515
-    hlint = enableCabalFlag "ghc-lib" super.hlint;
-    apply-refact = self.apply-refact_0_11_0_0;
-  };
-
-  # For -f-auto see cabal.project in haskell-language-server.
-  ghc-lib-parser-ex = addBuildDepend self.ghc-lib-parser (disableCabalFlag "auto" super.ghc-lib-parser-ex);
-
-  # 2021-05-08: Tests fail: https://github.com/haskell/haskell-language-server/issues/1809
-  hls-eval-plugin = dontCheck super.hls-eval-plugin;
-
-  # 2021-06-20: Tests fail: https://github.com/haskell/haskell-language-server/issues/1949
-  hls-refine-imports-plugin = dontCheck super.hls-refine-imports-plugin;
-
-  # 2021-11-20: https://github.com/haskell/haskell-language-server/pull/2373
-  hls-explicit-imports-plugin = dontCheck super.hls-explicit-imports-plugin;
-
-  # 2021-11-20: https://github.com/haskell/haskell-language-server/pull/2374
-  hls-module-name-plugin = dontCheck super.hls-module-name-plugin;
-
-  # 2022-09-19: https://github.com/haskell/haskell-language-server/issues/3200
-  hls-refactor-plugin = dontCheck super.hls-refactor-plugin;
-
-  # tests require network
-  ghcide = dontCheck super.ghcide;
-
   # 2020-11-15: nettle tests are pre MonadFail change
   # https://github.com/stbuehler/haskell-nettle/issues/10
   nettle = dontCheck super.nettle;
@@ -2039,16 +2114,6 @@ self: super: {
 
   # 2021-08-18: streamly-posix was released with hspec 2.8.2, but it works with older versions too.
   streamly-posix = doJailbreak super.streamly-posix;
-
-  # 2021-09-14: Tests are flaky.
-  hls-splice-plugin = dontCheck super.hls-splice-plugin;
-
-  # 2021-09-18: https://github.com/haskell/haskell-language-server/issues/2205
-  hls-stylish-haskell-plugin = doJailbreak super.hls-stylish-haskell-plugin;
-
-  # Necesssary .txt files are not included in sdist.
-  # https://github.com/haskell/haskell-language-server/pull/2887
-  hls-change-type-signature-plugin = dontCheck super.hls-change-type-signature-plugin;
 
   # 2022-12-30: Restrictive upper bound on optparse-applicative
   retrie = doJailbreak super.retrie;
