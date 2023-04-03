@@ -166,6 +166,7 @@ extra-packages:
   - weeder == 2.3.*                     # 2022-05-31: preserve for GHC 9.0.2
   - ghc-exactprint == 1.5.0             # 2022-10-06: newer versions of ghc-exactprint require ghc 9.4.2
   - primitive == 0.7.4.0                # 2023-03-04: primitive 0.8 is not compatible with too many packages on ghc 9.4 as of now
+  - fourmolu == 0.10.0.0                # 2023-04-03: for hls-fourmolu-plugin 1.1.1.0
 
 package-maintainers:
   abbradar:
