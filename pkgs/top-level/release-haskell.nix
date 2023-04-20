@@ -55,7 +55,7 @@ let
     ghc924
     ghc925
     ghc928
-    ghc944
+    ghc945
   ];
 
   # packagePlatforms applied to `haskell.packages.*`
@@ -392,6 +392,7 @@ let
       ghc-lib-parser-ex = released;
       spectacle = [
         compilerNames.ghc8107
+        compilerNames.ghc945
       ];
       weeder = [
         compilerNames.ghc8107
