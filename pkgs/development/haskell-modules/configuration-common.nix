@@ -26,11 +26,35 @@ self: super: {
     let
       # !!! Use cself/csuper inside for the actual overrides
       cabalInstallOverlay = cself: csuper:
-        lib.optionalAttrs (lib.versionOlder self.ghc.version "9.4") {
-          Cabal = cself.Cabal_3_8_1_0;
-          Cabal-syntax = cself.Cabal-syntax_3_8_1_0;
-          process = cself.process_1_6_16_0;
-        } // lib.optionalAttrs (lib.versions.majorMinor self.ghc.version == "8.10") {
+        lib.optionalAttrs (lib.versionOlder self.ghc.version "9.6") {
+          Cabal = cself.Cabal_3_10_1_0;
+          Cabal-syntax = cself.Cabal-syntax_3_10_1_0;
+        } // lib.optionalAttrs (lib.versionOlder self.ghc.version "9.4") {
+          # We need at least directory >= 1.3.7.0. Using the latest version
+          # 1.3.8.* is not an option since it causes very annoying dependencies
+          # on newer versions of unix and filepath than GHC 9.2 ships
+          directory = cself.directory_1_3_7_1;
+          # GHC 9.2.5 starts shipping 1.6.16.0 which is required by
+          # cabal-install, but we need to recompile process even if the correct
+          # version is available to prevent inconsistent dependencies:
+          # process depends on directory.
+          process = cself.process_1_6_17_0;
+
+          # hspec < 2.10 depends on ghc (the library) directly which in turn
+          # depends on directory, causing a dependency conflict which is practically
+          # not solvable short of recompiling GHC. Instead of adding
+          # allowInconsistentDependencies for all reverse dependencies of hspec-core,
+          # just upgrade to an hspec version without the offending dependency.
+          hspec-core = cself.hspec-core_2_11_0;
+          hspec-discover = cself.hspec-discover_2_11_0;
+          hspec = cself.hspec_2_11_0;
+
+          # hspec-discover and hspec-core depend on hspec-meta for testing which
+          # we need to avoid since it depends on ghc as well. Since hspec*_2_10*
+          # are overridden to take the versioned attributes as inputs, we need
+          # to make sure to override the versioned attribute with this fix.
+          hspec-discover_2_11_0 = dontCheck csuper.hspec-discover_2_11_0;
+
           # Prevent dependency on doctest which causes an inconsistent dependency
           # due to depending on ghc-8.10.7 (with bundled process) vs. process 1.6.16.0
           vector = dontCheck csuper.vector;
@@ -947,12 +971,12 @@ self: super: {
     testHaskellDepends = drv.testHaskellDepends or [] ++ [ self.hspec-meta_2_9_3 ];
     testToolDepends = drv.testToolDepends or [] ++ [ pkgs.git ];
   }) (super.sensei.override {
-    hspec = self.hspec_2_10_10;
+    hspec = self.hspec_2_11_0;
     hspec-wai = self.hspec-wai.override {
-      hspec = self.hspec_2_10_10;
+      hspec = self.hspec_2_11_0;
     };
     hspec-contrib = self.hspec-contrib.override {
-      hspec-core = self.hspec-core_2_10_10;
+      hspec-core = self.hspec-core_2_11_0;
     };
     fsnotify = self.fsnotify_0_4_1_0;
   });
@@ -1769,14 +1793,16 @@ self: super: {
   servant-openapi3 = dontCheck super.servant-openapi3;
 
   # Give hspec 2.10.* correct dependency versions without overrideScope
-  hspec_2_10_10 = doDistribute (super.hspec_2_10_10.override {
-    hspec-discover = self.hspec-discover_2_10_10;
-    hspec-core = self.hspec-core_2_10_10;
+  hspec_2_11_0 = doDistribute (super.hspec_2_11_0.override {
+    hspec-discover = self.hspec-discover_2_11_0;
+    hspec-core = self.hspec-core_2_11_0;
   });
-  hspec-discover_2_10_10 = doDistribute (super.hspec-discover_2_10_10.override {
+  hspec-discover_2_11_0 = doDistribute (super.hspec-discover_2_11_0.override {
     hspec-meta = self.hspec-meta_2_10_5;
   });
-  hspec-core_2_10_10 = doDistribute (super.hspec-core_2_10_10.override {
+  # Need to disable tests to prevent an infinite recursion if hspec-core_2_11_0
+  # is overlayed to hspec-core.
+  hspec-core_2_11_0 = doDistribute (dontCheck (super.hspec-core_2_11_0.override {
     hspec-meta = self.hspec-meta_2_10_5;
   });
 
