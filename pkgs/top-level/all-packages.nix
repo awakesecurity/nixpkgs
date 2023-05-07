@@ -22751,7 +22751,6 @@ with pkgs;
 
   inherit (callPackages ../development/libraries/libressl { })
     libressl_3_4
-    libressl_3_5
     libressl_3_6;
 
   libressl = libressl_3_6;
