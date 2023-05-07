@@ -622,6 +622,7 @@ mapAliases ({
   librdf = throw "'librdf' has been renamed to/replaced by 'lrdf'"; # Converted to throw 2022-09-24
   librecad2 = throw "'librecad2' has been renamed to/replaced by 'librecad'"; # Converted to throw 2022-02-22
   libressl_3_2 = throw "'libressl_3_2' has reached end-of-life "; # Added 2022-03-19
+  libressl_3_5 = throw "'libressl_3_5' has reached end-of-life "; # Added 2023-05-07
   librevisa = throw "librevisa has been removed because its website and source have disappeared upstream"; # Added 2022-09-23
   libseat = throw "'libseat' has been renamed to/replaced by 'seatd'"; # Converted to throw 2022-09-24
   libspotify = throw "libspotify has been removed because Spotify stopped supporting it"; # added 2022-05-29
