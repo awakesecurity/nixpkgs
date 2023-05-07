@@ -696,6 +696,7 @@ mapAliases ({
   librdf = lrdf; # Added 2020-03-22
   librecad2 = throw "'librecad2' has been renamed to/replaced by 'librecad'"; # Converted to throw 2022-02-22
   libressl_3_2 = throw "'libressl_3_2' has reached end-of-life "; # Added 2022-03-19
+  libressl_3_5 = throw "'libressl_3_5' has reached end-of-life "; # Added 2023-05-07
   librsync_0_9 = throw "librsync_0_9 has been removed"; # Added 2021-07-24
   libseat = seatd; # Added 2021-06-24
   libstdcxxHook = throw "libstdcxx hook has been removed because cc-wrapper is now directly aware of the c++ standard library intended to be used"; # Added 2020-06-22
