@@ -6,24 +6,17 @@
 
 buildPythonPackage rec {
   pname = "nbclient";
-  version = "0.5.8";
+  version = "0.5.10";
   disabled = pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-NPUsycuDGl2MzXAxU341THXcYaJEh/mYcS0Sid4yCiU=";
+    sha256 = "b5fdea88d6fa52ca38de6c2361401cfe7aaa7cd24c74effc5e489cec04d79088";
   };
 
   inherit doCheck;
   checkInputs = [ pytest xmltodict nbconvert ipywidgets ];
   propagatedBuildInputs = [ async_generator traitlets nbformat nest-asyncio jupyter-client ];
-
-  postFixup =  ''
-    # Remove until fixed by upstream
-    # https://github.com/jupyter/nbclient/pull/173#issuecomment-968760082
-    rm $out/bin/.jupyter-run-wrapped
-    rm $out/bin/jupyter-run
-  '';
 
   meta = with lib; {
     homepage = "https://github.com/jupyter/nbclient";
