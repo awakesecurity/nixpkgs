@@ -4549,6 +4549,8 @@ with pkgs;
 
   mkgmap-splitter = callPackage ../applications/misc/mkgmap/splitter { };
 
+  modern-cpp-kafka = callPackage ../development/libraries/modern-cpp-kafka {};
+
   op-geth = callPackage ../applications/blockchains/optimism/geth.nix {
     inherit (darwin) libobjc;
     inherit (darwin.apple_sdk.frameworks) IOKit;
