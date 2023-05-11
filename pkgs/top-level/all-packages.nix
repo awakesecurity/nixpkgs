@@ -10489,6 +10489,8 @@ with pkgs;
 
   mkgmap-splitter = callPackage ../applications/misc/mkgmap/splitter { };
 
+  modern-cpp-kafka = callPackage ../development/libraries/modern-cpp-kafka {};
+
   mtm = callPackage ../tools/misc/mtm { };
 
   op-geth = callPackage ../applications/blockchains/optimism/geth.nix {
