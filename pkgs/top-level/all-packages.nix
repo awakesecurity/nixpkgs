@@ -11149,6 +11149,8 @@ with pkgs;
 
   mkgmap-splitter = callPackage ../applications/misc/mkgmap/splitter { };
 
+  modern-cpp-kafka = callPackage ../development/libraries/modern-cpp-kafka {};
+
   mpack = callPackage ../tools/networking/mpack { };
 
   mtm = callPackage ../tools/misc/mtm { };
