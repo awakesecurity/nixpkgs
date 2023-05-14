@@ -1370,7 +1370,7 @@ with pkgs;
 
   airgeddon = callPackage ../tools/networking/airgeddon { };
 
-  apache-airflow = with python3.pkgs; toPythonApplication apache-airflow;
+  apache-airflow = callPackage ../servers/apache-airflow { };
 
   airsonic = callPackage ../servers/misc/airsonic { };
 
