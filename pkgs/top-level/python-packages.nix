@@ -10018,6 +10018,8 @@ self: super: with self; {
 
   rich = callPackage ../development/python-modules/rich { };
 
+  rich-argparse = callPackage ../development/python-modules/rich-argparse { };
+
   rich-click = callPackage ../development/python-modules/rich-click { };
 
   rich-rst = callPackage ../development/python-modules/rich-rst { };
