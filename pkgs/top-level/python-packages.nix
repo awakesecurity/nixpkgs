@@ -11707,6 +11707,8 @@ in {
 
   wifi = callPackage ../development/python-modules/wifi { };
 
+  wikipedia = callPackage ../development/python-modules/wikipedia { };
+
   willow = callPackage ../development/python-modules/willow { };
 
   winacl = callPackage ../development/python-modules/winacl { };
