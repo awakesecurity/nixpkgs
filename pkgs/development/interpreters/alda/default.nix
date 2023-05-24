@@ -25,7 +25,6 @@ stdenv.mkDerivation rec {
     ''
       install -D $src_alda $out/bin/alda
       install -D $src_player $out/bin/alda-player
-
       wrapProgram $out/bin/alda --prefix PATH : $out/bin:${binPath}
       wrapProgram $out/bin/alda-player --prefix PATH : $out/bin:${binPath}
     '';
@@ -37,4 +36,5 @@ stdenv.mkDerivation rec {
     maintainers = [ maintainers.ericdallo ];
     platforms = jre.meta.platforms;
   };
+
 }
