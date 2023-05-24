@@ -283,13 +283,6 @@
       </listitem>
       <listitem>
         <para>
-          <link xlink:href="https://maddy.email">maddy</link>, a
-          composable all-in-one mail server. Available as
-          <link xlink:href="options.html#opt-services.maddy.enable">services.maddy</link>.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
           <link xlink:href="https://sr.ht">sourcehut</link>, a
           collection of tools useful for software development. Available
           as
@@ -2049,8 +2042,13 @@ Superuser created successfully.
       </listitem>
       <listitem>
         <para>
-          More jdk and jre versions are now exposed via
-          <literal>java-packages.compiler</literal>.
+          <literal>pkgs.emacsPackages.orgPackages</literal> is removed
+          because org elpa is deprecated. The packages in the top level
+          of <literal>pkgs.emacsPackages</literal>, such as org and
+          org-contrib, refer to the ones in
+          <literal>pkgs.emacsPackages.elpaPackages</literal> and
+          <literal>pkgs.emacsPackages.nongnuPackages</literal> where the
+          new versions will release.
         </para>
       </listitem>
     </itemizedlist>
