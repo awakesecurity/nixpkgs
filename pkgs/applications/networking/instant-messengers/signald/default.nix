@@ -1,21 +1,21 @@
-{ lib, stdenv, fetchurl, fetchFromGitLab, jdk17_headless, coreutils, gradle_6, git, perl
+{ lib, stdenv, fetchurl, fetchFromGitLab, jre_headless, coreutils, gradle_6, git, perl
 , makeWrapper, fetchpatch
 }:
 
 let
   pname = "signald";
-  version = "0.15.0";
+  version = "0.14.1";
+
+  log4j-update-cve-2021-44228 = fetchpatch {
+    url = "https://gitlab.com/signald/signald/-/commit/7f668062ab9ffa09a49d171e995f57cf0a0803a7.patch";
+    sha256 = "sha256-504je6hKciUGelVCGZjxGjHi1qZQaovagXD5PBQP+mM=";
+  };
 
   src = fetchFromGitLab {
     owner = pname;
     repo = pname;
     rev = version;
-    sha256 = "ftK+oeqzJ+TxrlvqivFkAi5RCcyJ5Y0oQAJuo0YheBg=";
-  };
-
-  log4j-update-cve-2021-44228 = fetchpatch {
-    url = "https://gitlab.com/signald/signald/-/commit/7f668062ab9ffa09a49d171e995f57cf0a0803a7.patch";
-    sha256 = "sha256-504je6hKciUGelVCGZjxGjHi1qZQaovagXD5PBQP+mM=";
+    sha256 = "K/G5+w1GINLZwJIG5a7u0TxlGe+Cyp4wQm+pgm28qCA=";
   };
 
   buildConfigJar = fetchurl {
@@ -23,10 +23,15 @@ let
     sha256 = "0y1f42y7ilm3ykgnm6s3ks54d71n8lsy5649xgd9ahv28lj05x9f";
   };
 
+  postPatch = ''
+    patchShebangs gradlew
+    sed -i -e 's|BuildConfig.jar|${buildConfigJar}|' build.gradle
+  '';
+
   # fake build to pre-download deps into fixed-output derivation
   deps = stdenv.mkDerivation {
-    pname = "${pname}-deps";
-    inherit src version;
+    name = "${pname}-deps";
+    inherit src version postPatch;
     patches = [ log4j-update-cve-2021-44228 ];
     nativeBuildInputs = [ gradle_6 perl ];
     buildPhase = ''
@@ -45,22 +50,18 @@ let
     outputHashMode = "recursive";
     # Downloaded jars differ by platform
     outputHash = {
-      x86_64-linux = "sha256-e2Tehtznc+VsvQzD3lQ50Lg7ipQc7P3ekOnb8XLORO8=";
-      aarch64-linux = "sha256-P48s3vG5vUNxCCga5FhzpODhlvvc+F2ZZGX/G0FVGWc=";
+      x86_64-linux = "sha256-Tn0x5MJJMe04Du+eFGAkdvh/7Sgb7pf2FtBiRyCvjo8=";
+      aarch64-linux = "sha256-T/Cj/QxlW48xW6l+O3K4fFA19fulOB8nk9dRoiP1sys=";
     }.${stdenv.system} or (throw "Unsupported platform");
   };
 
 in stdenv.mkDerivation rec {
-  inherit pname src version;
+  inherit pname src version postPatch;
 
   patches = [
     ./gradle-plugin.patch
     log4j-update-cve-2021-44228
   ];
-
-  postPatch = ''
-    sed -i 's|BuildConfig.jar|${buildConfigJar}|' build.gradle
-  '';
 
   buildPhase = ''
     runHook preBuild
@@ -82,7 +83,7 @@ in stdenv.mkDerivation rec {
     tar xvf ./build/distributions/signald.tar --strip-components=1 --directory $out/
     wrapProgram $out/bin/signald \
       --prefix PATH : ${lib.makeBinPath [ coreutils ]} \
-      --set JAVA_HOME "${jdk17_headless}"
+      --set JAVA_HOME "${jre_headless}"
 
     runHook postInstall
   '';
