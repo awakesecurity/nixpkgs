@@ -193,7 +193,8 @@ in {
   servant-swagger = doJailbreak super.servant-swagger;
   servant-client-core = doJailbreak super.servant-client-core;
   servant-client = doJailbreak super.servant-client;
-  relude = doJailbreak super.relude;
+  # https://github.com/kowainik/relude/issues/436
+  relude = dontCheck (doJailbreak super.relude);
 
   cborg = appendPatch (pkgs.fetchpatch {
     name = "cborg-support-ghc-9.4.patch";
