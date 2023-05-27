@@ -67,6 +67,7 @@ let
     ghc925
     ghc926
     ghc927
+    ghc928
     ghc945
     ghc961
   ];
@@ -542,6 +543,7 @@ let
         compilerNames.ghc925
         compilerNames.ghc926
         compilerNames.ghc927
+        compilerNames.ghc928
         compilerNames.ghc945
       ];
     })
@@ -623,6 +625,7 @@ let
           jobs.pkgsMusl.haskell.compiler.ghc925
           jobs.pkgsMusl.haskell.compiler.ghc926
           jobs.pkgsMusl.haskell.compiler.ghc927
+          jobs.pkgsMusl.haskell.compiler.ghc928
           jobs.pkgsMusl.haskell.compiler.ghcHEAD
           jobs.pkgsMusl.haskell.compiler.integer-simple.ghc8107
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc902
@@ -630,6 +633,7 @@ let
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc925
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc926
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc927
+          jobs.pkgsMusl.haskell.compiler.native-bignum.ghc928
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghcHEAD
         ];
       };
