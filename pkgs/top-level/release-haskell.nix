@@ -54,6 +54,7 @@ let
     ghc902
     ghc924
     ghc925
+    ghc928
     ghc942
     ghc943
   ];
@@ -398,6 +399,7 @@ let
         compilerNames.ghc902
         compilerNames.ghc924
         compilerNames.ghc925
+        compilerNames.ghc928
       ];
       purescript = [
         compilerNames.ghc924
@@ -477,11 +479,13 @@ let
           jobs.pkgsMusl.haskell.compiler.ghc902
           jobs.pkgsMusl.haskell.compiler.ghc924
           jobs.pkgsMusl.haskell.compiler.ghc925
+          jobs.pkgsMusl.haskell.compiler.ghc928
           jobs.pkgsMusl.haskell.compiler.ghcHEAD
           jobs.pkgsMusl.haskell.compiler.integer-simple.ghc8107
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc902
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc924
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghc925
+          jobs.pkgsMusl.haskell.compiler.native-bignum.ghc928
           jobs.pkgsMusl.haskell.compiler.native-bignum.ghcHEAD
         ];
       };
