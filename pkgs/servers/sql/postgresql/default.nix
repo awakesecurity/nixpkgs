@@ -156,8 +156,10 @@ let
                      }
                      this.pkgs;
 
-      tests.postgresql = nixosTests.postgresql-wal-receiver.${thisAttr};
-    };
+      tests = {
+        postgresql = nixosTests.postgresql-wal-receiver.${thisAttr};
+        upgrade = nixosTests.postgresql-upgrade;
+      };
 
     meta = with lib; {
       homepage    = "https://www.postgresql.org";
