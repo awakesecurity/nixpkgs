@@ -27,6 +27,32 @@ let
 
   groupAccessAvailable = versionAtLeast postgresql.version "11.0";
 
+  upgradeScript =
+    assert lib.versionOlder cfg.upgradeFrom.package.version cfg.package.version;
+    pkgs.writeShellApplication {
+      name = "upgrade.sh";
+      runtimeInputs = [];
+      text = ''
+        # There is no old version to upgrade from - noop
+        [[ -d "${cfg.upgradeFrom.dataDir}" ]] || exit 0
+
+        if [[ -f "${cfg.upgradeFrom.dataDir}/.upgraded" ]]; then
+          echo "Old data dir found, but was already migrated. Please remove the old path '${cfg.upgradeFrom.dataDir}' to suppress this message." >&2
+          exit 0
+        fi
+
+        pushd "${cfg.upgradeFrom.dataDir}"
+        ${cfg.package}/bin/pg_upgrade ${lib.cli.toGNUCommandLineShell {} {
+          old-datadir = cfg.upgradeFrom.dataDir;
+          new-datadir = cfg.dataDir;
+          old-bindir = "${cfg.upgradeFrom.package}/bin";
+          new-bindir = "${cfg.package}/bin";
+        }}
+        popd
+        touch "${cfg.dataDir}/.post_upgrade" "${cfg.upgradeFrom.dataDir}/.upgraded"
+      '';
+    };
+
 in
 
 {
@@ -269,7 +295,40 @@ in
           PostgreSQL superuser account to use for various operations. Internal since changing
           this value would lead to breakage while setting up databases.
         '';
-        };
+      };
+
+      upgradeFrom = mkOption {
+        type = types.nullOr (types.submodule ({ config, ... }: {
+          options = {
+            package = mkOption {
+              type = types.package;
+              description = "Package to upgrade from";
+            };
+            dataDir = mkOption {
+              type = types.path;
+              default = "/var/lib/postgresql/${config.package.psqlSchema}";
+              defaultText = ''/var/lib/postgresql/''${config.package.psqlSchema}'';
+              example = "/mnt/postgresql/11";
+              description = ''
+                Location of the existing data directory to migrate.
+                Will not be deleted.
+              '';
+            };
+          };
+        }));
+        default = null;
+        description =
+          "A postgres package and data directory to upgrade";
+      };
+
+      analyzeAfterUpgrade = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Will run `vacuumdb --all --analyze-in-stages` after
+          successful upgrade as postgresql suggests.
+        '';
+      };
     };
 
   };
@@ -346,6 +405,8 @@ in
               # Initialise the database.
               initdb -U ${cfg.superUser} ${concatStringsSep " " cfg.initdbArgs}
 
+              ${optionalString (null != cfg.upgradeFrom) (getExe upgradeScript)}
+
               # See postStart!
               touch "${cfg.dataDir}/.first_startup"
             fi
@@ -368,6 +429,13 @@ in
             done
 
             if test -e "${cfg.dataDir}/.first_startup"; then
+              if test -e "${cfg.dataDir}/.post_upgrade"; then
+                ${optionalString cfg.analyzeAfterUpgrade ''
+                  vacuumdb --port=${toString cfg.port} --all --analyze-in-stages
+                ''}
+                rm "${cfg.dataDir}/.post_upgrade"
+              fi
+
               ${optionalString (cfg.initialScript != null) ''
                 $PSQL -f "${cfg.initialScript}" -d postgres
               ''}
