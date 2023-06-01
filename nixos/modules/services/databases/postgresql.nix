@@ -11,6 +11,13 @@ let
       then cfg.package
       else cfg.package.withPackages (_: cfg.extraPlugins);
 
+  defaultPackageVersion =
+    if versionAtLeast config.system.stateVersion "22.05" then "14"
+    else if versionAtLeast config.system.stateVersion "21.11" then "13"
+    else if versionAtLeast config.system.stateVersion "20.03" then "11"
+    else if versionAtLeast config.system.stateVersion "17.09" then "9_6"
+    else "9_5";
+
   toStr = value:
     if true == value then "yes"
     else if false == value then "no"
@@ -27,6 +34,97 @@ let
 
   groupAccessAvailable = versionAtLeast postgresql.version "11.0";
 
+  upgradeScript =
+    pkgs.writeShellApplication {
+      name = "upgrade.sh";
+      text = with cfg.upgradeFrom; ''
+        # There is no old version to upgrade from - noop
+        if ! [[ -d "${settings.old-datadir}" ]]; then
+          echo "No old datadir to upgrade from (expecting ${settings.old-datadir})"
+          exit 0
+        fi
+
+        if [[ -f "${settings.old-datadir}/.upgraded" ]]; then
+          echo "Old data dir found, but was already migrated. Please remove the old path '${settings.old-datadir}' to suppress this message." >&2
+          exit 0
+        fi
+
+        pushd "${settings.old-datadir}"
+        ${settings.new-bindir}/pg_upgrade ${lib.cli.toGNUCommandLineShell {} settings}
+        popd
+        touch "${settings.new-datadir}/.post_upgrade" "${settings.old-datadir}/.upgraded"
+      '';
+    };
+
+  upgradeOptions = upgrade: {
+    options = {
+      package = mkOption {
+        type = types.package;
+        description = "Package to upgrade from";
+      };
+
+      settings = mkOption {
+        type = types.submodule {
+          freeformType = types.attrsOf (types.oneOf [
+            types.bool
+            types.str
+            types.path
+            (types.listOf lib.types.str)
+          ]) // {
+            description =
+              "Type of flags accepted by pg_upgrade (see [pg_upgrade](https://www.postgresql.org/docs/current/pgupgrade.html))";
+          };
+
+          options = {
+            old-datadir = mkOption {
+              type = types.path;
+              default = "/var/lib/postgresql/${upgrade.config.package.psqlSchema}";
+              defaultText =
+                ''"/var/lib/postgresql/''${config.services.postgresql.upgradeFrom.package.psqlSchema}"'';
+              example = "/mnt/postgresql/13";
+              description = ''
+                Location of the existing data directory.
+                It won't be deleted in the upgrade process.
+                See the [pg_upgrade docs](https://www.postgresql.org/docs/current/pgupgrade.html).
+              '';
+            };
+
+            new-datadir = mkOption {
+              type = types.path;
+              default = cfg.dataDir;
+              example = "/mnt/postgresql/15";
+              description = ''
+                The desired destination for the upgraded data directory.
+                See the [pg_upgrade docs](https://www.postgresql.org/docs/current/pgupgrade.html).
+              '';
+            };
+
+            old-bindir = mkOption {
+              type = types.path;
+              default = "${upgrade.config.package}/bin";
+              example = "/usr/bin";
+              description = ''
+                Dirname of the old postgres binary to upgrade from.
+                See the [pg_upgrade docs](https://www.postgresql.org/docs/current/pgupgrade.html).
+              '';
+            };
+
+            new-bindir = mkOption {
+              type = types.path;
+              default = "${cfg.package}/bin";
+              example = ''"''${pkgs.postgresql_14}/bin"'';
+              description = ''
+                Dirname of the new postgres binary to upgrade to.
+                See the [pg_upgrade docs](https://www.postgresql.org/docs/current/pgupgrade.html).
+              '';
+            };
+          };
+        };
+        example = ''{ link = true; }'';
+        description = "Flags to provide `pg_upgrade`";
+      };
+    };
+  };
 in
 
 {
@@ -269,7 +367,21 @@ in
           PostgreSQL superuser account to use for various operations. Internal since changing
           this value would lead to breakage while setting up databases.
         '';
-        };
+      };
+
+      upgradeFrom = mkOption {
+        type = types.nullOr (types.submodule upgradeOptions);
+        default = null;
+        description = "Settings related to automatically upgrading from a previous version";
+      };
+
+      analyzeAfterUpgrade = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether to run `vacuumdb --all --analyze-in-stages` after an successful upgrade as pg_upgrade suggests.
+        '';
+      };
     };
 
   };
@@ -278,6 +390,13 @@ in
   ###### implementation
 
   config = mkIf cfg.enable {
+    assertions = [{
+      assertion = null != cfg.upgradeFrom
+        -> cfg.upgradeFrom.settings.new-bindir == "${cfg.package}/bin"
+        -> cfg.upgradeFrom.settings.old-bindir == "${cfg.upgradeFrom.package}/bin"
+        -> lib.versionOlder cfg.upgradeFrom.package.version cfg.package.version;
+      message = "Refusing to downgrade postgresql data from ${cfg.package.version} to ${cfg.upgradeFrom.package.version}";
+    }];
 
     services.postgresql.settings =
       {
@@ -289,14 +408,14 @@ in
         port = cfg.port;
       };
 
+    # Note: when changing the default, make it conditional on
+    # ‘system.stateVersion’ to maintain compatibility with existing
+    # systems!
     services.postgresql.package =
-      # Note: when changing the default, make it conditional on
-      # ‘system.stateVersion’ to maintain compatibility with existing
-      # systems!
-      mkDefault (if versionAtLeast config.system.stateVersion "21.11" then pkgs.postgresql_13
-            else if versionAtLeast config.system.stateVersion "20.03" then pkgs.postgresql_11
-            else if versionAtLeast config.system.stateVersion "17.09" then pkgs.postgresql_9_6
-            else throw "postgresql_9_5 was removed, please upgrade your postgresql version.");
+      if lib.versionAtLeast defaultPackageVersion "11"
+      then pkgs."postgresql_${defaultPackageVersion}"
+      else throw
+        "postgresql_${defaultPackageVersion} was removed, please upgrade your postgresql version.";
 
     services.postgresql.dataDir = mkDefault "/var/lib/postgresql/${cfg.package.psqlSchema}";
 
@@ -346,6 +465,8 @@ in
               # Initialise the database.
               initdb -U ${cfg.superUser} ${concatStringsSep " " cfg.initdbArgs}
 
+              ${optionalString (null != cfg.upgradeFrom) (getExe upgradeScript)}
+
               # See postStart!
               touch "${cfg.dataDir}/.first_startup"
             fi
@@ -367,7 +488,14 @@ in
                 sleep 0.1
             done
 
-            if test -e "${cfg.dataDir}/.first_startup"; then
+            if [ -e "${cfg.dataDir}/.first_startup" ]; then
+              if [ -e "${cfg.dataDir}/.post_upgrade" ]; then
+                '' + optionalString cfg.analyzeAfterUpgrade ''
+                  vacuumdb --port=${toString cfg.port} --all --analyze-in-stages
+                '' + ''
+                rm -f "${cfg.dataDir}/.post_upgrade"
+              fi
+
               ${optionalString (cfg.initialScript != null) ''
                 $PSQL -f "${cfg.initialScript}" -d postgres
               ''}
