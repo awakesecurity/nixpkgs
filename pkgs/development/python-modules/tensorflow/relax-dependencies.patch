@@ -46,6 +46,6 @@ index 65133afdafe..8ef6364ff7e 100644
  if sys.byteorder == 'little':
 -  REQUIRED_PACKAGES.append('grpcio ~= 1.32.0')
 +  REQUIRED_PACKAGES.append('grpcio >= 1.31.0')
- 
- 
+
+
  # Packages which are only needed for testing code.

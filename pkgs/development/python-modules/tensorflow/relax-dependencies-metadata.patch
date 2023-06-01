@@ -41,6 +41,6 @@ diff -ur unpacked/tensorflow-2.4.0/tensorflow-2.4.0.dist-info/METADATA unpacked.
 +Requires-Dist: tensorboard
 +Requires-Dist: tensorflow-estimator
 +Requires-Dist: grpcio
- 
+
  [![Python](https://img.shields.io/pypi/pyversions/tensorflow.svg?style=plastic)](https://badge.fury.io/py/tensorflow)
  [![PyPI](https://badge.fury.io/py/tensorflow.svg)](https://badge.fury.io/py/tensorflow)

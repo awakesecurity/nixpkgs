@@ -6,13 +6,13 @@
 , numpy, tensorflow-tensorboard_2, absl-py
 , setuptools, wheel, keras-preprocessing, google-pasta
 , opt-einsum, astunparse, h5py
-, termcolor, grpcio, six, wrapt, protobuf-python, tensorflow-estimator_2
+, termcolor, grpcio, six, wrapt, protobuf, tensorflow-estimator_2
 , dill, flatbuffers-python, tblib, typing-extensions
 # Common deps
 , git, pybind11, which, binutils, glibcLocales, cython, perl
 # Common libraries
 , jemalloc, mpi, gast, grpc, sqlite, boringssl, jsoncpp
-, curl, snappy, flatbuffers-core, lmdb-core, icu, double-conversion, libpng, libjpeg_turbo, giflib, protobuf-core
+, curl, snappy, flatbuffers-core, lmdb-core, icu, double-conversion, libpng, libjpeg_turbo, giflib
 # Upsteam by default includes cuda support since tensorflow 1.15. We could do
 # that in nix as well. It would make some things easier and less confusing, but
 # it would also make the default tensorflow package unfree. See
@@ -72,7 +72,7 @@ let
 
   tfFeature = x: if x then "1" else "0";
 
-  version = "2.4.4";
+  version = "2.4.2";
   variant = if cudaSupport then "-gpu" else "";
   pname = "tensorflow${variant}";
 
@@ -90,7 +90,7 @@ let
       keras-preprocessing
       numpy
       opt-einsum
-      protobuf-python
+      protobuf
       setuptools
       six
       tblib
@@ -124,18 +124,13 @@ let
       ./relax-dependencies.patch
       # Add missing `io_bazel_rules_docker` dependency.
       ./workspace.patch
-      # Patch the sources to compile with protobuf >= 3.16.
-      ./system-protobuf.patch
-      # Avoid using a deprecated method that was removed
-      # https://github.com/protocolbuffers/protobuf/blob/66dc42d891a4fc8e9190c524fd67961688a37bbe/src/google/protobuf/io/coded_stream.h#L387-L39
-      ./system-protobuf_SetTotalBytesLimit.patch
     ];
 
     # On update, it can be useful to steal the changes from gentoo
     # https://gitweb.gentoo.org/repo/gentoo.git/tree/sci-libs/tensorflow
 
     nativeBuildInputs = [
-      which pythonEnv cython perl protobuf-core
+      which pythonEnv cython perl
     ] ++ lib.optional cudaSupport addOpenGLRunpath;
 
     buildInputs = [
@@ -184,7 +179,12 @@ let
       # "com_github_googleapis_googleapis"
       # "com_github_googlecloudplatform_google_cloud_cpp"
       "com_github_grpc_grpc"
-      "com_google_protobuf"
+      # Multiple issues with custom protobuf.
+      # First `com_github_googleapis` fails to configure. Can be worked around by disabling `com_github_googleapis`
+      # and related functionality, but then the next error is about "dangling symbolic link", and in general
+      # looks like that's only the beginning: see
+      # https://stackoverflow.com/questions/55578884/how-to-build-tensorflow-1-13-1-with-custom-protobuf
+      # "com_google_protobuf"
       # Fails with the error: external/org_tensorflow/tensorflow/core/profiler/utils/tf_op_utils.cc:46:49: error: no matching function for call to 're2::RE2::FullMatch(absl::lts_2020_02_25::string_view&, re2::RE2&)'
       # "com_googlesource_code_re2"
       "curl"
@@ -219,11 +219,6 @@ let
     ];
 
     INCLUDEDIR = "${includes_joined}/include";
-
-    # This is needed for the Nix-provided protobuf dependency to work,
-    # as otherwise the rule `link_proto_files` tries to create the links
-    # to `/usr/include/...` which results in build failures.
-    PROTOBUF_INCLUDE_PATH = "${protobuf-core}/include";
 
     PYTHON_BIN_PATH = pythonEnv.interpreter;
 
@@ -300,12 +295,9 @@ let
     fetchAttrs = {
       # cudaSupport causes fetch of ncclArchive, resulting in different hashes
       sha256 = if cudaSupport then
-        "sha256-yxEbdEd7c18+N0XQgadjG72fMbD3f6CvMdfejb6kalo="
+        "10m6qj3kchgxfgb6qh59vc51knm9r9pkng8bf90h00dnggvv8234"
       else
-        if stdenv.isDarwin then
-          "sha256-SPdW7lBGdlozXBg9nBN1R3XK4stNAgHQO2ewHE2ohCc="
-        else
-          "sha256-zrXOEp2jHf1kYsPca4d1IQS3j6K0tpEoPwld/u4Bn5c=";
+        "04a98yrp09nd0p17k0jbzkgjppxs0yma7m5zkfrwgvr4g0w71v68";
     };
 
     buildAttrs = {
@@ -369,12 +361,6 @@ in buildPythonPackage {
   # https://github.com/tensorflow/tensorflow/blob/v1.7.1/tensorflow/tools/pip_package/setup.py#L79
   postInstall = ''
     rm $out/bin/tensorboard
-  ''
-  # Workaround https://github.com/tensorflow/tensorflow/issues/44467#issuecomment-720042186
-  + ''
-    substituteInPlace "$out"/${python.sitePackages}/tensorflow/python/keras/saving/hdf5_format.py \
-      --replace ".decode('utf-8')" "" \
-      --replace ".decode('utf8')" ""
   '';
 
   setupPyGlobalFlags = [ "--project_name ${pname}" ];
@@ -392,7 +378,7 @@ in buildPythonPackage {
     keras-preprocessing
     numpy
     opt-einsum
-    protobuf-python
+    protobuf
     six
     tblib
     tensorflow-estimator_2
