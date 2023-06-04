@@ -7,7 +7,7 @@ let
 
   baseOS =
     import ../eval-config.nix {
-      inherit system;
+      inherit system lib;
       inherit (config.node) specialArgs;
       modules = [ config.defaults ];
       baseModules = (import ../../modules/module-list.nix) ++
