@@ -24,11 +24,11 @@ in
 
 stdenv.mkDerivation rec {
   pname = "liquibase";
-  version = "4.9.0";
+  version = "4.17.2";
 
   src = fetchurl {
     url = "https://github.com/liquibase/liquibase/releases/download/v${version}/${pname}-${version}.tar.gz";
-    sha256 = "sha256-1InRJzHqikm6Jd7z54TW6JFn3FO0LtStehWNaC+rdw8=";
+    sha256 = "0h5gqxgarzjb3c46ig6yxbs12czz3dha81b8gpywrg8602411sc5";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
       cat > $out/bin/liquibase <<EOF
       #!/usr/bin/env bash
       # taken from the executable script in the source
-      CP="$out/liquibase-core.jar"
+      CP=""
       ${addJars "$out/lib"}
       ${addJars "$out"}
       ${lib.concatStringsSep "\n" (map (p: addJars "${p}/share/java") extraJars)}
