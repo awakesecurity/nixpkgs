@@ -173,7 +173,7 @@ in {
   ghc-exactprint = overrideCabal (drv: {
     libraryHaskellDepends = with self; [ HUnit data-default fail filemanip free ghc-paths ordered-containers silently syb Diff ];
   })
-    self.ghc-exactprint_1_6_1_1;
+    self.ghc-exactprint_1_6_1_3;
 
   # 2022-11-06: Override override from common, because Cabal-syntax is included since ghc 9.4.
   implicit-hie = super.implicit-hie.override {
