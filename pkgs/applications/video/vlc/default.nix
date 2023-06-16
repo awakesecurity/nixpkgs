@@ -159,7 +159,7 @@ stdenv.mkDerivation rec {
     xcbutilkeysyms
     xlibsWrapper
   ])
-  ++ optional (!hostIsAarch) live555
+  ++ optional (!stdenv.hostPlatform.isAarch64 && !stdenv.hostPlatform.isAarch32 && !onlyLibVLC) live555
   ++ optional jackSupport libjack2
   ++ optionals chromecastSupport [ libmicrodns protobuf ]
   ++ optionals skins2Support (with xorg; [ freetype libXext libXinerama libXpm ])
