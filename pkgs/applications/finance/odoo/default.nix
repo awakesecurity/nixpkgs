@@ -42,7 +42,7 @@ buildPythonApplication rec {
   makeWrapperArgs = [ "--prefix" "PATH" ":" "${lib.makeBinPath [ wkhtmltopdf nodePackages.rtlcss ]}" ];
 
   propagatedBuildInputs = [
-    Babel
+    babel
     chardet
     decorator
     docutils
