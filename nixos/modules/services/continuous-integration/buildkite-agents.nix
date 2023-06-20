@@ -104,7 +104,7 @@ let
           }'';
         description = lib.mdDoc ''
           "Agent" hooks to install.
-          See <https://buildkite.com/docs/agent/v3/hooks> for possible options.
+          See https://buildkite.com/docs/agent/v3/hooks for possible options.
         '';
       };
 
