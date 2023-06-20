@@ -23195,7 +23195,6 @@ with pkgs;
   openvr = callPackage ../development/libraries/openvr { };
 
   inherit (callPackages ../development/libraries/libressl { })
-    libressl_3_4
     libressl_3_6
     libressl_3_7;
 
