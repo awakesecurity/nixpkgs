@@ -58,6 +58,16 @@ self: super: {
   tasty-inspection-testing = doDistribute self.tasty-inspection-testing_0_2;
   # Too strict bounds on ghc-prim and template-haskell
   aeson = doDistribute (doJailbreak self.aeson_2_1_2_1);
+  turtle = doDistribute self.turtle_1_6_1;
+  memory = doDistribute self.memory_0_18_0;
+  semigroupoids = doDistribute self.semigroupoids_6_0_0_1;
+  bifunctors = doDistribute self.bifunctors_5_6_1;
+  cabal-plan = doDistribute self.cabal-plan_0_7_3_0;
+  base-compat = doDistribute self.base-compat_0_13_0;
+  base-compat-batteries = doDistribute self.base-compat-batteries_0_13_0;
+  semialign = doDistribute self.semialign_1_3;
+  assoc = doDistribute self.assoc_1_1;
+  strict = doDistribute self.strict_0_5;
 
   ghc-lib = doDistribute self.ghc-lib_9_6_1_20230312;
   ghc-lib-parser = doDistribute self.ghc-lib-parser_9_6_1_20230312;
@@ -88,18 +98,12 @@ self: super: {
   # base >= 4.18 is allowed in those newer versions
   boring = assert !(self ? boring_0_2_1); doJailbreak super.boring;
   some = assert !(self ? some_1_0_5); doJailbreak super.some;
-  assoc = assert !(self ? assoc_1_1); doJailbreak super.assoc;
   these = assert !(self ? assoc_1_2); doJailbreak super.these;
   # Temporarily upgrade manually until the attribute is available
   doctest = doDistribute (overrideCabal {
     version = "0.21.1";
     sha256 = "0vgl89p6iaj2mwnd1gkpq86q1g18shdcws0p3can25algi2sldk3";
   } super.doctest_0_21_0);
-
-  # XXX: We probably should be using semigroupoids 6.0.1 which is intended for 9.6
-  semigroupoids = doJailbreak super.semigroupoids;
-  # XXX: 1.3 supports 9.6 properly, but is intended for bifunctors >= 5.6
-  semialign = doJailbreak super.semialign;
 
   #
   # Too strict bounds, waiting on Revision in nixpkgs
