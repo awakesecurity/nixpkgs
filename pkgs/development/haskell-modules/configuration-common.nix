@@ -172,10 +172,7 @@ self: super: {
 
   # For -fghc-lib see cabal.project in haskell-language-server.
   stylish-haskell = if lib.versionAtLeast super.ghc.version "9.2"
-    then enableCabalFlag "ghc-lib"
-      (if lib.versionAtLeast super.ghc.version "9.4"
-       then super.stylish-haskell_0_14_4_0
-       else super.stylish-haskell)
+    then enableCabalFlag "ghc-lib" super.stylish-haskell
     else super.stylish-haskell;
 
   ###########################################
@@ -695,32 +692,13 @@ self: super: {
   #    else dontCheck super.doctest-discover);
   doctest-discover = dontCheck super.doctest-discover;
 
-  # Depends on itself for testing
-  tasty-discover = overrideCabal (drv: {
-    # Compatibility with tasty-hspec >= 1.1.7 requires a patch and a dependency on hspec
-    patches = drv.patches or [] ++ [
-      # Intermediate patch so fix applies
-      (fetchpatch {
-        url = "https://github.com/haskell-works/tasty-discover/commit/67b022f5945abdfb71ca31fca7910abc7effe043.patch";
-        sha256 = "1x539qa2871fiahw9zjxyyqz86v4ib7k7fv9hdvvxcrrfw3zwl66";
-      })
-      # Actual fix
-      (fetchpatch {
-        name = "tasty-hspec-1.1.7-compat.patch";
-        url = "https://github.com/haskell-works/tasty-discover/commit/98d3c464f33129e38fa9c0fcdfb1847dfb0490b9.patch";
-        sha256 = "01a8ni3lyh1wql7aghl41nd2c9m6gcn1i77bh3pygh6r403x771p";
-      })
-    ];
-    testHaskellDepends = drv.testHaskellDepends or [] ++ [
-      self.hspec
-    ];
-    # https://github.com/haskell-works/tasty-discover/issues/17
-    jailbreak = true; # allow tasty-hspec >= 1.2
+  # Too strict lower bound on tasty-hedgehog
+  # https://github.com/qfpl/tasty-hedgehog/issues/70
+  tasty-sugar = doJailbreak super.tasty-sugar;
 
-    preBuild = ''
-      export PATH="$PWD/dist/build/tasty-discover:$PATH"
-    '' + (drv.preBuild or "");
-  }) super.tasty-discover;
+  # Too strict lower bound on aeson
+  # https://github.com/input-output-hk/hedgehog-extras/issues/39
+  hedgehog-extras = doJailbreak super.hedgehog-extras;
 
   # Known issue with nondeterministic test suite failure
   # https://github.com/nomeata/tasty-expected-failure/issues/21
