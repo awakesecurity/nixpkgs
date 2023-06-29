@@ -149,10 +149,7 @@ self: super: {
 
   # For -fghc-lib see cabal.project in haskell-language-server.
   stylish-haskell = if lib.versionAtLeast super.ghc.version "9.2"
-    then enableCabalFlag "ghc-lib"
-      (if lib.versionAtLeast super.ghc.version "9.4"
-       then super.stylish-haskell_0_14_4_0
-       else super.stylish-haskell)
+    then enableCabalFlag "ghc-lib" super.stylish-haskell
     else super.stylish-haskell;
 
   ###########################################
@@ -705,12 +702,13 @@ self: super: {
   #    else dontCheck super.doctest-discover);
   doctest-discover = dontCheck super.doctest-discover;
 
-  tasty-discover = overrideCabal (drv: {
-    # Depends on itself for testing
-    preBuild = ''
-      export PATH="$PWD/dist/build/tasty-discover:$PATH"
-    '' + (drv.preBuild or "");
-  }) super.tasty-discover;
+  # Too strict lower bound on tasty-hedgehog
+  # https://github.com/qfpl/tasty-hedgehog/issues/70
+  tasty-sugar = doJailbreak super.tasty-sugar;
+
+  # Too strict lower bound on aeson
+  # https://github.com/input-output-hk/hedgehog-extras/issues/39
+  hedgehog-extras = doJailbreak super.hedgehog-extras;
 
   # Known issue with nondeterministic test suite failure
   # https://github.com/nomeata/tasty-expected-failure/issues/21
