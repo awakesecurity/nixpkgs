@@ -173,9 +173,6 @@ in {
     Cabal-syntax = null;
   };
 
-  # needed to build servant
-  attoparsec-iso8601 = super.attoparsec-iso8601_1_1_0_0;
-
   # requires newer versions to work with GHC 9.4
   swagger2 = dontCheck super.swagger2;
   servant = doJailbreak super.servant;
