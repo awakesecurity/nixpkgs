@@ -156,17 +156,9 @@ in {
   # 2022-08-01: Tests are broken on ghc 9.2.4: https://github.com/wz1000/HieDb/issues/46
   hiedb = dontCheck super.hiedb;
 
-  hls-hlint-plugin = super.hls-hlint-plugin.override {
-    inherit (self) hlint;
-  };
-
   # 2022-10-06: https://gitlab.haskell.org/ghc/ghc/-/issues/22260
   ghc-check = dontHaddock super.ghc-check;
 
-  ghc-exactprint = overrideCabal (drv: {
-    libraryHaskellDepends = with self; [ HUnit data-default fail filemanip free ghc-paths ordered-containers silently syb Diff ];
-  })
-    self.ghc-exactprint_1_6_1_3;
 
   # 2022-11-06: Override override from common, because Cabal-syntax is included since ghc 9.4.
   implicit-hie = super.implicit-hie.override {
@@ -185,11 +177,9 @@ in {
   # https://github.com/kowainik/relude/issues/436
   relude = dontCheck (doJailbreak super.relude);
 
-  ormolu = doDistribute self.ormolu_0_5_3_0;
-  # https://github.com/tweag/ormolu/issues/941
   fourmolu = overrideCabal (drv: {
     libraryHaskellDepends = drv.libraryHaskellDepends ++ [ self.file-embed ];
-  }) (disableCabalFlag "fixity-th" super.fourmolu_0_10_1_0);
+  }) (disableCabalFlag "fixity-th" super.fourmolu);
 
   # Apply workaround for Cabal 3.8 bug https://github.com/haskell/cabal/issues/8455
   # by making `pkg-config --static` happy. Note: Cabal 3.9 is also affected, so
