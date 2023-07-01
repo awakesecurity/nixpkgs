@@ -401,6 +401,8 @@ let
       spectacle = [
         compilerNames.ghc8107
       ];
+      hashable = released;
+      primitive = released;
       weeder = [
         compilerNames.ghc8107
         compilerNames.ghc902

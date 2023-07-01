@@ -57,6 +57,16 @@ self: super: {
   # This build needs a newer version of Cabal.
   cabal2spec = super.cabal2spec.override { Cabal = self.Cabal_3_2_1_0; };
 
+  # Additionally depends on OneTuple for GHC < 9.0
+  base-compat-batteries = addBuildDepend self.OneTuple super.base-compat-batteries;
+
+  # For GHC < 9.4, some packages need data-array-byte as an extra dependency
+  primitive = addBuildDepends [ self.data-array-byte ] super.primitive;
+  hashable = addBuildDepends [
+    self.data-array-byte
+    self.base-orphans
+  ] super.hashable;
+
   # Ignore overly restrictive upper version bounds.
   aeson-diff = doJailbreak super.aeson-diff;
   async = doJailbreak super.async;
@@ -64,7 +74,6 @@ self: super: {
   chell = doJailbreak super.chell;
   Diff = dontCheck super.Diff;
   doctest = doJailbreak super.doctest;
-  hashable = doJailbreak super.hashable;
   hashable-time = doJailbreak super.hashable-time;
   hledger-lib = doJailbreak super.hledger-lib;  # base >=4.8 && <4.13, easytest >=0.2.1 && <0.3
   integer-logarithms = doJailbreak super.integer-logarithms;
