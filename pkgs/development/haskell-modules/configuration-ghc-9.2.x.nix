@@ -200,6 +200,9 @@ self: super: {
     ghc-lib-parser-ex = self.ghc-lib-parser-ex_9_2_0_4;
   }));
 
+  # 0.2.2.3 requires Cabal >= 3.8
+  shake-cabal = doDistribute self.shake-cabal_0_2_2_2;
+
   # https://github.com/sjakobi/bsb-http-chunked/issues/38
   bsb-http-chunked = dontCheck super.bsb-http-chunked;
 
