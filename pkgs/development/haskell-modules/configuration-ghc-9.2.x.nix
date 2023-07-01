@@ -172,6 +172,9 @@ self: super: {
   # Use hlint from git for GHC 9.2.1 support
   hlint = self.hlint_3_4_1;
 
+  # 0.2.2.3 requires Cabal >= 3.8
+  shake-cabal = doDistribute self.shake-cabal_0_2_2_2;
+
   # https://github.com/sjakobi/bsb-http-chunked/issues/38
   bsb-http-chunked = dontCheck super.bsb-http-chunked;
 

@@ -142,6 +142,7 @@ extra-packages:
   - hspec-discover < 2.8                # 2022-04-07: Needed for tasty-hspec 1.1.6
   - vty == 5.35.1                       # 2022-07-08: needed for glirc-2.39.0.1
   - fourmolu == 0.10.1.0                # 2023-04-18: for hls-fourmolu-plugin 1.1.1.0
+  - shake-cabal < 0.2.2.3               # 2023-07-01: last version to support Cabal 3.6.*
 
 package-maintainers:
   abbradar:
