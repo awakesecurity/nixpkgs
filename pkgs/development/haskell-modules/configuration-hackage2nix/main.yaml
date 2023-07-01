@@ -110,6 +110,13 @@ c versions)
   - lsp-test == 0.14.*
 
 extra-packages:
+  - Cabal-syntax == 3.6.*               # Dummy package that ensures packages depending on Cabal-syntax can work for Cabal < 3.8
+  - Cabal == 3.2.*
+  - Cabal == 3.6.*
+  - Cabal-syntax == 3.10.*              # newest version required for cabal-install and other packages
+  - cachix < 1.4                        # 2023-04-02: cachix 1.4{,.1} have known on multi-user Nix systems
+  - directory == 1.3.7.*                # required to build cabal-install 3.10.* with GHC 9.2
+  - Diff < 0.4                          # required by liquidhaskell-0.8.10.2: https://github.com/ucsd-progsys/liquidhaskell/issues/1729
   - aeson < 2                           # required by pantry-0.5.2
   - base16-bytestring < 1               # required for cabal-install etc.
   - Cabal == 2.2.*                      # required for jailbreak-cabal etc.
