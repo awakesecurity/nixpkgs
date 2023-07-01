@@ -166,6 +166,7 @@ extra-packages:
   - weeder == 2.3.*                     # 2022-05-31: preserve for GHC 9.0.2
   - ghc-exactprint == 1.5.0             # 2022-10-06: newer versions of ghc-exactprint require ghc 9.4.2
   - fourmolu == 0.10.1.0                # 2023-04-18: for hls-fourmolu-plugin 1.1.1.0
+  - shake-cabal < 0.2.2.3               # 2023-07-01: last version to support Cabal 3.6.*
 
 package-maintainers:
   abbradar:
