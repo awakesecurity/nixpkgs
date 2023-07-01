@@ -152,6 +152,7 @@ extra-packages:
   - weeder == 2.3.*                     # 2022-05-31: preserve for GHC 9.0.2
   - brick == 0.70.*                     # 2022-08-13: needed by matterhorn-50200.17.0
   - fourmolu == 0.10.1.0                # 2023-04-18: for hls-fourmolu-plugin 1.1.1.0
+  - shake-cabal < 0.2.2.3               # 2023-07-01: last version to support Cabal 3.6.*
 
 package-maintainers:
   abbradar:
