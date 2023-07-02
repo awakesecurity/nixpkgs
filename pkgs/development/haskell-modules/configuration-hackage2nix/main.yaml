@@ -142,7 +142,7 @@ extra-packages:
   - ormolu == 0.2.*                     # 2022-02-21: For ghc 8.8 and 8.10
   - ormolu == 0.5.*                     # 2022-04-12: For ghc 9.4
   - pantry == 0.5.2.1                   # needed for stack-2.7.3
-  - resolv == 0.1.1.2                   # required to build cabal-install-3.0.0.0 with pre ghc-8.8.x
+  - resolv < 0.2                        # required to build cabal-install-3.10.1
   - sbv == 7.13                         # required for pkgs.petrinizer
   - crackNum < 3.0                      # 2021-05-21: 3.0 removed the lib which sbv 7.13 uses
   - ghc-api-compat == 8.6               # 2021-09-07: preserve for GHC 8.8.4
