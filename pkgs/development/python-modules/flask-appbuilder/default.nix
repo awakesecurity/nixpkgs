@@ -8,7 +8,7 @@
 , email-validator
 , flask
 , flask-babel
-, flask_login
+, flask-login
 , flask-openid
 , flask-sqlalchemy
 , flask-wtf
@@ -17,8 +17,8 @@
 , marshmallow
 , marshmallow-enum
 , marshmallow-sqlalchemy
-, pythonOlder
 , python-dateutil
+, pythonOlder
 , prison
 , pyjwt
 , pyyaml
@@ -59,8 +59,7 @@ buildPythonPackage rec {
     email-validator
     flask
     flask-babel
-    flask-jwt-extended
-    flask_login
+    flask-login
     flask-openid
     flask-sqlalchemy
     flask-wtf
@@ -88,10 +87,12 @@ buildPythonPackage rec {
   # Majority of tests require network access or mongo
   doCheck = false;
 
-  pythonImportsCheck = [ "flask_appbuilder" ];
+  pythonImportsCheck = [
+    "flask_appbuilder"
+  ];
 
   meta = with lib; {
-    description = "Simple and rapid application development framework, built on top of Flask";
+    description = "Application development framework, built on top of Flask";
     homepage = "https://github.com/dpgaspar/flask-appbuilder/";
     license = licenses.bsd3;
     maintainers = with maintainers; [ costrouc ];

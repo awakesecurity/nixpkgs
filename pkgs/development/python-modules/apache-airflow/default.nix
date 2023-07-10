@@ -20,7 +20,7 @@
 , deprecated
 , dill
 , flask
-, flask_login
+, flask-login
 , flask-appbuilder
 , flask-caching
 , flask-session
