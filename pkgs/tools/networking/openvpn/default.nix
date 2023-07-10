@@ -20,7 +20,7 @@ let
 
   generic = { version, sha256, extraBuildInputs ? [] }:
     let
-      withIpRoute = stdenv.isLinux && (versionOlder version "2.5.4");
+      withIpRoute = stdenv.isLinux && (versionOlder version "2.5");
     in
     stdenv.mkDerivation
       rec {
