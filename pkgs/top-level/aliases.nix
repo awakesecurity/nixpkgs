@@ -922,8 +922,7 @@ mapAliases ({
   portaudio2014 = throw "'portaudio2014' has been removed"; # Added 2022-05-10
 
   # postgresql
-  postgresql96 = throw "'postgresql96' has been renamed to/replaced by 'postgresql_9_6'"; # Converted to throw 2022-09-24
-  postgresql_9_6 = throw "postgresql_9_6 has been removed from nixpkgs, as this version is no longer supported by upstream"; # Added 2021-12-03
+  postgresql96 = postgresql_9_6;
 
   # postgresql plugins
   cstore_fdw = throw "'cstore_fdw' has been renamed to/replaced by 'postgresqlPackages.cstore_fdw'"; # Converted to throw 2022-09-24
