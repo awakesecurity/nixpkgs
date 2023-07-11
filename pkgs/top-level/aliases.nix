@@ -1004,7 +1004,6 @@ mapAliases ({
 
   # postgresql
   postgresql96 = postgresql_9_6;
-  postgresql_9_6 = throw "postgresql_9_6 has been removed from nixpkgs, as this version is no longer supported by upstream"; # Added 2021-12-03
 
   # postgresql plugins
   cstore_fdw = postgresqlPackages.cstore_fdw;
