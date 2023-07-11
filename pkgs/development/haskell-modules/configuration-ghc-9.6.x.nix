@@ -69,8 +69,12 @@ self: super: {
   assoc = doDistribute self.assoc_1_1;
   strict = doDistribute self.strict_0_5;
 
-  ghc-lib = doDistribute self.ghc-lib_9_6_1_20230312;
-  ghc-lib-parser = doDistribute self.ghc-lib-parser_9_6_1_20230312;
+  # Too strict upper bound on template-haskell
+  # https://github.com/mokus0/th-extras/pull/21
+  th-extras = doJailbreak super.th-extras;
+
+  ghc-lib = doDistribute self.ghc-lib_9_6_2_20230523;
+  ghc-lib-parser = doDistribute self.ghc-lib-parser_9_6_2_20230523;
   ghc-lib-parser-ex = doDistribute self.ghc-lib-parser-ex_9_6_0_0;
 
   #
