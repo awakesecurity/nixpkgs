@@ -144,14 +144,18 @@ self: super: builtins.intersectAttrs super {
   }) super.heist;
 
   # https://github.com/NixOS/cabal2nix/issues/136 and https://github.com/NixOS/cabal2nix/issues/216
-  gio = disableHardening ["fortify"] (addPkgconfigDepend pkgs.glib (addBuildTool self.buildHaskellPackages.gtk2hs-buildtools super.gio));
+  gio = lib.pipe super.gio
+    [ (disableHardening ["fortify"])
+      (addBuildTool self.buildHaskellPackages.gtk2hs-buildtools)
+    ];
   glib = disableHardening ["fortify"] (addPkgconfigDepend pkgs.glib (addBuildTool self.buildHaskellPackages.gtk2hs-buildtools super.glib));
   gtk3 = disableHardening ["fortify"] (super.gtk3.override { inherit (pkgs) gtk3; });
-  gtk = let gtk1 = addBuildTool self.buildHaskellPackages.gtk2hs-buildtools super.gtk;
-            gtk2 = addPkgconfigDepend pkgs.gtk2 gtk1;
-            gtk3 = disableHardening ["fortify"] gtk1;
-            gtk4 = if pkgs.stdenv.isDarwin then appendConfigureFlag "-fhave-quartz-gtk" gtk3 else gtk4;
-        in gtk3;
+  gtk = lib.pipe super.gtk (
+    [ (disableHardening ["fortify"])
+      (addBuildTool self.buildHaskellPackages.gtk2hs-buildtools)
+    ] ++
+    ( if pkgs.stdenv.isDarwin then [(appendConfigureFlag "-fhave-quartz-gtk")] else [] )
+  );
   gtksourceview2 = addPkgconfigDepend pkgs.gtk2 super.gtksourceview2;
   gtk-traymanager = addPkgconfigDepend pkgs.gtk3 super.gtk-traymanager;
 
