@@ -17,8 +17,8 @@
 , marshmallow
 , marshmallow-enum
 , marshmallow-sqlalchemy
-, python-dateutil
 , pythonOlder
+, python-dateutil
 , prison
 , pyjwt
 , pyyaml
@@ -88,12 +88,10 @@ buildPythonPackage rec {
   # Majority of tests require network access or mongo
   doCheck = false;
 
-  pythonImportsCheck = [
-    "flask_appbuilder"
-  ];
+  pythonImportsCheck = [ "flask_appbuilder" ];
 
   meta = with lib; {
-    description = "Application development framework, built on top of Flask";
+    description = "Simple and rapid application development framework, built on top of Flask";
     homepage = "https://github.com/dpgaspar/flask-appbuilder/";
     license = licenses.bsd3;
     maintainers = with maintainers; [ costrouc ];
