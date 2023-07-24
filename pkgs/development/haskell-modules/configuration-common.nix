@@ -50,15 +50,15 @@ self: super: {
           # not solvable short of recompiling GHC. Instead of adding
           # allowInconsistentDependencies for all reverse dependencies of hspec-core,
           # just upgrade to an hspec version without the offending dependency.
-          hspec-core = cself.hspec-core_2_11_0;
-          hspec-discover = cself.hspec-discover_2_11_0;
-          hspec = cself.hspec_2_11_0;
+          hspec-core = cself.hspec-core_2_11_4;
+          hspec-discover = cself.hspec-discover_2_11_4;
+          hspec = cself.hspec_2_11_4;
 
           # hspec-discover and hspec-core depend on hspec-meta for testing which
           # we need to avoid since it depends on ghc as well. Since hspec*_2_10*
           # are overridden to take the versioned attributes as inputs, we need
           # to make sure to override the versioned attribute with this fix.
-          hspec-discover_2_11_0 = dontCheck csuper.hspec-discover_2_11_0;
+          hspec-discover_2_11_4 = dontCheck csuper.hspec-discover_2_11_4;
 
           # Prevent dependency on doctest which causes an inconsistent dependency
           # due to depending on ghc-8.10.7 (with bundled process) vs. process 1.6.16.0
@@ -247,6 +247,35 @@ self: super: {
   ghc-heap-view = disableLibraryProfiling super.ghc-heap-view;
   ghc-datasize = disableLibraryProfiling super.ghc-datasize;
   ghc-vis = disableLibraryProfiling super.ghc-vis;
+
+  # Waiting for the commit being fetched as a patch to get a release.
+  espial = appendPatch (fetchpatch {
+    url = "https://github.com/jonschoning/espial/commit/70375db7e245207b3572779288eade3252c4d9e3.patch";
+    sha256 = "sha256-fto8fdFbZkzn7dwCCsGw+j+5HSvEvyvU5VzYDn4F2G8=";
+    excludes = ["*.yaml" "*.lock" "*.json"];
+  }) super.espial;
+
+  # 2023-06-10: Too strict version bound on https://github.com/haskell/ThreadScope/issues/118
+  threadscope = doJailbreak super.threadscope;
+
+  patat = appendPatches [
+    # patat main branch has an unreleased commit that fixes the build by
+    # relaxing restrictive upper boundaries. This can be removed once there's a
+    # new release following version 0.8.8.0.
+    (fetchpatch {
+    url = "https://github.com/jaspervdj/patat/commit/be9e0fe5642ba6aa7b25705ba17950923e9951fa.patch";
+    sha256 = "sha256-Vxxi46qrkIyzYQZ+fe1vNTPldcQEI2rX2H40GvFJR2M=";
+    excludes = ["stack.yaml" "stack.yaml.lock"];
+    })
+    # Patching with a commit bumping dependencies that's not released to hackage yet.
+    (fetchpatch {
+    url = "https://github.com/jaspervdj/patat/commit/b4c5a7e641b813ef1c34821984a9e897f4ecf84e.patch";
+    sha256 = "sha256-01xdlN3r3p/r8TwAzbcWoTMIBesGvL8HZcXJRDZyWQM=";
+    excludes = ["stack.yaml" "stack.yaml.lock"];
+    })
+    # Overriding the version pandoc dependency uses as the latest release has version bounds
+    # defined as >= 3.1  && < 3.2, can be removed once pandoc gets bumped by Stackage.
+  ] (super.patat.override { pandoc = self.pandoc_3_1_6; });
 
   # The latest release on hackage has an upper bound on containers which
   # breaks the build, though it works with the version of containers present
@@ -1836,19 +1865,23 @@ self: super: {
   # https://github.com/biocad/servant-openapi3/issues/30
   servant-openapi3 = dontCheck super.servant-openapi3;
 
-  # Give hspec 2.10.* correct dependency versions without overrideScope
-  hspec_2_11_0 = doDistribute (super.hspec_2_11_0.override {
-    hspec-discover = self.hspec-discover_2_11_0;
-    hspec-core = self.hspec-core_2_11_0;
+  # Give latest hspec correct dependency versions without overrideScope
+  hspec_2_11_4 = doDistribute (super.hspec_2_11_4.override {
+    hspec-discover = self.hspec-discover_2_11_4;
+    hspec-core = self.hspec-core_2_11_4;
   });
-  hspec-discover_2_11_0 = doDistribute (super.hspec-discover_2_11_0.override {
-    hspec-meta = self.hspec-meta_2_10_5;
-  });
-  # Need to disable tests to prevent an infinite recursion if hspec-core_2_11_0
+  hspec-discover_2_11_4 = doDistribute super.hspec-discover_2_11_4;
+  # Need to disable tests to prevent an infinite recursion if hspec-core_2_11_4
   # is overlayed to hspec-core.
-  hspec-core_2_11_0 = doDistribute (dontCheck (super.hspec-core_2_11_0.override {
-    hspec-meta = self.hspec-meta_2_10_5;
-  });
+  hspec-core_2_11_4 = doDistribute (dontCheck (super.hspec-core_2_11_4.override {
+    hspec-expectations = self.hspec-expectations_0_8_4;
+  }));
+
+  # Point hspec 2.7.10 to correct dependencies
+  hspec_2_7_10 = super.hspec_2_7_10.override {
+    hspec-discover = self.hspec-discover_2_7_10;
+    hspec-core = self.hspec-core_2_7_10;
+  };
 
   # waiting for aeson bump
   servant-swagger-ui-core = doJailbreak super.servant-swagger-ui-core;
@@ -2014,6 +2047,59 @@ self: super: {
 
   # https://github.com/jgm/pandoc/issues/7163
   pandoc = dontCheck super.pandoc;
+
+  # Since pandoc-3, the actual `pandoc` executable is in the pandoc-cli
+  # package.  It is no longer distributed in the pandoc package itself.  So for
+  # people that want to use the `pandoc` cli tool, they must use pandoc-cli.
+  #
+  # The unfortunate thing is that LTS-21 includes no possible build plan for
+  # pandoc-cli, because pandoc-cli pandoc-lua-engine are not in LTS 21.
+  # To get pandoc-lua-engine building we need either to downgrade a ton
+  # of hslua-module-* packages from stackage or use pandoc 3.1 although
+  # LTS contains pandoc 3.0.
+  inherit (let
+    pandoc-cli-overlay = self: super: {
+      # pandoc-cli requires pandoc >= 3.1
+      pandoc = self.pandoc_3_1_6;
+
+      # pandoc depends on crypton-connection, which requires tls >= 1.7
+      tls = self.tls_1_7_0;
+
+      # pandoc depends on http-client-tls, which only starts depending
+      # on crypton-connection in http-client-tls-0.3.6.2.
+      http-client-tls = self.http-client-tls_0_3_6_2;
+    };
+  in {
+    pandoc-cli = super.pandoc-cli.overrideScope pandoc-cli-overlay;
+    pandoc_3_1_6 = doDistribute (super.pandoc_3_1_6.overrideScope pandoc-cli-overlay);
+    pandoc-lua-engine = super.pandoc-lua-engine.overrideScope pandoc-cli-overlay;
+  })
+    pandoc-cli
+    pandoc_3_1_6
+    pandoc-lua-engine
+    ;
+
+  crypton-x509 =
+    lib.pipe
+      super.crypton-x509
+      [
+        # Mistype in a dependency in a test.
+        # https://github.com/kazu-yamamoto/crypton-certificate/pull/3
+        (appendPatch
+          (fetchpatch {
+            name = "crypton-x509-rename-dep.patch";
+            url = "https://github.com/kazu-yamamoto/crypton-certificate/commit/5281ff115a18621407b41f9560fd6cd65c602fcc.patch";
+            hash = "sha256-pLzuq+baSDn+MWhtYIIBOrE1Js+tp3UsaEZy5MhWAjY=";
+            relative = "x509";
+          })
+        )
+        # There is a revision in crypton-x509, so the above patch won't
+        # apply because of line endings in revised .cabal files.
+        (overrideCabal {
+           editedCabalFile = null;
+           revision = null;
+        })
+      ];
 
   # * doctests don't work without cabal
   #   https://github.com/noinia/hgeometry/issues/132
