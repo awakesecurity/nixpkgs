@@ -21,7 +21,6 @@
 , withGnome ? true
 , gcr_4
 , glib
-, substituteAll
 , lib
 }:
 

@@ -10,7 +10,6 @@
 , useSystemd ? lib.meta.availableOn stdenv.hostPlatform systemd
 , systemd
 , update-systemd-resolved
-, util-linux
 , pkcs11Support ? false
 , pkcs11helper
 }:
