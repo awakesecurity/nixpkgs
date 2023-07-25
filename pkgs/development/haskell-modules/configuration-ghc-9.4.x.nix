@@ -79,6 +79,8 @@ in {
   hashable = super.hashable_1_4_1_0;
   hashable-time = doJailbreak super.hashable-time;
   libmpd = doJailbreak super.libmpd;
+  lens-family-th = doJailbreak super.lens-family-th;  # template-haskell <2.19
+
   # generically needs base-orphans for 9.4 only
   base-orphans = dontCheck (doDistribute super.base-orphans);
 
@@ -94,6 +96,11 @@ in {
   type-equality = doJailbreak super.type-equality;
   unordered-containers = doJailbreak super.unordered-containers;
   vector = dontCheck super.vector;
+
+  # Cherry-pick GHC 9.4 changes from hnix master branch
+  hnix = appendPatches [
+    ./patches/hnix-compat-for-ghc-9.4.patch
+  ] (doJailbreak super.hnix);
 
   hpack = overrideCabal (drv: {
     # Cabal 3.6 seems to preserve comments when reading, which makes this test fail
