@@ -5,6 +5,7 @@
 , libpcap
 , openssl
 , bash
+, nixosTests
 }:
 
 stdenv.mkDerivation rec {
