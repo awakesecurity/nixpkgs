@@ -1,4 +1,11 @@
-{ lib, stdenv, rustPlatform, fetchFromGitHub, fetchzip, androidenv, makeWrapper }:
+{ lib
+, stdenv
+, rustPlatform
+, fetchFromGitHub
+, fetchzip
+, androidenv
+, makeWrapper
+}:
 let
 version = "2.5";
 apk = stdenv.mkDerivation {
@@ -52,4 +59,3 @@ rustPlatform.buildRustPackage {
     platforms = platforms.unix;
   };
 }
-

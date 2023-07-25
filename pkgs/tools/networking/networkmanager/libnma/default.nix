@@ -20,7 +20,6 @@
 , withGnome ? true
 , gcr
 , glib
-, substituteAll
 , lib
 }:
 
