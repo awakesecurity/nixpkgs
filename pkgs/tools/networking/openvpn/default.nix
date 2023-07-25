@@ -9,7 +9,6 @@
 , useSystemd ? stdenv.isLinux
 , systemd
 , update-systemd-resolved
-, util-linux
 , pkcs11Support ? false
 , pkcs11helper
 }:
