@@ -1,4 +1,4 @@
-{ fetchurl, lib, stdenv, fetchpatch }:
+{ lib, autoreconfHook, pkg-config, fetchpatch, fetchurl, stdenv, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   pname = "nss-mdns";
@@ -14,7 +14,8 @@ stdenv.mkDerivation rec {
   # hand-written D-Bus code to talk to the Avahi daemon.
 
   configureFlags =
-    [ # Try to use the Avahi daemon before resolving on our own.
+    [
+      # Try to use the Avahi daemon before resolving on our own.
       "--enable-avahi"
 
       # Connect to the daemon at `/var/run/avahi-daemon/socket'.
