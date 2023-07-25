@@ -13,7 +13,6 @@
 # package without splicing See: https://github.com/NixOS/nixpkgs/pull/107606
 , pkgs
 , fetchurl
-, fetchpatch
 , zlib
 , openssl
 , libedit
@@ -169,9 +168,9 @@ stdenv.mkDerivation rec {
     description = "An implementation of the SSH protocol${extraDesc}";
     homepage = "https://www.openssh.com/";
     changelog = "https://www.openssh.com/releasenotes.html";
-    license = licenses.bsd2;
-    platforms = platforms.unix ++ platforms.windows;
-    maintainers = (extraMeta.maintainers or []) ++ (with maintainers; [ eelco aneeshusa ]);
+    license = lib.licenses.bsd2;
+    platforms = lib.platforms.unix ++ lib.platforms.windows;
+    maintainers = (extraMeta.maintainers or []) ++ (with lib.maintainers; [ eelco aneeshusa ]);
     mainProgram = "ssh";
   } // extraMeta;
 }
