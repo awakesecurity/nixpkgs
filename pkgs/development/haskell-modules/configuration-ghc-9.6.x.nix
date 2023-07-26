@@ -139,4 +139,149 @@ self: super: {
   # Test suite doesn't compile with base-4.18 / GHC 9.6
   # https://github.com/dreixel/syb/issues/40
   syb = dontCheck super.syb;
+
+  # Support for template-haskell >= 2.16
+  language-haskell-extract = appendPatch (pkgs.fetchpatch {
+    url = "https://gitlab.haskell.org/ghc/head.hackage/-/raw/dfd024c9a336c752288ec35879017a43bd7e85a0/patches/language-haskell-extract-0.2.4.patch";
+    sha256 = "0w4y3v69nd3yafpml4gr23l94bdhbmx8xky48a59lckmz5x9fgxv";
+  }) (doJailbreak super.language-haskell-extract);
+
+  # Patch for support of mtl-2.3
+  monad-par = appendPatch
+    (pkgs.fetchpatch {
+      name = "monad-par-mtl-2.3.patch";
+      url = "https://github.com/simonmar/monad-par/pull/75/commits/ce53f6c1f8246224bfe0223f4aa3d077b7b6cc6c.patch";
+      sha256 = "1jxkl3b3lkjhk83f5q220nmjxbkmni0jswivdw4wfbzp571djrlx";
+      stripLen = 1;
+    })
+    (doJailbreak super.monad-par);
+
+  # Patch 0.17.1 for support of mtl-2.3
+  xmonad-contrib = appendPatch
+    (pkgs.fetchpatch {
+      name = "xmonad-contrib-mtl-2.3.patch";
+      url = "https://github.com/xmonad/xmonad-contrib/commit/8cb789af39e93edb07f1eee39c87908e0d7c5ee5.patch";
+      sha256 = "sha256-ehCvVy0N2Udii/0K79dsRSBP7/i84yMoeyupvO8WQz4=";
+    })
+    (doJailbreak super.xmonad-contrib);
+
+  # Patch 0.12.0.1 for support of unix-2.8.0.0
+  arbtt = appendPatch
+    (pkgs.fetchpatch {
+      name = "arbtt-unix-2.8.0.0.patch";
+      url = "https://github.com/nomeata/arbtt/pull/168/commits/ddaac94395ac50e3d3cd34c133dda4a8e5a3fd6c.patch";
+      sha256 = "sha256-5Gmz23f4M+NfgduA5O+9RaPmnneAB/lAlge8MrFpJYs=";
+    })
+    super.arbtt;
+
+  # 2023-04-03: plugins disabled for hls 1.10.0.0 based on
+  #
+  haskell-language-server =
+    let
+      # TODO: HLS-2.0.0.0 added support for the foumolu plugin for ghc-9.6.
+      # However, putting together all the overrides to get the latest
+      # version of fourmolu compiling together with ghc-9.6 and HLS is a
+      # little annoying, so currently fourmolu has been disabled.  We should
+      # try to enable this at some point in the future.
+      hlsWithFlags = disableCabalFlag "fourmolu" super.haskell-language-server;
+    in
+    hlsWithFlags.override {
+      hls-ormolu-plugin = null;
+      hls-floskell-plugin = null;
+      hls-fourmolu-plugin = null;
+      hls-hlint-plugin = null;
+      hls-stylish-haskell-plugin = null;
+    };
+
+  # Newer version of servant required for GHC 9.6
+  servant = self.servant_0_20;
+  servant-server = self.servant-server_0_20;
+  servant-client = self.servant-client_0_20;
+  servant-client-core = self.servant-client-core_0_20;
+  # Select versions compatible with servant_0_20
+  servant-docs = self.servant-docs_0_13;
+  servant-swagger = self.servant-swagger_1_2;
+  # Jailbreaks for servant <0.20
+  servant-lucid = doJailbreak super.servant-lucid;
+
+  # Jailbreak strict upper bounds: http-api-data <0.6
+  servant_0_20 = doJailbreak super.servant_0_20;
+  servant-server_0_20 = doJailbreak super.servant-server_0_20;
+  servant-client_0_20 = doJailbreak super.servant-client_0_20;
+  servant-client-core_0_20 = doJailbreak super.servant-client-core_0_20;
+  # Jailbreak strict upper bounds: doctest <0.22
+  servant-swagger_1_2 = doJailbreak super.servant-swagger_1_2;
+
+  lifted-base = dontCheck super.lifted-base;
+  hw-fingertree = dontCheck super.hw-fingertree;
+  hw-prim = dontCheck (doJailbreak super.hw-prim);
+  stm-containers = dontCheck super.stm-containers;
+  regex-tdfa = dontCheck super.regex-tdfa;
+  rebase = doJailbreak super.rebase_1_20;
+  rerebase = doJailbreak super.rerebase_1_20;
+  hiedb = dontCheck super.hiedb;
+  retrie = dontCheck super.retrie;
+  # https://github.com/kowainik/relude/issues/436
+  relude = dontCheck (doJailbreak super.relude);
+
+  ghc-exactprint = unmarkBroken (addBuildDepends (with self.ghc-exactprint.scope; [
+   HUnit Diff data-default extra fail free ghc-paths ordered-containers silently syb
+  ]) super.ghc-exactprint_1_7_0_1);
+
+  inherit (pkgs.lib.mapAttrs (_: doJailbreak ) super)
+    hls-cabal-plugin
+    algebraic-graphs
+    co-log-core
+    lens
+    cryptohash-sha1
+    cryptohash-md5
+    ghc-trace-events
+    tasty-hspec
+    constraints-extras
+    tree-diff
+    implicit-hie-cradle
+    focus
+    hie-compat
+    dbus       # template-haskell >=2.18 && <2.20, transformers <0.6, unix <2.8
+    gi-cairo-connector          # mtl <2.3
+    haskintex                   # text <2
+    lens-family-th              # template-haskell <2.19
+    ghc-prof                    # base <4.18
+    profiteur                   # vector <0.13
+    mfsolve                     # mtl <2.3
+    cubicbezier                 # mtl <2.3
+    dhall                       # template-haskell <2.20
+    env-guard                   # doctest <0.21
+    package-version             # doctest <0.21, tasty-hedgehog <1.4
+  ;
+
+  # Avoid triggering an issue in ghc-9.6.2
+  gi-gtk = disableParallelBuilding super.gi-gtk;
+
+  # Pending text-2.0 support https://github.com/gtk2hs/gtk2hs/issues/327
+  gtk = doJailbreak super.gtk;
+
+  # Doctest comments have bogus imports.
+  bsb-http-chunked = dontCheck super.bsb-http-chunked;
+
+  # Fix ghc-9.6.x build errors.
+  libmpd = appendPatch
+    (pkgs.fetchpatch { url = "https://github.com/vimus/libmpd-haskell/pull/138.patch";
+                       sha256 = "sha256-CvvylXyRmoCoRJP2MzRwL0SBbrEzDGqAjXS+4LsLutQ=";
+                     })
+    super.libmpd;
+
+  # Apply patch from PR with mtl-2.3 fix.
+  ConfigFile = overrideCabal (drv: {
+    editedCabalFile = null;
+    buildDepends = drv.buildDepends or [] ++ [ self.HUnit ];
+    patches = [(pkgs.fetchpatch {
+      name = "ConfigFile-pr-12.patch";
+      url = "https://github.com/jgoerzen/configfile/pull/12.patch";
+      sha256 = "sha256-b7u9GiIAd2xpOrM0MfILHNb6Nt7070lNRIadn2l3DfQ=";
+    })];
+  }) super.ConfigFile;
+
+  # The curl executable is required for withApplication tests.
+  warp_3_3_28 = addTestToolDepend pkgs.curl super.warp_3_3_28;
 }
