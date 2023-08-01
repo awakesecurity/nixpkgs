@@ -11958,6 +11958,8 @@ self: super: with self; {
 
   pymfy = callPackage ../development/python-modules/pymfy { };
 
+  pymisp = callPackage ../development/python-modules/pymisp { };
+
   pymodbus = callPackage ../development/python-modules/pymodbus { };
 
   pymongo = callPackage ../development/python-modules/pymongo { };
