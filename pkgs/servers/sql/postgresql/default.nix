@@ -9,6 +9,7 @@ let
       # This is important to obtain a version of `libpq` that does not depend on systemd.
       , enableSystemd ? !stdenv.isDarwin && !stdenv.hostPlatform.isStatic
       , gssSupport ? with stdenv.hostPlatform; !isWindows && !isStatic
+      , withPython ? null
 
       # for postgresql.pkgs
       , this, self, newScope, buildEnv
@@ -49,6 +50,7 @@ let
       ++ lib.optionals zstdEnabled [ zstd ]
       ++ lib.optionals enableSystemd [ systemd ]
       ++ lib.optionals gssSupport [ libkrb5 ]
+      ++ lib.optionals (withPython != null) [ withPython ]
       ++ lib.optionals (!stdenv.isDarwin) [ libossp_uuid ];
 
     nativeBuildInputs = [
@@ -80,6 +82,7 @@ let
     ] ++ lib.optionals lz4Enabled [ "--with-lz4" ]
       ++ lib.optionals zstdEnabled [ "--with-zstd" ]
       ++ lib.optionals gssSupport [ "--with-gssapi" ]
+      ++ lib.optionals (withPython != null) [ "--with-python" ]
       ++ lib.optionals stdenv.hostPlatform.isRiscV [ "--disable-spinlocks" ];
 
     patches = [
