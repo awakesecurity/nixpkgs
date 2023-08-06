@@ -8,19 +8,12 @@
 , mysql_jdbc
 , postgresqlSupport ? true
 , postgresql_jdbc
-, redshiftSupport ? true
-, redshift_jdbc
-, liquibase_redshift_extension
 }:
 
 let
   extraJars =
     lib.optional mysqlSupport mysql_jdbc
-    ++ lib.optional postgresqlSupport postgresql_jdbc
-    ++ lib.optionals redshiftSupport [
-      redshift_jdbc
-      liquibase_redshift_extension
-    ];
+    ++ lib.optional postgresqlSupport postgresql_jdbc;
 in
 
 stdenv.mkDerivation rec {
