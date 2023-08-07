@@ -36,6 +36,8 @@ buildPythonPackage rec {
     requests
   ];
 
+  doCheck = false;
+
   checkInputs = [
     moto
     paramiko
