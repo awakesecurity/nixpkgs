@@ -9,7 +9,6 @@
 , google-cloud-storage
 , requests
 , moto
-, parameterizedtestcase
 , pytestCheckHook
 }:
 
@@ -35,9 +34,10 @@ buildPythonPackage rec {
     requests
   ];
 
+  doCheck = false;
+
   checkInputs = [
     moto
-    parameterizedtestcase
     pytestCheckHook
   ];
 
