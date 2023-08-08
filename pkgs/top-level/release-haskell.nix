@@ -56,6 +56,7 @@ let
     ghc925
     ghc928
     ghc945
+    ghc946
   ];
 
   # packagePlatforms applied to `haskell.packages.*`
@@ -393,6 +394,7 @@ let
       spectacle = [
         compilerNames.ghc8107
         compilerNames.ghc945
+        compilerNames.ghc946
       ];
       weeder = [
         compilerNames.ghc8107
