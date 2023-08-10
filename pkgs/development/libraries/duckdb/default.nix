@@ -13,10 +13,13 @@
 
 let
   enableFeature = yes: if yes then "ON" else "OFF";
-in
-stdenv.mkDerivation rec {
+
   pname = "duckdb";
+
   version = "0.3.3";
+in
+stdenv.mkDerivation {
+  inherit pname version;
 
   src = fetchFromGitHub {
     owner = pname;
