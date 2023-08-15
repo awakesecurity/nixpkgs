@@ -188,6 +188,9 @@ in {
   inherit (callPackage ../development/java-modules/apache/ant-launcher.nix { inherit fetchMaven; })
     antLauncher_1_8_2;
 
+  inherit (callPackage ../development/java-modules/assertj { inherit fetchMaven; })
+    assertjCore_1_7_1;
+
   inherit (callPackage ../development/java-modules/beanshell/bsh.nix { inherit fetchMaven; })
     bsh_2_0_b4;
 
