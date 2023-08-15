@@ -195,6 +195,9 @@ in {
     classworlds_1_1_alpha2
     classworlds_1_1;
 
+  inherit (callPackage ../development/java-modules/cglib { inherit fetchMaven; })
+    cglib_2_2_2;
+
   inherit (callPackage ../development/java-modules/apache/commons-cli.nix { inherit fetchMaven; })
     commonsCli_1_0
     commonsCli_1_2;
