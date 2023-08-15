@@ -292,6 +292,9 @@ in {
     mavenHello_1_0
     mavenHello_1_1;
 
+  inherit (callPackage ../development/java-modules/mockito { inherit fetchMaven; })
+    mockitoAll_1_10_19;
+
   inherit (callPackage ../development/java-modules/maven/model.nix { inherit fetchMaven; })
     mavenModel_2_0_1
     mavenModel_2_0_6
