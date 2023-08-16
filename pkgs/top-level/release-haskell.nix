@@ -404,10 +404,19 @@ let
         compilerNames.ghc924
         compilerNames.ghc925
         compilerNames.ghc926
-        compilerNames.ghc944
+        compilerNames.ghc927
+        compilerNames.ghc928
+        compilerNames.ghc945
+        compilerNames.ghc946
+        compilerNames.ghc962
       ];
       spectacle = [
         compilerNames.ghc8107
+        compilerNames.ghc927
+        compilerNames.ghc928
+        compilerNames.ghc945
+        compilerNames.ghc946
+        compilerNames.ghc962
       ];
       hashable = released;
       primitive = released;
