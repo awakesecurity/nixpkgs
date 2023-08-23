@@ -4,7 +4,8 @@
 }:
 
 { src
-, patches ? []
+, sourceRoot ? null
+, patches ? [ ]
 , pname
 , version
 , mvnHash ? ""
@@ -19,7 +20,7 @@
 let
   fetchedMavenDeps = stdenv.mkDerivation ({
     name = "${pname}-${version}-maven-deps";
-    inherit src patches;
+    inherit src sourceRoot patches;
 
     nativeBuildInputs = [
       maven
