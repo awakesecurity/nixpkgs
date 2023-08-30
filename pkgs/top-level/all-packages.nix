@@ -2400,6 +2400,8 @@ with pkgs;
 
   madlang = haskell.lib.compose.justStaticExecutables haskellPackages.madlang;
 
+  mailsend-go = callPackage ../tools/networking/mailsend-go { };
+
   man = man-db;
 
   marimo = with python3Packages; toPythonApplication marimo;
