@@ -3537,6 +3537,8 @@ with pkgs;
   };
   mailnagWithPlugins = mailnag.withPlugins (builtins.attrValues mailnag.availablePlugins);
 
+  mailsend-go = callPackage ../tools/networking/mailsend-go { };
+
   man = man-db;
 
   mangohud = callPackage ../tools/graphics/mangohud {
