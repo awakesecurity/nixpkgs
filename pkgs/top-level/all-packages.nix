@@ -3705,6 +3705,8 @@ with pkgs;
     libtool = if stdenv.hostPlatform.isDarwin then cctools else libtool;
   };
 
+  mailsend-go = callPackage ../tools/networking/mailsend-go { };
+
   man = man-db;
 
   mangohud = callPackage ../tools/graphics/mangohud {
