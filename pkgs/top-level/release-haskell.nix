@@ -53,7 +53,14 @@ let
     ghc8107
     ghc902
     ghc924
-    ghc942
+    ghc925
+    ghc926
+    ghc927
+    ghc928
+    ghc945
+    ghc946
+    ghc947
+    ghc962
   ];
 
   # packagePlatforms applied to `haskell.packages.*`
@@ -408,6 +415,7 @@ let
         compilerNames.ghc928
         compilerNames.ghc945
         compilerNames.ghc946
+        compilerNames.ghc947
         compilerNames.ghc962
       ];
       spectacle = [
@@ -424,6 +432,15 @@ let
         compilerNames.ghc8107
         compilerNames.ghc902
         compilerNames.ghc924
+        compilerNames.ghc925
+        compilerNames.ghc926
+        compilerNames.ghc927
+        compilerNames.ghc928
+        compilerNames.ghc945
+        compilerNames.ghc946
+        compilerNames.ghc947
+        compilerNames.ghc962
+        compilerNames.ghc963
       ];
       purescript = [
         compilerNames.ghc8107
