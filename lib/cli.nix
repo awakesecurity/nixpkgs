@@ -61,11 +61,22 @@ rec {
     # and `mkOption` is applied to the values themselves.
     mkList ? k: v: lib.concatMap (mkOption k) v,
 
+    # any preprocessing of an attribute value of type "override"
+    # before we attempt to convert it to a command line option;
+    # by default we extract its "content" attribute.
+    #
+    # See also the mention of this attribute in the comments for `mkOption`.
+    unwrapOverride ? v: v.content,
+
     # how to format any remaining value to a command list;
     # on the toplevel, booleans and lists are handled by `mkBool` and `mkList`,
     # though they can still appear as values of a list.
     # By default, everything is printed verbatim and complex types
     # are forbidden (lists, attrsets, functions). `null` values are omitted.
+    #
+    # NOTE: If you modify this attribute to support attrsets that might
+    # have a "_type" attribute named "override", then consider whether
+    # to also specify a non-default value for `unwrapOverride`.
     mkOption ?
       k: v: if v == null
             then []
@@ -73,10 +84,15 @@ rec {
     }:
     options:
       let
-        render = k: v:
-          if      builtins.isBool v then mkBool k v
-          else if builtins.isList v then mkList k v
-          else mkOption k v;
+        render = k: raw:
+          let
+            v = if lib.isType "override" raw
+                then unwrapOverride raw
+                else raw;
+          in
+            if      builtins.isBool v then mkBool k v
+            else if builtins.isList v then mkList k v
+            else mkOption k v;
 
       in
         builtins.concatLists (lib.mapAttrsToList render options);
