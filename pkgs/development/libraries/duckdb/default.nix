@@ -15,7 +15,7 @@
 let
   enableFeature = yes: if yes then "ON" else "OFF";
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "duckdb";
   version = "0.6.1";
 
