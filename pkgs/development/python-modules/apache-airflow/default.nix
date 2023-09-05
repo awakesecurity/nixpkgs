@@ -11,15 +11,20 @@
 , cattrs
 , clickclick
 , colorlog
+, configupdater
+, connexion
+, cron-descriptor
 , croniter
 , cryptography
 , dataclasses
+, deprecated
 , dill
 , flask
 , flask_login
-, flask-wtf
 , flask-appbuilder
 , flask-caching
+, flask-session
+, flask_wtf
 , GitPython
 , graphviz
 , gunicorn
@@ -32,13 +37,16 @@
 , jinja2
 , jsonschema
 , lazy-object-proxy
+, linkify-it-py
 , lockfile
 , markdown
 , markupsafe
 , marshmallow-oneofschema
+, mdit-py-plugins
 , numpy
 , openapi-spec-validator
 , pandas
+, pathspec
 , pendulum
 , psutil
 , pygments
@@ -58,6 +66,7 @@
 , tabulate
 , tenacity
 , termcolor
+, typing-extensions
 , unicodecsv
 , werkzeug
 , pytestCheckHook
@@ -69,13 +78,15 @@
 , enabledProviders ? []
 }:
 let
-  version = "2.3.3";
+  version = "2.4.1";
 
   airflow-src = fetchFromGitHub rec {
     owner = "apache";
     repo = "airflow";
     rev = "refs/tags/${version}";
-    sha256 = "sha256-N+6ljfSo6+UvSAnvDav6G0S49JZ1VJwxmaiKPV3/DjA=";
+    # Required because the GitHub archive tarballs don't appear to include tests
+    leaveDotGit = true;
+    sha256 = "sha256-HpPL/ocV7hRhYXsjfXMYvlP83Vh15kXyjBgubsaqaE8=";
   };
 
   # airflow bundles a web interface, which is built using webpack by an undocumented shell script in airflow's source tree.
@@ -90,6 +101,12 @@ let
     yarnNix = ./yarn.nix;
 
     distPhase = "true";
+
+    # The webpack license plugin tries to create /licenses when given the
+    # original relative path
+    postPatch = ''
+      sed -i 's!../../../../licenses/LICENSES-ui.txt!licenses/LICENSES-ui.txt!' webpack.config.js
+    '';
 
     configurePhase = ''
       cp -r $node_modules node_modules
@@ -130,14 +147,19 @@ buildPythonPackage rec {
     cattrs
     clickclick
     colorlog
+    configupdater
+    connexion
+    cron-descriptor
     croniter
     cryptography
+    deprecated
     dill
     flask
     flask-appbuilder
     flask-caching
+    flask-session
+    flask_wtf
     flask_login
-    flask-wtf
     GitPython
     graphviz
     gunicorn
@@ -149,13 +171,16 @@ buildPythonPackage rec {
     jinja2
     jsonschema
     lazy-object-proxy
+    linkify-it-py
     lockfile
     markdown
     markupsafe
     marshmallow-oneofschema
+    mdit-py-plugins
     numpy
     openapi-spec-validator
     pandas
+    pathspec
     pendulum
     psutil
     pygments
@@ -174,6 +199,7 @@ buildPythonPackage rec {
     tabulate
     tenacity
     termcolor
+    typing-extensions
     unicodecsv
     werkzeug
   ] ++ lib.optionals (pythonOlder "3.7") [
@@ -198,27 +224,7 @@ buildPythonPackage rec {
 
   postPatch = ''
     substituteInPlace setup.cfg \
-      --replace "attrs>=20.0, <21.0" "attrs" \
-      --replace "cattrs~=1.1, <1.7.0" "cattrs" \
-      --replace "colorlog>=4.0.2, <6.0" "colorlog" \
-      --replace "croniter>=0.3.17, <1.1" "croniter" \
-      --replace "docutils<0.17" "docutils" \
-      --replace "flask-login>=0.3, <0.5" "flask-login" \
-      --replace "flask-wtf>=0.14.3, <0.15" "flask-wtf" \
-      --replace "flask>=1.1.0, <2.0" "flask" \
-      --replace "importlib_resources~=1.4" "importlib_resources" \
-      --replace "itsdangerous>=1.1.0, <2.0" "itsdangerous" \
-      --replace "markupsafe>=1.1.1, <2.0" "markupsafe" \
-      --replace "pyjwt<2" "pyjwt" \
-      --replace "python-slugify>=3.0.0,<5.0" "python-slugify" \
-      --replace "sqlalchemy_jsonfield~=1.0" "sqlalchemy-jsonfield" \
-      --replace "tenacity~=6.2.0" "tenacity" \
-      --replace "werkzeug~=1.0, >=1.0.1" "werkzeug"
-
-    substituteInPlace tests/core/test_core.py \
-      --replace "/bin/bash" "${stdenv.shell}"
       --replace "colorlog>=4.0.2, <5.0" "colorlog" \
-      --replace "flask-login>=0.6.2" "flask-login" \
       --replace "pathspec~=0.9.0" "pathspec"
   '' + lib.optionalString stdenv.isDarwin ''
     # Fix failing test on Hydra
@@ -290,8 +296,6 @@ buildPythonPackage rec {
     description = "Programmatically author, schedule and monitor data pipelines";
     homepage = "https://airflow.apache.org/";
     license = licenses.asl20;
-    maintainers = with maintainers; [ bhipple costrouc ingenieroariel ];
-    # requires extremely outdated versions of multiple dependencies
-    broken = true;
+    maintainers = with maintainers; [ bhipple gbpdt ingenieroariel ];
   };
 }
