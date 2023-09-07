@@ -1,4 +1,5 @@
 { lib
+, stdenv
 , python3
 , groff
 , less
@@ -22,6 +23,9 @@ let
           inherit version;
           sha256 = "sha256-uF0FZ7hmYUmpMXJxLmiSBzQzPAzn6Jt4s+mH9x5e1Pk=";
         };
+      });
+      twisted = super.twisted.overridePythonAttrs (o: {
+        doCheck = stdenv.hostPlatform.isLinux;
       });
     };
   };
