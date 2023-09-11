@@ -2272,7 +2272,6 @@ dont-distribute-packages:
  - huzzy
  - hw-all
  - hw-aws-sqs-conduit
- - hw-json
  - hw-json-demo
  - hw-json-lens
  - hw-uri

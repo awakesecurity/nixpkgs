@@ -3,7 +3,6 @@
 
 pkgs/applications/editors/emacs-modes/*-generated.nix linguist-generated
 pkgs/development/r-modules/*-packages.nix linguist-generated
-pkgs/development/haskell-modules/hackage-packages.nix linguist-generated
 pkgs/development/beam-modules/hex-packages.nix linguist-generated
 
 doc/** linguist-documentation

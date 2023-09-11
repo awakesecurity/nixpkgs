@@ -498,7 +498,6 @@ broken-packages:
   - byline
   - bytearray-parsing
   - bytestring-aeson-orphans
-  - bytestring-arbitrary
   - bytestring-class
   - bytestring-csv
   - bytestring-delta
@@ -958,7 +957,6 @@ broken-packages:
   - data-construction
   - data-constructors
   - data-dispersal
-  - data-diverse
   - datadog
   - data-easy
   - data-embed
@@ -1009,7 +1007,6 @@ broken-packages:
   - DBlimited
   - dbm
   - dbmigrations-mysql
-  - dbmigrations-postgresql
   - dbmigrations-sqlite
   - d-bus
   - DBus
@@ -1255,18 +1252,15 @@ broken-packages:
   - ekg-bosun
   - ekg-elastic
   - ekg-elasticsearch
-  - ekg-json
   - ekg-log
   - ekg-push
   - ekg-rrd
-  - ekg-statsd
   - elevator
   - elision
   - elm-export-persistent
   - elminator
   - elm-street
   - elm-websocket
-  - elocrypt
   - emacs-module
   - emailaddress
   - email-header
@@ -1552,7 +1546,6 @@ broken-packages:
   - fsmActions
   - fst
   - fsutils
-  - fswait
   - fswatch
   - ft-generator
   - FTGL-bytestring
@@ -2530,7 +2523,6 @@ broken-packages:
   - hweblib
   - hw-fingertree-strict
   - hwhile
-  - hw-mquery
   - hworker
   - hw-playground-linear
   - hwsl2
@@ -2655,7 +2647,6 @@ broken-packages:
   - iostring
   - iothread
   - iotransaction
-  - ip
   - ip2location
   - ip2proxy
   - ipa
@@ -2681,7 +2672,6 @@ broken-packages:
   - iteratee
   - iterative-forward-search
   - iterIO
-  - it-has
   - ivory
   - ixdopp
   - ixmonad
@@ -2718,7 +2708,6 @@ broken-packages:
   - jonathanscard
   - jordan
   - jort
-  - jose-jwt
   - joy-rewrite
   - jpeg
   - jsaddle-clib
@@ -3434,7 +3423,6 @@ broken-packages:
   - netclock
   - netcore
   - netease-fm
-  - net-mqtt
   - netrium
   - NetSNMP
   - netspec
@@ -3442,7 +3430,6 @@ broken-packages:
   - nettle-openflow
   - netwire-input-javascript
   - netwire-vinylglfw-examples
-  - network-address
   - network-api-support
   - network-arbitrary
   - network-attoparsec
@@ -3455,7 +3442,6 @@ broken-packages:
   - networked-game
   - network-house
   - network-metrics
-  - network-msg
   - network-msgpack-rpc
   - network-packet-linux
   - network-server
@@ -3484,7 +3470,6 @@ broken-packages:
   - nibblestring
   - nice-html
   - nitro
-  - nix-delegate
   - nix-deploy
   - nix-eval
   - nix-freeze-tree
@@ -3911,7 +3896,6 @@ broken-packages:
   - polar-configfile
   - polar-shader
   - policeman
-  - polling-cache
   - Pollutocracy
   - poly-cont
   - poly-control
@@ -3942,7 +3926,6 @@ broken-packages:
   - porte
   - PortFusion
   - positron
-  - posix-acl
   - posix-api
   - posix-realtime
   - posix-waitpid
@@ -4481,7 +4464,6 @@ broken-packages:
   - servant-auth-hmac
   - servant-avro
   - servant-benchmark
-  - servant-cassava
   - servant-client-js
   - servant-db
   - servant-dhall

@@ -1893,15 +1893,6 @@ self: super: {
     '';
   }) super.cabal-install;
 
-  # while waiting for a new release: https://github.com/brendanhay/amazonka/pull/572
-  amazonka = appendPatches [
-    (fetchpatch {
-      relative = "amazonka";
-      url = "https://github.com/brendanhay/amazonka/commit/43ddd87b1ebd6af755b166e16336259ec025b337.patch";
-      sha256 = "sha256-9Ed3qrLGRaNCdvqWMyg8ydAnqDkFqWKLLoObv/5jG54=";
-    })
-  ] (doJailbreak super.amazonka);
-
   # Test suite does not compile.
   feed = dontCheck super.feed;
 
