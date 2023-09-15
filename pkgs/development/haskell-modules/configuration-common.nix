@@ -153,6 +153,10 @@ self: super: {
   ### END HASKELL-LANGUAGE-SERVER SECTION ###
   ###########################################
 
+  termonad = appendPatches [
+    ./patches/termonad-reproduce-response-params-expander.patch
+  ] super.termonad;
+
   vector = overrideCabal (old: {
     # Too strict bounds on doctest which isn't used, but is part of the configuration
     jailbreak = true;

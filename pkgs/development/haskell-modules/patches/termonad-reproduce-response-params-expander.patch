@@ -1,0 +1,90 @@
+commit dc8244513b4d6ae4278527a03c2e9e63730558de
+Author: John Soo <john.soo@arista.com>
+Date:   Fri Sep 15 13:39:39 2023 -0700
+
+    reproduce hsc2hs response params
+
+diff --git a/src/Termonad/Reproducer.hsc b/src/Termonad/Reproducer.hsc
+new file mode 100644
+index 0000000..caf7ee4
+--- /dev/null
++++ b/src/Termonad/Reproducer.hsc
+@@ -0,0 +1,56 @@
++{-# LANGUAGE DeriveAnyClass #-}
++module Termonad.Reproducer where
++
++import Data.Time.Clock (NominalDiffTime, picosecondsToDiffTime)
++import Foreign.C.Types (CClock (..))
++import Foreign.Marshal.Alloc (alloca)
++import Foreign.Ptr (Ptr)
++import Foreign.Storable.Generic (GStorable, peek)
++import System.Posix.Unistd (SysVar (ClockTick), getSysVar)
++
++newtype SystemTimeSeconds = SystemTimeSeconds {systemTimeSeconds :: NominalDiffTime}
++  deriving newtype (Num, Show)
++
++newtype UserTimeSeconds = UserTimeSeconds {userTimeSeconds :: NominalDiffTime}
++  deriving newtype (Num, Show)
++
++-- | A representation of @struct tms@ from @\<sys/times.h\>@. All fields represent
++-- measurement in clock ticks.
++data TMS = TMS
++  { -- | user time
++    tms_utime :: !CClock,
++    -- | system time
++    tms_stime :: !CClock,
++    -- | user time of children
++    tms_cutime :: !CClock,
++    -- | system time of children
++    tms_cstime :: !CClock
++  }
++  deriving (Generic, Show, GStorable)
++
++times :: MonadIO m => m (UserTimeSeconds, SystemTimeSeconds)
++times = liftIO do
++  sc_clk_tck :: Integer <- getSysVar ClockTick
++  let convert :: CClock -> NominalDiffTime
++      convert =
++        clockTicksToDouble
++          >>> (/ fromIntegral sc_clk_tck)
++          >>> (* 10 ^ (12 :: Integer))
++          >>> truncate
++          >>> picosecondsToDiffTime
++          >>> realToFrac
++
++  (clk, TMS {..}) <-
++    alloca \tms_p -> do
++      clk <- c_times tms_p
++      (clk,) <$> peek tms_p
++
++  let userTimeSeconds = convert (tms_utime + tms_cutime)
++  let systemTimeSeconds = convert (tms_stime + tms_cstime)
++
++  pure (UserTimeSeconds {..}, SystemTimeSeconds {..})
++
++foreign import ccall "times" c_times :: Ptr TMS -> IO CClock
++
++clockTicksToDouble :: CClock -> Double
++clockTicksToDouble = coerce >>> fromIntegral @Int64 @Double
+diff --git a/termonad.cabal b/termonad.cabal
+index f15adbd..d5ee900 100644
+--- a/termonad.cabal
++++ b/termonad.cabal
+@@ -67,6 +67,7 @@ library
+                      , Termonad.Pcre
+                      , Termonad.PreferencesFile
+                      , Termonad.Prelude
++                     , Termonad.Reproducer
+                      , Termonad.Term
+                      , Termonad.Types
+                      , Termonad.XML
+@@ -98,7 +99,9 @@ library
+                      , pretty-simple
+                      , QuickCheck
+                      , text
++                     , time
+                      , transformers
++                     , unix
+                      , unordered-containers
+                      , xml-conduit
+                      , xml-html-qq
