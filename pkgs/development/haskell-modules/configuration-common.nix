@@ -2401,6 +2401,10 @@ self: super: {
   # but fft is not on GitHub, so no issue reported.
   fft = dontCheck super.fft;
 
+  # 2023-09-19: Too strict bounds on servant, fixed on main branch, but unreleased
+  servant-multipart = doJailbreak super.servant-multipart;
+  servant-multipart-api = doJailbreak super.servant-multipart-api;
+
   # lucid-htmx has restrictive upper bounds on lucid and servant:
   #
   #   Setup: Encountered missing or private dependencies:
