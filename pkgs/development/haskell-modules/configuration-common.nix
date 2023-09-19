@@ -2295,6 +2295,10 @@ self: super: {
     sha256 = "1lpcz671mk5cwqffjfi9ncc0d67bmwgzypy3i37a2fhfmxd0y3nl";
   }) ((p: assert p.version == "4.0.0"; p) super.taffybar);
 
+  # 2023-09-19: Too strict bounds on servant, fixed on main branch, but unreleased
+  servant-multipart = doJailbreak super.servant-multipart;
+  servant-multipart-api = doJailbreak super.servant-multipart-api;
+
   # lucid-htmx has restrictive upper bounds on lucid and servant:
   #
   #   Setup: Encountered missing or private dependencies:
