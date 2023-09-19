@@ -2543,6 +2543,10 @@ self: super: {
       excludes = [ ".github/**" ];
     })
   ] super.fast-tags;
+  
+  # 2023-09-19: Too strict bounds on servant, fixed on main branch, but unreleased
+  servant-multipart = doJailbreak super.servant-multipart;
+  servant-multipart-api = doJailbreak super.servant-multipart-api;
 
   # lucid-htmx has restrictive upper bounds on lucid and servant:
   #
