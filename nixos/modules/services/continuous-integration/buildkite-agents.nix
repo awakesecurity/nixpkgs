@@ -60,6 +60,14 @@ let
         '';
       };
 
+      extraGroups = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = ''
+          List of extra groups to add the agent to.
+        '';
+      };
+
       tags = lib.mkOption {
         type = lib.types.attrsOf (lib.types.either lib.types.str (lib.types.listOf lib.types.str));
         default = { };
@@ -150,7 +158,7 @@ in
       home = cfg.dataDir;
       createHome = true;
       description = "Buildkite agent user";
-      extraGroups = [ "keys" ];
+      extraGroups = [ "keys" ] ++ cfg.extraGroups;
       isSystemUser = true;
       group = "buildkite-agent-${name}";
     };
