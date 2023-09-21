@@ -8255,6 +8255,8 @@ in {
 
   pytest-randomly = callPackage ../development/python-modules/pytest-randomly { };
 
+  pytest-reverse = callPackage ../development/python-modules/pytest-reverse { };
+
   pytest-random-order = callPackage ../development/python-modules/pytest-random-order { };
 
   pytest-regressions = callPackage ../development/python-modules/pytest-regressions { };
