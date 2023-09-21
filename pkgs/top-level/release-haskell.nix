@@ -54,6 +54,7 @@ let
     ghc902
     ghc923
     ghc928
+    ghc943
   ];
 
   # packagePlatforms applied to `haskell.packages.*`
