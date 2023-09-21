@@ -27,8 +27,7 @@ in
 , doHoogle ? true
 , doHaddockQuickjump ? doHoogle && lib.versionAtLeast ghc.version "8.6"
 , editedCabalFile ? null
-# aarch64 outputs otherwise exceed 2GB limit
-, enableLibraryProfiling ? !(ghc.isGhcjs or stdenv.targetPlatform.isAarch64 or false)
+, enableLibraryProfiling ? !(ghc.isGhcjs or false)
 , enableExecutableProfiling ? false
 , profilingDetail ? "exported-functions"
 # TODO enable shared libs for cross-compiling
