@@ -17,14 +17,14 @@ let
     "ghc902"
     "ghc924"
     "ghc928"
-    "ghc942"
+    "ghc943"
     "ghcHEAD"
   ];
 
   nativeBignumIncludes = [
     "ghc902"
     "ghc924"
-    "ghc942"
+    "ghc943"
     "ghcHEAD"
   ];
 
@@ -156,7 +156,7 @@ in {
       buildTargetLlvmPackages = pkgsBuildTarget.llvmPackages_12;
       llvmPackages = pkgs.llvmPackages_12;
     };
-    ghc942 = callPackage ../development/compilers/ghc/9.4.2.nix {
+    ghc943 = callPackage ../development/compilers/ghc/9.4.3.nix {
       bootPkgs =
         # Building with 9.2 is broken due to
         # https://gitlab.haskell.org/ghc/ghc/-/issues/21914
@@ -307,9 +307,9 @@ in {
       ghc = bh.compiler.ghc928;
       compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-9.2.x.nix { };
     };
-    ghc942 = callPackage ../development/haskell-modules {
-      buildHaskellPackages = bh.packages.ghc942;
-      ghc = bh.compiler.ghc942;
+    ghc943 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc943;
+      ghc = bh.compiler.ghc943;
       compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-9.4.x.nix { };
     };
     ghcHEAD = callPackage ../development/haskell-modules {
