@@ -190,6 +190,12 @@ let
             nixosTests.zfs.installer
             nixosTests.zfs.stable
           ];
+
+        systemdServices = [
+          "zfs-mount"
+          "zfs-share"
+          "zfs-zed"
+        ];
       };
 
       meta = {
