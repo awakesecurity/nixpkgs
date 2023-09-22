@@ -108,10 +108,19 @@ stdenv.mkDerivation rec {
 
   disallowedReferences = [ (lib.getDev libkrb5) ];
 
-  passthru.tests = {
-    nfs3-simple = nixosTests.nfs3.simple;
-    nfs4-simple = nixosTests.nfs4.simple;
-    nfs4-kerberos = nixosTests.nfs4.kerberos;
+  passthru = {
+    tests = {
+      nfs3-simple = nixosTests.nfs3.simple;
+      nfs4-simple = nixosTests.nfs4.simple;
+      nfs4-kerberos = nixosTests.nfs4.kerberos;
+    };
+    systemdServices = [
+      "auth-rpcgss-module"
+      "nfs-blkmap"
+      "nfs-idmapd"
+      "rpc-gssd"
+      "rpc-statd"
+    ];
   };
 
   meta = with lib; {
