@@ -24,6 +24,9 @@ let
 
   knownEnabledServices = [ "nix-daemon" ];
 
+  packageServices =
+    lib.concatMap (p: p.systemdServices or [ ]) cfg.packages;
+
   upstreamSystemUnits =
     [ # Targets.
       "basic.target"
@@ -445,6 +448,7 @@ in
                 (service.enable
                   && !hasStartCmd service
                   && !(lib.elem name knownEnabledServices)
+                  && !(lib.elem name packageServices)
                   && !(!isNull templateUnit && cfg.services?${template} && hasStartCmd cfg.services.${template})
                   && !(lib.elem "${name}.service" enabledUpstreamSystemUnits)
                   && builtins.all (p: isNull ((builtins.match "^${name}.*") p.name)) cfg.packages)
