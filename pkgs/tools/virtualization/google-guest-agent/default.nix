@@ -43,6 +43,12 @@ buildGoModule rec {
       --prefix PATH ":" "$binPath"
   '';
 
+  passthru.systemdServices = [
+    "google-guest-agent"
+    "google-shutdown-scripts"
+    "google-startup-scripts"
+  ];
+
   meta = with lib; {
     homepage = "https://github.com/GoogleCloudPlatform/guest-agent";
     description = "Guest Agent for Google Compute Engine";
