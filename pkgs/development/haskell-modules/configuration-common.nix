@@ -832,12 +832,13 @@ self: super: {
   sensei = overrideCabal (drv: {
     testHaskellDepends = drv.testHaskellDepends or [] ++ [ self.hspec-meta_2_9_3 ];
     testToolDepends = drv.testToolDepends or [] ++ [ pkgs.git ];
-  }) (super.sensei.override {
-    hspec = self.hspec_2_10_0;
-    hspec-wai = super.hspec-wai.override {
-      hspec = self.hspec_2_10_0;
-    };
-  });
+  }) (super.sensei.overrideScope (self: super: {
+    hspec-meta = self.hspec-meta_2_9_3;
+    hspec = self.hspec_2_10_7;
+    hspec-core = dontCheck self.hspec-core_2_10_7;
+    hspec-discover = self.hspec-discover_2_10_7;
+    shelly = dontCheck super.shelly; # disable checks, because the newer hspec in this overrideScope doesn‘t work with newest hspec-contrib
+  }));
 
   # Depends on broken fluid.
   fluid-idl-http-client = markBroken super.fluid-idl-http-client;
@@ -1646,15 +1647,15 @@ self: super: {
   servant-openapi3 = dontCheck super.servant-openapi3;
 
   # Give hspec 2.10.* correct dependency versions without overrideScope
-  hspec_2_10_0 = doDistribute (super.hspec_2_10_0.override {
-    hspec-discover = self.hspec-discover_2_10_0;
-    hspec-core = self.hspec-core_2_10_0;
+  hspec_2_10_7 = doDistribute (super.hspec_2_10_7.override {
+    hspec-discover = self.hspec-discover_2_10_7;
+    hspec-core = self.hspec-core_2_10_7;
   });
-  hspec-discover_2_10_0 = super.hspec-discover_2_10_0.override {
-    hspec-meta = self.hspec-meta_2_9_3;
+  hspec-discover_2_10_7 = super.hspec-discover_2_10_7.override {
+    hspec-meta = self.hspec-meta_2_10_5;
   };
-  hspec-core_2_10_0 = super.hspec-core_2_10_0.override {
-    hspec-meta = self.hspec-meta_2_9_3;
+  hspec-core_2_10_7 = super.hspec-core_2_10_7.override {
+    hspec-meta = self.hspec-meta_2_10_5;
   };
 
   # Point hspec 2.7.10 to correct dependencies
