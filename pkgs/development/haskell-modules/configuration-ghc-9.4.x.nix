@@ -69,14 +69,18 @@ in {
 
   assoc = doJailbreak super.assoc;
   base64-bytestring = doJailbreak super.base64-bytestring;
-  base-compat = self.base-compat_0_12_2;
-  base-compat-batteries = self.base-compat-batteries_0_12_2;
+  base-compat = self.base-compat_0_12_3;
+  base-compat-batteries = self.base-compat-batteries_0_12_3;
   binary-instances = doJailbreak super.binary-instances;
+  cabal-install = self.cabal-install_3_10_1_0;
+  cabal-install-solver = self.cabal-install-solver_3_10_1_0;
   ChasingBottoms = doJailbreak super.ChasingBottoms;
   constraints = doJailbreak super.constraints;
   cpphs = overrideCabal (drv: { postPatch = "sed -i -e 's,time >=1.5 && <1.11,time >=1.5 \\&\\& <1.12,' cpphs.cabal";}) super.cpphs;
   ghc-byteorder = doJailbreak super.ghc-byteorder;
-  hashable = super.hashable_1_4_1_0;
+  hackage-security = self.hackage-security_0_6_2_3;
+  hackage-security_0_6_2_3 = super.hackage-security_0_6_2_3.override { Cabal-syntax = self.Cabal-syntax_3_10_1_0; };
+  hashable = super.hashable_1_4_3_0;
   hashable-time = doJailbreak super.hashable-time;
   libmpd = doJailbreak super.libmpd;
   lens-family-th = doJailbreak super.lens-family-th;  # template-haskell <2.19
