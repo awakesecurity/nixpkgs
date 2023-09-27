@@ -148,6 +148,9 @@ in {
   # 2022-10-06: https://gitlab.haskell.org/ghc/ghc/-/issues/22260
   ghc-check = dontHaddock super.ghc-check;
 
+  # Too strict upper bound on template-haskell
+  # https://github.com/mokus0/th-extras/issues/18
+  th-extras = doJailbreak super.th-extras;
 
   # 2022-11-06: Override override from common, because Cabal-syntax is included since ghc 9.4.
   implicit-hie = super.implicit-hie.override {
