@@ -354,10 +354,6 @@ self: super: {
   # https://github.com/techtangents/ablist/issues/1
   ABList = dontCheck super.ABList;
 
-  # sse2 flag due to https://github.com/haskell/vector/issues/47.
-  # Jailbreak is necessary for QuickCheck dependency.
-  vector = doJailbreak (if pkgs.stdenv.isi686 then appendConfigureFlag "--ghc-options=-msse2" super.vector else super.vector);
-
   inline-c-cpp = overrideCabal (drv: {
     patches = drv.patches or [] ++ [
       (fetchpatch {
@@ -1509,12 +1505,6 @@ self: super: {
   # 2020-06-22: NOTE: > 0.4.0 => rm Jailbreak: https://github.com/serokell/nixfmt/issues/71
   nixfmt = doJailbreak super.nixfmt;
 
-  # The test suite depends on an impure cabal-install installation in
-  # $HOME, which we don't have in our build sandbox.
-  cabal-install-parsers = dontCheck (super.cabal-install-parsers.override {
-    Cabal = self.Cabal_3_6_3_0;
-  });
-
   # 2022-03-12: Pick patches from master for compat with Stackage Nightly
   gitit = appendPatches [
     (fetchpatch {
@@ -1830,9 +1820,6 @@ self: super: {
   # 2021-06-20: Tests fail: https://github.com/haskell/haskell-language-server/issues/1949
   hls-refine-imports-plugin = dontCheck super.hls-refine-imports-plugin;
 
-  # 2021-09-14: Tests are broken because of undeterministic variable names
-  hls-tactics-plugin = dontCheck super.hls-tactics-plugin;
-
   # 2021-11-20: https://github.com/haskell/haskell-language-server/pull/2373
   hls-explicit-imports-plugin = dontCheck super.hls-explicit-imports-plugin;
 
@@ -1930,7 +1917,7 @@ self: super: {
   # is overlayed to hspec-core.
   hspec-core_2_11_0 = doDistribute (dontCheck (super.hspec-core_2_11_0.override {
     hspec-meta = self.hspec-meta_2_10_5;
-  });
+  }));
 
   # Point hspec 2.7.10 to correct dependencies
   hspec_2_7_10 = doDistribute (super.hspec_2_7_10.override {
@@ -2060,21 +2047,6 @@ self: super: {
   # Test suite fails, upstream not reachable for simple fix (not responsive on github)
   vivid-osc = dontCheck super.vivid-osc;
   vivid-supercollider = dontCheck super.vivid-supercollider;
-
-  # cabal-install switched to build type simple in 3.2.0.0
-  # as a result, the cabal(1) man page is no longer installed
-  # automatically. Instead we need to use the `cabal man`
-  # command which generates the man page on the fly and
-  # install it to $out/share/man/man1 ourselves in this
-  # override.
-  # The commit that introduced this change:
-  # https://github.com/haskell/cabal/commit/91ac075930c87712eeada4305727a4fa651726e7
-  cabal-install = overrideCabal (old: {
-    postInstall = old.postInstall + ''
-      mkdir -p "$out/share/man/man1"
-      "$out/bin/cabal" man --raw > "$out/share/man/man1/cabal.1"
-    '';
-  }) super.cabal-install;
 
   # while waiting for a new release: https://github.com/brendanhay/amazonka/pull/572
   amazonka = appendPatches [
@@ -2469,9 +2441,6 @@ self: super: {
 
   # 2021-09-14: Tests are flaky.
   hls-splice-plugin = dontCheck super.hls-splice-plugin;
-
-  # 2021-09-18: https://github.com/haskell/haskell-language-server/issues/2205
-  hls-stylish-haskell-plugin = doJailbreak super.hls-stylish-haskell-plugin;
 
   # Necesssary .txt files are not included in sdist.
   # https://github.com/haskell/haskell-language-server/pull/2887
