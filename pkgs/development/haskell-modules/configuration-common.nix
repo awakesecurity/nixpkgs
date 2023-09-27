@@ -1493,21 +1493,6 @@ self: super: {
   # 2020-06-22: NOTE: > 0.4.0 => rm Jailbreak: https://github.com/serokell/nixfmt/issues/71
   nixfmt = doJailbreak super.nixfmt;
 
-  # The test suite depends on an impure cabal-install installation in
-  # $HOME, which we don't have in our build sandbox.
-  # 2022-08-31: Jailbreak is done to allow aeson 2.0.*:
-  # https://github.com/haskell-CI/haskell-ci/commit/6ad0d5d701cbe101013335d597acaf5feadd3ab9#r82681900
-  cabal-install-parsers = doJailbreak (dontCheck (super.cabal-install-parsers.override {
-    Cabal-syntax = self.Cabal-syntax_3_8_1_0;
-  }));
-  cabal-install-parsers_0_4_5 = doDistribute (
-    dontCheck (
-      super.cabal-install-parsers_0_4_5.override {
-        Cabal = self.Cabal_3_6_3_0;
-      }
-    )
-  );
-
   # 2022-03-12: Pick patches from master for compat with Stackage Nightly
   gitit = appendPatches [
     (fetchpatch {
@@ -1951,7 +1936,7 @@ self: super: {
   # is overlayed to hspec-core.
   hspec-core_2_11_0 = doDistribute (dontCheck (super.hspec-core_2_11_0.override {
     hspec-meta = self.hspec-meta_2_10_5;
-  });
+  }));
 
   # Point hspec 2.7.10 to correct dependencies
   hspec_2_7_10 = doDistribute (super.hspec_2_7_10.override {
