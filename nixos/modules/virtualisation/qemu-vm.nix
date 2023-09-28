@@ -223,6 +223,7 @@ let
                       + lib.optionalString cfg.useEFIBoot (
                         " -drive if=pflash,format=raw,unit=0,readonly=on,file=${cfg.efi.firmware}"
                       + " -drive if=pflash,format=raw,unit=1,file=$efiVars");
+          memSize = 1024;
         }
         ''
           # Create a /boot EFI partition with 60M and arbitrary but fixed GUIDs for reproducibility
