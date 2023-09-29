@@ -13463,6 +13463,8 @@ self: super: with self; {
 
   wikipedia = callPackage ../development/python-modules/wikipedia { };
 
+  wikipedia-api = callPackage ../development/python-modules/wikipedia-api { };
+
   willow = callPackage ../development/python-modules/willow { };
 
   winacl = callPackage ../development/python-modules/winacl { };
