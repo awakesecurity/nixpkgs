@@ -9550,6 +9550,12 @@ in {
 
   quantities = callPackage ../development/python-modules/quantities { };
 
+  quantiphy = callPackage ../development/python-modules/quantiphy { };
+
+  quantile-python = callPackage ../development/python-modules/quantile-python { };
+
+  quantiphy-eval = callPackage ../development/python-modules/quantiphy-eval { };
+
   quantum-gateway = callPackage ../development/python-modules/quantum-gateway { };
 
   quart = callPackage ../development/python-modules/quart { };
