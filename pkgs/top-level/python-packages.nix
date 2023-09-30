@@ -3721,6 +3721,8 @@ in {
 
   gremlinpython = callPackage ../development/python-modules/gremlinpython { };
 
+  greynoise = callPackage ../development/python-modules/greynoise { };
+
   growattserver = callPackage ../development/python-modules/growattserver { };
 
   gridnet = callPackage ../development/python-modules/gridnet { };
