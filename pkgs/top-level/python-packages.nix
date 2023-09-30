@@ -407,6 +407,8 @@ in {
 
   aioprocessing = callPackage ../development/python-modules/aioprocessing { };
 
+  aioprometheus = callPackage ../development/python-modules/aioprometheus { };
+
   aiopulse = callPackage ../development/python-modules/aiopulse { };
 
   aiopvapi = callPackage ../development/python-modules/aiopvapi { };
