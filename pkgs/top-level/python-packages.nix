@@ -4054,6 +4054,8 @@ in {
 
   hyperframe = callPackage ../development/python-modules/hyperframe { };
 
+  hyperscan = callPackage ../development/python-modules/hyperscan { };
+
   hyperion-py = callPackage ../development/python-modules/hyperion-py { };
 
   hyperlink = callPackage ../development/python-modules/hyperlink { };
