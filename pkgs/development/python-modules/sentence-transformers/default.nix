@@ -8,7 +8,7 @@
 , scipy
 , sentencepiece
 , tokenizers
-, torch
+, pytorch
 , torchvision
 , tqdm
 , transformers
@@ -34,7 +34,7 @@ buildPythonPackage rec {
     scipy
     sentencepiece
     tokenizers
-    torch
+    pytorch
     torchvision
     tqdm
     transformers
