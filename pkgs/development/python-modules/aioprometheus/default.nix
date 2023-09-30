@@ -45,7 +45,7 @@ buildPythonPackage rec {
     ];
   };
 
-  nativeCheckInputs = [
+  checkInputs = [
     pytestCheckHook
     aiohttp-basicauth
     httpx
