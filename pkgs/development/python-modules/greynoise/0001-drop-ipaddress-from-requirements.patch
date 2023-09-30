@@ -1,0 +1,37 @@
+From f2ef61e2559247f48a7ef52cd73969f2426cca69 Mon Sep 17 00:00:00 2001
+From: Maksym Balatsko <mbalatsko@gmail.com>
+Date: Sat, 30 Sep 2023 15:01:26 +0000
+Subject: [PATCH] drop ipaddress from requirements
+
+---
+ requirements/common.txt | 1 -
+ setup.py                | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/requirements/common.txt b/requirements/common.txt
+index 8b3ba21..d745e30 100644
+--- a/requirements/common.txt
++++ b/requirements/common.txt
+@@ -5,7 +5,6 @@ colorama==0.4.6
+ click-default-group==1.2.2
+ click-repl==0.2.0
+ dict2xml==1.7.3;python_version>='3'
+-ipaddress==1.0.23
+ jinja2==3.1.2;python_version>='3.6'
+ more-itertools==9.1.0;python_version>='3'
+ requests==2.28.2
+diff --git a/setup.py b/setup.py
+index 7a7bd1f..4de0f1f 100755
+--- a/setup.py
++++ b/setup.py
+@@ -19,7 +19,6 @@ INSTALL_REQUIRES = [
+     "click-default-group",
+     "click-repl",
+     "dict2xml",
+-    "ipaddress",
+     "jinja2",
+     "more-itertools",
+     "requests",
+-- 
+2.36.1
+

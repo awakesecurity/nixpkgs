@@ -31,6 +31,11 @@ buildPythonPackage rec {
     hash = "sha256-zevom7JqXnZuotXfGtfPOmQNh32dANS4Uc6tHUuq08s=";
   };
 
+  patches = [
+    # https://github.com/GreyNoise-Intelligence/pygreynoise/pull/788
+    ./0001-drop-ipaddress-from-requirements.patch
+  ];
+
   propagatedBuildInputs = [
     click
     ansimarkup
