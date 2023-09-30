@@ -329,6 +329,8 @@ in {
 
   aiohttp-apispec = callPackage ../development/python-modules/aiohttp-apispec { };
 
+  aiohttp-basicauth = callPackage ../development/python-modules/aiohttp-basicauth { };
+
   aiohttp-cors = callPackage ../development/python-modules/aiohttp-cors { };
 
   aiohttp-jinja2 = callPackage ../development/python-modules/aiohttp-jinja2 { };
