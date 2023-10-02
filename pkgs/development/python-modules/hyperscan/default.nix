@@ -38,7 +38,7 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "hyperscan" ];
 
-  nativeCheckInputs = [
+  checkInputs = [
     pytestCheckHook
     pytest-mock
   ];
