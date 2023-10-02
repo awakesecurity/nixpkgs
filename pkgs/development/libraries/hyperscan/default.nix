@@ -51,8 +51,8 @@ stdenv.mkDerivation (finalAttrs: {
       --replace "includedir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@" "includedir=@CMAKE_INSTALL_INCLUDEDIR@"
   '';
 
-  doCheck = true;
-  checkPhase = ''
+  doInstallCheck = true;
+  installCheckPhase = ''
     runHook preCheck
 
     bin/unit-hyperscan
