@@ -95,6 +95,11 @@ stdenv.mkDerivation ({
         See https://github.com/NixOS/nixpkgs/pull/188492#issuecomment-1233802991 for context.
       */
       ./reenable_DT_HASH.patch
+
+      /* CVE-2023-4911 - Looney tunables
+         https://sourceware.org/git/?p=glibc.git;a=shortlog;h=refs/heads/release/2.37/master
+	 https://sourceware.org/git/?p=glibc.git;a=commitdiff_plain;h=b4e23c75aea756b4bddc4abcf27a1c6dca8b6bd3
+      ./cve-2023-4911.patch
     ]
     ++ lib.optional stdenv.hostPlatform.isMusl ./fix-rpc-types-musl-conflicts.patch
     ++ lib.optional stdenv.buildPlatform.isDarwin ./darwin-cross-build.patch;
