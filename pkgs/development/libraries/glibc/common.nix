@@ -95,6 +95,11 @@ stdenv.mkDerivation ({
       ./nix-nss-open-files.patch
 
       ./0001-Revert-Remove-all-usage-of-BASH-or-BASH-in-installed.patch
+
+      /* CVE-2023-4911 - Looney tunables
+         https://sourceware.org/git/?p=glibc.git;a=shortlog;h=refs/heads/release/2.34/master
+         https://sourceware.org/git/?p=glibc.git;a=commitdiff_plain;h=dcc367f148bc92e7f3778a125f7a416b093964d9;hp=c3b99f8328939533a9b6ac93e8ae7285e90fbdab */
+      ./cve-2023-4911.patch
     ]
     ++ lib.optional stdenv.hostPlatform.isMusl ./fix-rpc-types-musl-conflicts.patch
     ++ lib.optional stdenv.buildPlatform.isDarwin ./darwin-cross-build.patch;
