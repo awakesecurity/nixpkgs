@@ -1,6 +1,6 @@
-{ lib, buildGoModule, fetchFromGitHub, nixosTests }:
+{ lib, buildGo119Module, fetchFromGitHub, nixosTests }:
 
-buildGoModule rec {
+buildGo119Module rec {
   pname = "consul";
   version = "1.15.0";
   rev = "v${version}";
