@@ -59,6 +59,11 @@ stdenv.mkDerivation (finalAttrs: {
 
   patches = [
     ./7.79.1-darwin-no-systemconfiguration.patch
+
+    # Recent low/med priorities
+    ./CVE-2023-28319.patch
+    ./CVE-2023-28320.patch
+    ./CVE-2023-28321.patch
   ];
 
   outputs = [ "bin" "dev" "out" "man" "devdoc" ];
