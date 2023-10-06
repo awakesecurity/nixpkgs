@@ -60,6 +60,19 @@ let
       };
     };
 
+    options.openssh.authorizedPrincipals = mkOption {
+      type = with types; listOf types.singleLineStr;
+      default = [];
+      description = mdDoc ''
+        A list of verbatim principal names that should be added to the user's
+        authorized principals.
+      '';
+      example = [
+        "example@host"
+        "foo@bar"
+      ];
+    };
+
   };
 
   authKeysFiles = let
@@ -74,6 +87,16 @@ let
       length u.openssh.authorizedKeys.keys != 0 || length u.openssh.authorizedKeys.keyFiles != 0
     ));
   in listToAttrs (map mkAuthKeyFile usersWithKeys);
+
+  authPrincipalsFiles = let
+    mkAuthPrincipalsFile = u: nameValuePair "ssh/authorized_principals.d/${u.name}" {
+      mode = "0444";
+      text = concatStringsSep "\n" u.openssh.authorizedPrincipals;
+    };
+    usersWithPrincipals = attrValues (flip filterAttrs config.users.users (n: u:
+      length u.openssh.authorizedPrincipals != 0
+    ));
+  in listToAttrs (map mkAuthPrincipalsFile usersWithPrincipals);
 
 in
 
@@ -408,7 +431,7 @@ in
     services.openssh.moduliFile = mkDefault "${cfgc.package}/etc/ssh/moduli";
     services.openssh.sftpServerExecutable = mkDefault "${cfgc.package}/libexec/sftp-server";
 
-    environment.etc = authKeysFiles //
+    environment.etc = authKeysFiles // authPrincipalsFiles //
       { "ssh/moduli".source = cfg.moduliFile;
         "ssh/sshd_config".source = sshconf;
       };
@@ -542,6 +565,9 @@ in
           AuthorizedKeysCommand ${cfg.authorizedKeysCommand}
           AuthorizedKeysCommandUser ${cfg.authorizedKeysCommandUser}
         ''}
+
+        ${optionalString (authPrincipalsFiles != {})
+          "AuthorizedPrincipalsFile /etc/ssh/authorized_principals.d/%u"}
 
         ${flip concatMapStrings cfg.hostKeys (k: ''
           HostKey ${k.path}
