@@ -30,7 +30,7 @@ stdenv.mkDerivation (rec {
       [ "https://www.zlib.net/fossils/zlib-${version}.tar.gz"  # stable archive path
         "mirror://sourceforge/libpng/zlib/${version}/zlib-${version}.tar.gz"
       ];
-    hash = "sha256-s6JN6XqP28g1uYMxaVAQMLiXcDG8tUs7OsE3QPhGqzA=";
+    sha256 = "sha256-s6JN6XqP28g1uYMxaVAQMLiXcDG8tUs7OsE3QPhGqzA=";
   };
 
   postPatch = lib.optionalString stdenv.hostPlatform.isDarwin ''
