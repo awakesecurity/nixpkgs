@@ -20,6 +20,10 @@ buildPythonPackage rec {
     hash = "sha256-w4cBQRpk9UTuGA0lPDsqpQ3UEIQdYe38NYXz+V4+Lvc=";
   };
 
+  preBuild = ''
+    echo "from setuptools import setup;setup()" > setup.py
+  '';
+
   nativeBuildInputs = [
     poetry-core
   ];
