@@ -79,6 +79,9 @@ stdenv.mkDerivation (finalAttrs: {
     ./CVE-2023-28319.patch
     ./CVE-2023-28320.patch
     ./CVE-2023-28321.patch
+
+    # High priority
+    ./CVE-2023-38545.patch
   ];
 
   outputs = [ "bin" "dev" "out" "man" "devdoc" ];
