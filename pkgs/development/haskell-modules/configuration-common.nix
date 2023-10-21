@@ -77,10 +77,7 @@ self: super: {
   ### HASKELL-LANGUAGE-SERVER SECTION ###
   #######################################
 
-  haskell-language-server = (lib.pipe super.haskell-language-server [
-    dontCheck
-    (disableCabalFlag "stan") # Sorry stan is totally unmaintained and terrible to get to run. It only works on ghc 8.8 or 8.10 anyways …
-  ]).overrideScope (lself: lsuper: {
+  haskell-language-server = dontCheck (super.haskell-language-server.overrideScope (lself: lsuper: {
     # For most ghc versions, we overrideScope Cabal in the configuration-ghc-???.nix,
     # because some packages, like ormolu, need a newer Cabal version.
     # ghc-paths is special because it depends on Cabal for building
@@ -91,7 +88,12 @@ self: super: {
     # otherwise we have different versions of ghc-paths
     # around which have the same abi-hash, which can lead to confusions and conflicts.
     ghc-paths = lsuper.ghc-paths.override { Cabal = null; };
-  });
+  }));
+
+  # hasn't bumped upper bounds
+  # test fails: "floskell-test: styles/base.md: openBinaryFile: does not exist (No such file or directory)"
+  # https://github.com/ennocramer/floskell/issues/48
+  floskell = dontCheck (doJailbreak super.floskell);
 
   # 2023-04-03: https://github.com/haskell/haskell-language-server/issues/3546#issuecomment-1494139751
   # There will probably be a new revision soon.
