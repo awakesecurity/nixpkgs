@@ -22749,9 +22749,10 @@ with pkgs;
 
   inherit (callPackages ../development/libraries/libressl { })
     libressl_3_6
-    libressl_3_7;
+    libressl_3_7
+    libressl_3_8;
 
-  libressl = libressl_3_7;
+  libressl = libressl_3_8;
 
   boringssl = callPackage ../development/libraries/boringssl { };
 
