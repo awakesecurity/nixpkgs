@@ -710,6 +710,7 @@
   ./services/home-automation/zigbee2mqtt.nix
   ./services/home-automation/zwave-js-ui.nix
   ./services/home-automation/zwave-js.nix
+  ./services/infrastructure/terraform-cloud-agent/default.nix
   ./services/logging/awstats.nix
   ./services/logging/filebeat.nix
   ./services/logging/fluentd.nix
