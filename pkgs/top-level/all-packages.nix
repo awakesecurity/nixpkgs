@@ -17968,6 +17968,8 @@ with pkgs;
 
   terraforming = callPackage ../applications/networking/cluster/terraforming { };
 
+  terraform-cloud-agent = callPackage ../tools/infrastructure/terraform-cloud-agent { };
+
   terraform-landscape = callPackage ../applications/networking/cluster/terraform-landscape { };
 
   tftui = python3Packages.callPackage ../applications/networking/cluster/tftui { };
