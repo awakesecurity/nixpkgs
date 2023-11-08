@@ -37349,6 +37349,8 @@ with pkgs;
 
   terraform-landscape = callPackage ../applications/networking/cluster/terraform-landscape {};
 
+  terraform-cloud-agent = callPackage ../tools/infrastructure/terraform-cloud-agent {};
+
   terragrunt = callPackage ../applications/networking/cluster/terragrunt {};
 
   terranix = callPackage ../applications/networking/cluster/terranix {};
