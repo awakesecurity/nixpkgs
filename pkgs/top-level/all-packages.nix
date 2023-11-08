@@ -40502,6 +40502,8 @@ with pkgs;
 
   terraform-backend-git = callPackage ../applications/networking/cluster/terraform-backend-git { };
 
+  terraform-cloud-agent = callPackage ../tools/infrastructure/terraform-cloud-agent { };
+
   terraform-compliance = python3Packages.callPackage ../applications/networking/cluster/terraform-compliance { };
 
   terraform-docs = callPackage ../applications/networking/cluster/terraform-docs { };
