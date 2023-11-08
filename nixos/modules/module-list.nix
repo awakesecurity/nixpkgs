@@ -480,6 +480,7 @@
   ./services/hardware/vdr.nix
   ./services/home-automation/home-assistant.nix
   ./services/home-automation/zigbee2mqtt.nix
+  ./services/infrastructure/terraform-cloud-agent/default.nix
   ./services/logging/SystemdJournal2Gelf.nix
   ./services/logging/awstats.nix
   ./services/logging/filebeat.nix
