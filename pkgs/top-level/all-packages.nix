@@ -11052,6 +11052,8 @@ with pkgs;
     callPackage ../applications/networking/cluster/terraform-providers { }
   );
 
+  terraform-cloud-agent = callPackage ../tools/infrastructure/terraform-cloud-agent { };
+
   vaultenv = haskell.lib.justStaticExecutables haskellPackages.vaultenv;
 
   vaultwarden-sqlite = vaultwarden;
