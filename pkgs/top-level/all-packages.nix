@@ -38304,6 +38304,8 @@ with pkgs;
 
   terraform-backend-git = callPackage ../applications/networking/cluster/terraform-backend-git { };
 
+  terraform-cloud-agent = callPackage ../tools/infrastructure/terraform-cloud-agent { };
+
   terraform-inventory = callPackage ../applications/networking/cluster/terraform-inventory { };
 
   terraform-landscape = callPackage ../applications/networking/cluster/terraform-landscape { };
