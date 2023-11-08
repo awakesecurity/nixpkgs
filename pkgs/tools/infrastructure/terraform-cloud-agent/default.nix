@@ -5,6 +5,7 @@ stdenv.mkDerivation rec {
   version = "1.13.0";
   src = fetchzip {
     url = "https://releases.hashicorp.com/tfc-agent/${version}/tfc-agent_${version}_linux_amd64.zip";
+    stripRoot = false;
   };
 
   installPhase = ''
