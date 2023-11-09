@@ -22,10 +22,6 @@
 , vala
 , withIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 , gobject-introspection
-, _experimental-update-script-combinators
-, common-updater-scripts
-, jq
-, nix
 }:
 
 stdenv.mkDerivation rec {
@@ -131,40 +127,10 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    updateScript =
-      let
-        updateSource = gnome.updateScript {
-          packageName = "librsvg";
-        };
-
-        updateLockfile = {
-          command = [
-            "sh"
-            "-c"
-            ''
-              PATH=${lib.makeBinPath [
-                common-updater-scripts
-                jq
-                nix
-              ]}
-              # update-source-version does not allow updating to the same version so we need to clear it temporarily.
-              # Get the current version so that we can restore it later.
-              latestVersion=$(nix-instantiate --eval -A librsvg.version | jq --raw-output)
-              # Clear the version. Provide hash so that we do not need to do pointless TOFU.
-              # Needs to be a fake SRI hash that is non-zero, since u-s-v uses zero as a placeholder.
-              # Also cannot be here verbatim or u-s-v would be confused what to replace.
-              update-source-version librsvg 0 "sha256-${lib.fixedWidthString 44 "B" "="}" --source-key=cargoDeps > /dev/null
-              update-source-version librsvg "$latestVersion" --source-key=cargoDeps > /dev/null
-            ''
-          ];
-          # Experimental feature: do not copy!
-          supportedFeatures = [ "silent" ];
-        };
-      in
-      _experimental-update-script-combinators.sequence [
-        updateSource
-        updateLockfile
-      ];
+    updateScript = gnome.updateScript {
+      packageName = pname;
+      versionPolicy = "odd-unstable";
+    };
   };
 
   meta = with lib; {
