@@ -822,36 +822,42 @@ self: super: builtins.intersectAttrs super {
 
   rel8 = addTestToolDepend pkgs.postgresql super.rel8;
 
-  cachix = generateOptparseApplicativeCompletion "cachix" (super.cachix.override { nix = pkgs.nixVersions.nix_2_7; });
-
-  cachix = overrideCabal (drv: {
-    version = "1.3.3";
-    src = pkgs.fetchFromGitHub {
-      owner = "cachix";
-      repo = "cachix";
-      rev = "v1.3.3";
-      sha256 = "sha256-xhLCsAkz5c+XIqQ4eGY9bSp3zBgCDCaHXZ2HLk8vqmE=";
-    };
-    buildDepends = [ self.conduit-concurrent-map ];
-    postUnpack = "sourceRoot=$sourceRoot/cachix";
-    postPatch = ''
-      sed -i 's/1.3.2/1.3.3/' cachix.cabal
-    '';
-  }) (super.cachix.override {
-    nix = self.hercules-ci-cnix-store.passthru.nixPackage;
-    fsnotify = dontCheck super.fsnotify_0_4_1_0;
-    hnix-store-core = super.hnix-store-core_0_6_1_0;
-  });
   cachix-api = overrideCabal (drv: {
-    version = "1.3.3";
+    version = "1.6.1";
     src = pkgs.fetchFromGitHub {
       owner = "cachix";
       repo = "cachix";
-      rev = "v1.3.3";
-      sha256 = "sha256-xhLCsAkz5c+XIqQ4eGY9bSp3zBgCDCaHXZ2HLk8vqmE=";
+      rev = "v1.6.1";
+      sha256 = "sha256-6S8EOs7bGTyY4eDXGuTbJMTlaz0n1JYIAPKIB2cVYxg=";
     };
     postUnpack = "sourceRoot=$sourceRoot/cachix-api";
+    postPatch = ''
+      sed -i 's/1.6/1.6.1/' cachix-api.cabal
+    '';
   }) super.cachix-api;
+  cachix = overrideCabal (drv: {
+    version = "1.6.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "cachix";
+      repo = "cachix";
+      rev = "v1.6.1";
+      sha256 = "sha256-6S8EOs7bGTyY4eDXGuTbJMTlaz0n1JYIAPKIB2cVYxg=";
+    };
+    postUnpack = "sourceRoot=$sourceRoot/cachix";
+    postPatch = ''
+      sed -i 's/1.6/1.6.1/' cachix.cabal
+    '';
+  }) (lib.pipe
+        (super.cachix.override {
+          hnix-store-core = self.hnix-store-core_0_6_1_0;
+          nix = self.hercules-ci-cnix-store.nixPackage;
+        })
+        [
+         (addBuildTool self.hercules-ci-cnix-store.nixPackage)
+         (addBuildTool pkgs.pkg-config)
+         (addBuildDepend self.immortal)
+        ]
+  );
 
   hercules-ci-agent = super.hercules-ci-agent.override { nix = self.hercules-ci-cnix-store.passthru.nixPackage; };
   hercules-ci-cnix-expr = addTestToolDepend pkgs.git (super.hercules-ci-cnix-expr.override { nix = self.hercules-ci-cnix-store.passthru.nixPackage; });
