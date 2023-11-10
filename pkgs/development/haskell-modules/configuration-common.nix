@@ -12,13 +12,20 @@
 { pkgs, haskellLib }:
 
 let
-  inherit (pkgs) fetchpatch lib;
-  inherit (lib) throwIfNot versionOlder;
+  inherit (pkgs) fetchpatch fetchpatch2 lib;
+  inherit (lib) throwIfNot versionOlder versions;
 in
 
 with haskellLib;
 
 self: super: {
+  # Make sure that Cabal 3.10.* can be built as-is
+  Cabal_3_10_1_0 = doDistribute (super.Cabal_3_10_1_0.override ({
+    Cabal-syntax = self.Cabal-syntax_3_10_1_0;
+  } // lib.optionalAttrs (lib.versionOlder self.ghc.version "9.2.5") {
+    # Use process core package when possible
+    process = self.process_1_6_18_0;
+  }));
 
   # cabal-install needs most recent versions of Cabal and Cabal-syntax,
   # so we need to put some extra work for non-latest GHCs
@@ -43,22 +50,22 @@ self: super: {
           # cabal-install, but we need to recompile process even if the correct
           # version is available to prevent inconsistent dependencies:
           # process depends on directory.
-          process = cself.process_1_6_17_0;
+          process = cself.process_1_6_18_0;
 
           # hspec < 2.10 depends on ghc (the library) directly which in turn
           # depends on directory, causing a dependency conflict which is practically
           # not solvable short of recompiling GHC. Instead of adding
           # allowInconsistentDependencies for all reverse dependencies of hspec-core,
           # just upgrade to an hspec version without the offending dependency.
-          hspec-core = cself.hspec-core_2_11_4;
-          hspec-discover = cself.hspec-discover_2_11_4;
-          hspec = cself.hspec_2_11_4;
+          hspec-core = cself.hspec-core_2_11_5;
+          hspec-discover = cself.hspec-discover_2_11_5;
+          hspec = cself.hspec_2_11_5;
 
           # hspec-discover and hspec-core depend on hspec-meta for testing which
-          # we need to avoid since it depends on ghc as well. Since hspec*_2_10*
+          # we need to avoid since it depends on ghc as well. Since hspec*_2_11*
           # are overridden to take the versioned attributes as inputs, we need
           # to make sure to override the versioned attribute with this fix.
-          hspec-discover_2_11_4 = dontCheck csuper.hspec-discover_2_11_4;
+          hspec-discover_2_11_5 = dontCheck csuper.hspec-discover_2_11_5;
 
           # Prevent dependency on doctest which causes an inconsistent dependency
           # due to depending on ghc-8.10.7 (with bundled process) vs. process 1.6.16.0
@@ -68,9 +75,21 @@ self: super: {
     {
       cabal-install = super.cabal-install.overrideScope cabalInstallOverlay;
       cabal-install-solver = super.cabal-install-solver.overrideScope cabalInstallOverlay;
+
+      # Needs cabal-install >= 3.8 /as well as/ matching Cabal
+      guardian =
+        lib.pipe
+          (super.guardian.overrideScope cabalInstallOverlay)
+          [
+            # Tests need internet access (run stack)
+            dontCheck
+            # May as well…
+            (self.generateOptparseApplicativeCompletions [ "guardian" ])
+          ];
     }
   ) cabal-install
     cabal-install-solver
+    guardian
   ;
 
   #######################################
@@ -390,8 +409,6 @@ self: super: {
 
   # https://github.com/techtangents/ablist/issues/1
   ABList = dontCheck super.ABList;
-
-  pandoc-cli = throwIfNot (versionOlder super.pandoc.version "3.0.0") "pandoc-cli contains the pandoc executable starting with 3.0, this needs to be considered now." (markBroken (dontDistribute super.pandoc-cli));
 
   inline-c-cpp = overrideCabal (drv: {
     patches = drv.patches or [] ++ [
@@ -1573,11 +1590,6 @@ self: super: {
   rdf4h = dontCheck super.rdf4h;
 
   # hasn't bumped upper bounds
-  # test fails: "floskell-test: styles/base.md: openBinaryFile: does not exist (No such file or directory)"
-  # https://github.com/ennocramer/floskell/issues/48
-  floskell = dontCheck (doJailbreak super.floskell);
-
-  # hasn't bumped upper bounds
   # test fails because of a "Warning: Unused LANGUAGE pragma"
   # https://github.com/ennocramer/monad-dijkstra/issues/4
   monad-dijkstra = dontCheck (doJailbreak super.monad-dijkstra);
@@ -1697,9 +1709,6 @@ self: super: {
     resource-pool = self.hasura-resource-pool;
     ekg-core = self.hasura-ekg-core;
   });
-
-  # https://github.com/bos/statistics/issues/170
-  statistics = dontCheck super.statistics;
 
   hcoord = overrideCabal (drv: {
     # Remove when https://github.com/danfran/hcoord/pull/8 is merged.
@@ -2059,22 +2068,23 @@ self: super: {
   inherit (let
     pandoc-cli-overlay = self: super: {
       # pandoc-cli requires pandoc >= 3.1
-      pandoc = self.pandoc_3_1_6;
-
-      # pandoc depends on crypton-connection, which requires tls >= 1.7
-      tls = self.tls_1_7_0;
+      pandoc = self.pandoc_3_1_8;
 
       # pandoc depends on http-client-tls, which only starts depending
       # on crypton-connection in http-client-tls-0.3.6.2.
-      http-client-tls = self.http-client-tls_0_3_6_2;
+      http-client-tls = self.http-client-tls_0_3_6_3;
+
+      # pandoc depends on skylighting >= 0.14
+      skylighting = self.skylighting_0_14;
+      skylighting-core = self.skylighting-core_0_14;
     };
   in {
     pandoc-cli = super.pandoc-cli.overrideScope pandoc-cli-overlay;
-    pandoc_3_1_6 = doDistribute (super.pandoc_3_1_6.overrideScope pandoc-cli-overlay);
+    pandoc_3_1_8 = doDistribute (super.pandoc_3_1_8.overrideScope pandoc-cli-overlay);
     pandoc-lua-engine = super.pandoc-lua-engine.overrideScope pandoc-cli-overlay;
   })
     pandoc-cli
-    pandoc_3_1_6
+    pandoc_3_1_8
     pandoc-lua-engine
     ;
 
