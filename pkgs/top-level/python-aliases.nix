@@ -311,4 +311,5 @@ mapAliases ({
   Yapsy = yapsy; # added 2023-02-19
   zc-buildout221 = zc-buildout; # added 2021-07-21
   zc_buildout_nix = throw "zc_buildout_nix was pinned to a version no longer compatible with other modules";
+  zope_testing = zope-testing; # added 2023-11-12
 })
