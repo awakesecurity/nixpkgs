@@ -4,7 +4,7 @@
 , zope_location
 , zope_event
 , zope_interface
-, zope_testing
+, zope-testing
 }:
 
 buildPythonPackage rec {
@@ -16,7 +16,7 @@ buildPythonPackage rec {
     sha256 = "sha256-47M8i8i6nYWlZxOrjwo8JhXVSoCF8eQVzgyN+15UC+Y=";
   };
 
-  propagatedBuildInputs = [ zope_location zope_event zope_interface zope_testing ];
+  propagatedBuildInputs = [ zope_location zope_event zope_interface zope-testing ];
 
   # ImportError: No module named 'zope.event'
   # even though zope_event has been included.
