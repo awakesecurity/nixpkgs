@@ -361,4 +361,5 @@ mapAliases ({
   zake = throw "zake has been removed because it is abandoned"; # added 2023-06-20
   zc-buildout221 = zc-buildout; # added 2021-07-21
   zc_buildout_nix = throw "zc_buildout_nix was pinned to a version no longer compatible with other modules";
+  zope_testing = zope-testing; # added 2023-11-12
 })
