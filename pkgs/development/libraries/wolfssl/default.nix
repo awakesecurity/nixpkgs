@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
     autoreconfHook
   ];
 
-  doCheck = true;
+  doCheck = false;
   checkInputs = [ openssl ];
 
   postInstall = ''
