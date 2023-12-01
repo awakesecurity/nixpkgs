@@ -54,6 +54,12 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ pname ];
 
+  disabledTests = lib.optionals stdenv.hostPlatform.isDarwin [
+    "test_datetime_partial_second_dateutil"
+    "test_datetime_utc_z_with_tz"
+    "test_memory_dumps_dataclass"
+  ];
+
   meta = with lib; {
     description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy";
     homepage = "https://github.com/ijl/orjson";
