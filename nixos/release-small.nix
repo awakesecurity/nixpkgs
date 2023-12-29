@@ -78,6 +78,7 @@ in rec {
       nginx
       nodejs
       openssh
+      opensshTest
       php
       postgresql
       python
@@ -137,6 +138,7 @@ in rec {
         "nixos.tests.simple"
         "nixpkgs.jdk"
         "nixpkgs.tests-stdenv-gcc-stageCompare"
+        "nixpkgs.opensshTest"
       ])
     ];
   };
