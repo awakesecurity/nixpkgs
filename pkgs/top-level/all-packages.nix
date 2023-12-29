@@ -11218,6 +11218,8 @@ with pkgs;
     etcDir = "/etc/ssh";
   };
 
+  opensshTest = openssh.tests.openssh;
+
   opensshWithKerberos = openssh.override {
     withKerberos = true;
   };
