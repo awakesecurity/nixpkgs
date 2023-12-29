@@ -36,7 +36,7 @@
 , isNixos ? stdenv.hostPlatform.isLinux
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   inherit pname version src;
 
   patches = [
@@ -111,7 +111,7 @@ stdenv.mkDerivation rec {
 
   hardeningEnable = [ "pie" ];
 
-  doCheck = true;
+  doCheck = false;
   enableParallelChecking = false;
   nativeCheckInputs = [ openssl ] ++ lib.optional (!stdenv.isDarwin) hostname;
   preCheck = lib.optionalString (stdenv.hostPlatform == stdenv.buildPlatform) ''
@@ -181,7 +181,11 @@ stdenv.mkDerivation rec {
     inherit withKerberos;
     tests = {
       borgbackup-integration = nixosTests.borgbackup;
-      openssh = nixosTests.openssh;
+      nixosTest = nixosTests.openssh;
+      openssh = finalAttrs.finalPackage.overrideAttrs (previousAttrs: {
+        pname = previousAttrs.pname + "-test";
+        doCheck = true;
+      });
     };
   };
 
@@ -194,4 +198,4 @@ stdenv.mkDerivation rec {
     maintainers = (extraMeta.maintainers or []) ++ (with lib.maintainers; [ eelco aneeshusa ]);
     mainProgram = "ssh";
   } // extraMeta;
-}
+})
