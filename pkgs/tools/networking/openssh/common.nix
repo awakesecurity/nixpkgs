@@ -53,6 +53,9 @@ stdenv.mkDerivation {
       url = "https://github.com/openssh/openssh-portable/commit/cb4ed12ffc332d1f72d054ed92655b5f1c38f621.patch";
       hash = "sha256-3Gx0/I2n9/XaWCIefVYtvk5f+VgH6MlhMBse+PMyf34=";
     })
+
+    # CVE-2023-48795 - terrapin
+    ./openssh-CVE-2023-48795.patch
   ] ++ extraPatches;
 
   postPatch =
