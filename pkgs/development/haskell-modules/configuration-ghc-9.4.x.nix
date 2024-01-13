@@ -136,11 +136,6 @@ in {
   # https://github.com/mokus0/th-extras/issues/18
   th-extras = doJailbreak super.th-extras;
 
-  # 2022-11-06: Override override from common, because Cabal-syntax is included since ghc 9.4.
-  implicit-hie = super.implicit-hie.override {
-    Cabal-syntax = null;
-  };
-
   # requires newer versions to work with GHC 9.4
   servant = doJailbreak super.servant;
   servant-server = doJailbreak super.servant-server;
