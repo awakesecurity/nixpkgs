@@ -160,7 +160,7 @@ buildPythonPackage rec {
     flask-caching
     flask-session
     flask-wtf
-    flask_login
+    flask-login
     GitPython
     graphviz
     gunicorn
