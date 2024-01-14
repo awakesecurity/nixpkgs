@@ -29,26 +29,23 @@ in
   };
 
   config = {
-    test = lib.lazyDerivation { # lazyDerivation improves performance when only passthru items and/or meta are used.
-      derivation = hostPkgs.stdenv.mkDerivation {
-        name = "vm-test-run-${config.name}";
+    test = hostPkgs.stdenv.mkDerivation {
+      name = "vm-test-run-${config.name}";
 
-        requiredSystemFeatures = [ "kvm" "nixos-test" ];
+      requiredSystemFeatures = [ "kvm" "nixos-test" ];
 
-        buildCommand = ''
-          mkdir -p $out
+      buildCommand = ''
+        mkdir -p $out
 
-          # effectively mute the XMLLogger
-          export LOGFILE=/dev/null
+        # effectively mute the XMLLogger
+        export LOGFILE=/dev/null
 
-          ${config.driver}/bin/nixos-test-driver -o $out
-        '';
+        ${config.driver}/bin/nixos-test-driver -o $out
+      '';
 
-        passthru = config.passthru;
+      passthru = config.passthru;
 
-        meta = config.meta;
-      };
-      inherit (config) passthru meta;
+      meta = config.meta;
     };
 
     # useful for inspection (debugging / exploration)
