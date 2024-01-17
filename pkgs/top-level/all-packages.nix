@@ -25902,6 +25902,10 @@ with pkgs;
 
   clickhouse-backup = callPackage ../development/tools/database/clickhouse-backup { };
 
+  clickhouse_jdbc = callPackage ../development/java-modules/clickhouse_jdbc { };
+
+  liquibase_clickhouse = callPackage ../development/java-modules/liquibase_clickhouse { };
+
   cockpit = callPackage ../servers/monitoring/cockpit { };
 
   codeowners = callPackage ../development/tools/codeowners { };
