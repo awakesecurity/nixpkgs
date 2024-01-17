@@ -9557,6 +9557,10 @@ with pkgs;
 
   clickhouse-cli = with python3Packages; toPythonApplication clickhouse-cli;
 
+  clickhouse_jdbc = callPackage ../development/java-modules/clickhouse_jdbc { };
+
+  liquibase_clickhouse = callPackage ../development/java-modules/liquibase_clickhouse { };
+
   couchdb3 = callPackage ../servers/http/couchdb/3.nix {
     erlang = beamMinimalPackages.erlang;
   };
