@@ -8,12 +8,16 @@
 , mysql_jdbc
 , postgresqlSupport ? true
 , postgresql_jdbc
+, clickhouseSupport ? true
+, liquibase_clickhouse
+, clickhouse_jdbc
 }:
 
 let
   extraJars =
     lib.optional mysqlSupport mysql_jdbc
-    ++ lib.optional postgresqlSupport postgresql_jdbc;
+    ++ lib.optional postgresqlSupport postgresql_jdbc
+    ++ lib.optionals clickhouseSupport [liquibase_clickhouse clickhouse_jdbc];
 in
 
 stdenv.mkDerivation rec {
