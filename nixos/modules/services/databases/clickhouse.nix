@@ -22,6 +22,14 @@ with lib;
         '';
       };
 
+      usersXml = mkOption {
+        type = types.path;
+        description = lib.mdDoc ''
+          ClickHouse server users.xml override for
+          declaring user access permissions and privileges
+        '';
+      };
+
     };
 
   };
@@ -30,6 +38,8 @@ with lib;
   ###### implementation
 
   config = mkIf cfg.enable {
+
+    services.clickhouse.usersXml = mkDefault (cfg.package + "/etc/clickhouse-server/users.xml");
 
     users.users.clickhouse = {
       name = "clickhouse";
@@ -67,11 +77,11 @@ with lib;
 
     environment.etc = {
       "clickhouse-server/config.xml" = {
-        source = "${cfg.package}/etc/clickhouse-server/config.xml";
+        source = cfg.package + "/etc/clickhouse-server/config.xml";
       };
 
       "clickhouse-server/users.xml" = {
-        source = "${cfg.package}/etc/clickhouse-server/users.xml";
+        source = cfg.usersXml;
       };
     };
 
