@@ -104,6 +104,14 @@ in
         description = "Additional raw XML configuration for ClickHouse server.";
       };
 
+      usersXml = lib.mkOption {
+        type = lib.types.path;
+        description = ''
+          ClickHouse server users.xml override for
+          declaring user access permissions and privileges
+        '';
+      };
+
     };
 
   };
@@ -111,6 +119,8 @@ in
   ###### implementation
 
   config = lib.mkIf cfg.enable {
+
+    services.clickhouse.usersXml = lib.mkDefault (cfg.package + "/etc/clickhouse-server/users.xml");
 
     users.users.clickhouse = {
       name = "clickhouse";
@@ -145,11 +155,11 @@ in
 
     environment.etc = {
       "clickhouse-server/config.xml" = {
-        source = "${cfg.package}/etc/clickhouse-server/config.xml";
+        source = cfg.package + "/etc/clickhouse-server/config.xml";
       };
 
       "clickhouse-server/users.xml" = {
-        source = "${cfg.package}/etc/clickhouse-server/users.xml";
+        source = cfg.usersXml;
       };
 
       "clickhouse-server/config.d/100-nixos-module-config.yaml" = lib.mkIf (cfg.serverConfig != { }) {
