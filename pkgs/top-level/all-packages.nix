@@ -23813,6 +23813,10 @@ with pkgs;
 
   clickhouse-backup = callPackage ../development/tools/database/clickhouse-backup { };
 
+  clickhouse_jdbc = callPackage ../development/java-modules/clickhouse_jdbc { };
+
+  liquibase_clickhouse = callPackage ../development/java-modules/liquibase_clickhouse { };
+
   codeowners = callPackage ../development/tools/codeowners { };
 
   couchdb3 = callPackage ../servers/http/couchdb/3.nix {
