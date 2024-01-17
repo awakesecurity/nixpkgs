@@ -12,6 +12,9 @@
   redshiftSupport ? true,
   redshift_jdbc,
   liquibase_redshift_extension,
+  clickhouseSupport ? true,
+  liquibase-clickhouse,
+  clickhouse-jdbc,
 }:
 
 let
@@ -21,7 +24,8 @@ let
     ++ lib.optionals redshiftSupport [
       redshift_jdbc
       liquibase_redshift_extension
-    ];
+    ]
+    ++ lib.optionals clickhouseSupport [liquibase-clickhouse clickhouse-jdbc];
 in
 
 stdenv.mkDerivation (finalAttrs: {
