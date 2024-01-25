@@ -23,8 +23,8 @@ with lib;
       };
 
       usersXml = mkOption {
-        type = types.path;
-        default = "${cfg.package}/etc/clickhouse-server/users.xml";
+        type = types.nullOr types.path;
+        default = null;
         description = lib.mdDoc ''
           ClickHouse server users.xml override for
           declaring user access permissions and privileges
@@ -73,7 +73,7 @@ with lib;
       };
 
       "clickhouse-server/users.xml" = {
-        source = cfg.usersXml;
+        source = cfg.usersXml or "${cfg.package}/etc/clickhouse-server/users.xml";
       };
     };
 
