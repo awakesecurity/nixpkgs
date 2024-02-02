@@ -274,8 +274,8 @@ rec {
     cliHash = "sha256-EPhsng0kLnweVbC8ZnH0NK1/yHlYSA5Sred4rWJX/Gs=";
     mobyRev = "v${version}";
     mobyHash = "sha256-IJ7m2mQnsLiom0EuZLpuLY6fYEko7rEy35igJv1AY04=";
-    runcRev = "v1.1.8";
-    runcHash = "sha256-rDJYEc64KW4Qa3Eg2oUjJqIKrg6THb5hxQFFbvb9Zp4=";
+    runcRev = "v1.1.12";
+    runcHash = "sha256-N77CU5XiGYIdwQNPFyluXjseTeaYuNJ//OsEUS0g/v0=";
     containerdRev = "v1.6.22";
     containerdHash = "sha256-In7OkK3xm7Cz3H1jzG9b4tsZbmo44QCq8pNU+PPy8dY=";
     tiniRev = "v0.19.0";
