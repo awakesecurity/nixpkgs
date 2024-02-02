@@ -8,7 +8,7 @@ rec {
       , containerdRev, containerdSha256
       , tiniRev, tiniSha256, buildxSupport ? true, composeSupport ? true
       # package dependencies
-      , stdenv, fetchFromGitHub, fetchpatch, buildGoPackage
+      , stdenv, fetchFromGitHub, fetchpatch, buildGoPackage, buildGo119Module
       , makeWrapper, installShellFiles, pkg-config, glibc
       , go-md2man, go, containerd, runc, docker-proxy, tini, libtool
       , sqlite, iproute2, docker-buildx, docker-compose
@@ -21,7 +21,7 @@ rec {
       , withSeccomp ? stdenv.isLinux, libseccomp
     }:
   let
-    docker-runc = runc.overrideAttrs (oldAttrs: {
+    docker-runc = (runc.overrideAttrs (oldAttrs: {
       pname = "docker-runc";
       inherit version;
 
@@ -34,7 +34,9 @@ rec {
 
       # docker/runc already include these patches / are not applicable
       patches = [];
-    });
+    })).override {
+      buildGoModule = buildGo119Module;
+    };
 
     docker-containerd = containerd.overrideAttrs (oldAttrs: {
       pname = "docker-containerd";
@@ -263,8 +265,8 @@ rec {
       rev = "v${version}";
       sha256 = "sha256-BcYDh/UEmmURt7hWLWdPTKVu/Nzoeq/shE+HnUoh8b4=";
     };
-    runcRev = "v1.1.4";
-    runcSha256 = "sha256-ougJHW1Z+qZ324P8WpZqawY1QofKnn8WezP7orzRTdA=";
+    runcRev = "v1.1.12";
+    runcSha256 = "sha256-N77CU5XiGYIdwQNPFyluXjseTeaYuNJ//OsEUS0g/v0=";
     containerdRev = "v1.6.9";
     containerdSha256 = "sha256-KvQdYQLzgt/MKPsA/mO5un6nE3/xcvVYwIveNn/uDnU=";
     tiniRev = "v0.19.0";
