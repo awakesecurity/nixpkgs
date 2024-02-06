@@ -8,6 +8,8 @@ self: super: {
 
     citus = super.callPackage ./citus.nix { };
 
+    clickhouse_fdw = super.callPackage ./clickhouse_fdw.nix { };
+
     h3-pg = super.callPackage ./h3-pg.nix { };
 
     hypopg = super.callPackage ./hypopg.nix { };
