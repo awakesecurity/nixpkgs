@@ -4,6 +4,7 @@
 , installShellFiles
 , stdenv
 , darwin
+, rust-jemalloc-sys
   # tests
 , ruff-lsp
 }:
@@ -25,7 +26,9 @@ rustPlatform.buildRustPackage rec {
     installShellFiles
   ];
 
-  buildInputs = lib.optionals stdenv.isDarwin [
+  buildInputs = [
+    rust-jemalloc-sys
+  ] ++ lib.optionals stdenv.isDarwin [
     darwin.apple_sdk.frameworks.CoreServices
   ];
 
