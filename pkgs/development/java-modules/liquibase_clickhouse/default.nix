@@ -7,10 +7,10 @@ stdenv.mkDerivation rec {
   src = fetchMavenArtifact {
     artifactId = "liquibase-clickhouse";
     groupId = "com.mediarithmics";
-    sha256 = "sha256-nTLOPAwKgbzmIAutMhHVpC8d6F0UvcLDa94mB2MJwAo=";
+    sha256 = "sha256-Fm/n2uP5zlwWev5762/0yd/muaTtpcEAXoYJ7ZhHQaA=";
     classifier = "shaded";
     repos = [
-      "http://jenkins.mv.awakenetworks.net:9081/content/repositories/thirdpartypatched/"
+      "https://artifactory.infra.corp.arista.io/artifactory/awake-ndr-third-party-patched/"
     ];
     inherit version;
   };
