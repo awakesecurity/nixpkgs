@@ -1833,11 +1833,6 @@ self: super: {
   # 2022-11-18: https://github.com/haskell/haskell-language-server/commit/c1a7527c4fb348bee6093d9794b7d3e0c8d563f2
   hls-fourmolu-plugin = assert super.hls-fourmolu-plugin.version == "1.1.0.0"; doJailbreak super.hls-fourmolu-plugin;
 
-  # 2022-10-27: implicit-hie 0.1.3.0 needs a newer version of Cabal-syntax.
-  implicit-hie = super.implicit-hie.override {
-    Cabal-syntax = self.Cabal-syntax_3_8_1_0;
-  };
-
   # 2021-03-21: Test hangs
   # https://github.com/haskell/haskell-language-server/issues/1562
   # 2021-11-13: Too strict upper bound on implicit-hie-cradle
