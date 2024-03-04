@@ -1832,11 +1832,6 @@ self: super: {
   # 2022-09-19: https://github.com/haskell/haskell-language-server/issues/3200
   hls-refactor-plugin = dontCheck super.hls-refactor-plugin;
 
-  # 2022-10-27: implicit-hie 0.1.3.0 needs a newer version of Cabal-syntax.
-  implicit-hie = super.implicit-hie.override {
-    Cabal-syntax = self.Cabal-syntax_3_8_1_0;
-  };
-
   # 2021-03-21: Test hangs
   # https://github.com/haskell/haskell-language-server/issues/1562
   # 2021-11-13: Too strict upper bound on implicit-hie-cradle
