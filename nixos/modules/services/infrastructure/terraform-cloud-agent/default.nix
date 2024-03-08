@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.services.terraform-cloud-agent;
+
+  packageWithMain = lib.types.addCheck lib.types.package (x: x ? meta.mainProgram);
 in
 {
   options.services.terraform-cloud-agent = {
@@ -13,16 +15,43 @@ in
       example = "/etc/terraform-cloud-agent/token";
     };
 
-    data-dir = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-      description = lib.mdDoc "Directory tfc-agent should store its state.";
-    };
+    hooks = lib.mkOption {
+      description = lib.mdDoc "Set of hooks the TFC agent should run (if any).";
+      type = lib.types.submodule {
+        options = {
+          pre-plan = lib.mkOption {
+            type = lib.types.nullOr packageWithMain;
+            default = null;
+            description = lib.mdDoc "Terraform pre-plan hook script.";
+            example =
+              let
+                name = "pre-plan";
+               in (pkgs.writeShellScriptBin name ''
+                 echo "TESTING 123"
+               '').overrideAttrs (_: {
+                 meta.mainProgram = name;
+               });
+          };
 
-    cache-dir = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-      description = lib.mdDoc "Directory tfc-agent should store its cache.";
+          post-plan = lib.mkOption {
+            type = lib.types.nullOr packageWithMain;
+            default = null;
+            description = lib.mdDoc "Terraform post-plan hook script.";
+          };
+
+          pre-apply = lib.mkOption {
+            type = lib.types.nullOr packageWithMain;
+            default = null;
+            description = lib.mdDoc "Terraform pre-apply hook script.";
+          };
+
+          post-apply = lib.mkOption {
+            type = lib.types.nullOr packageWithMain;
+            default = null;
+            description = lib.mdDoc "Terraform post-apply hook script.";
+          };
+        };
+      };
     };
 
     user = lib.mkOption {
@@ -86,6 +115,19 @@ in
       description = "Agent that executes plans from Terraform Cloud";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
+
+      preStart =
+        let
+          linkHook = name: pkg: if (pkg != null) then ''
+            ln -f -s ${lib.getExe pkg} $STATE_DIRECTORY/hooks/terraform-${name}
+          '' else ''
+            rm -f $STATE_DIRECTORY/hooks/terraform-${name}
+          '';
+        in ''
+          mkdir -p $STATE_DIRECTORY/hooks
+
+          ${lib.concatStringsSep "\n" (lib.mapAttrsToList linkHook cfg.hooks)}
+        '';
 
       script = ''
         export TFC_AGENT_TOKEN=$(${pkgs.coreutils}/bin/cat ${cfg.tokenPath})
