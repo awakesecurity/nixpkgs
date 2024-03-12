@@ -2,12 +2,12 @@
 
 stdenv.mkDerivation rec {
   pname = "liquibase-clickhouse";
-  version = "0.7.3-awake";
+  version = "0.7.3-awake1";
 
   src = fetchMavenArtifact {
     artifactId = "liquibase-clickhouse";
     groupId = "com.mediarithmics";
-    sha256 = "sha256-Fm/n2uP5zlwWev5762/0yd/muaTtpcEAXoYJ7ZhHQaA=";
+    sha256 = "sha256-4zZjWmW2fejsX4Av/ZOfcFhDKCwJyRVM7qScvxR58CU=";
     classifier = "shaded";
     repos = [
       "https://artifactory.infra.corp.arista.io/artifactory/awake-ndr-third-party-patched/"
