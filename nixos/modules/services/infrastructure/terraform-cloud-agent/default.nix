@@ -17,20 +17,19 @@ in
 
     hooks = lib.mkOption {
       description = lib.mdDoc "Set of hooks the TFC agent should run (if any).";
+      default = {};
       type = lib.types.submodule {
         options = {
           pre-plan = lib.mkOption {
             type = lib.types.nullOr packageWithMain;
             default = null;
             description = lib.mdDoc "Terraform pre-plan hook script.";
-            example =
-              let
+            example = lib.literalExpression ''
+              pkgs.writeShellApplication {
                 name = "pre-plan";
-               in (pkgs.writeShellScriptBin name ''
-                 echo "TESTING 123"
-               '').overrideAttrs (_: {
-                 meta.mainProgram = name;
-               });
+                text = "echo 'TESTING 123'";
+              };
+            '';
           };
 
           post-plan = lib.mkOption {
