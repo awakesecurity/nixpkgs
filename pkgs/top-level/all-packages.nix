@@ -31168,8 +31168,6 @@ with pkgs;
   docker = docker_24;
   docker-client = docker.override { clientOnly = true; };
 
-  docker-proxy = callPackage ../applications/virtualization/docker/proxy.nix { };
-
   docker-gc = callPackage ../applications/virtualization/docker/gc.nix { };
 
   docker-machine = callPackage ../applications/networking/cluster/docker-machine { };
