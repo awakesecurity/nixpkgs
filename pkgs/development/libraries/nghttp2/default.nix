@@ -38,6 +38,10 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-LNTbfXX3FJQVMknL6UoJLaTG7NdCQPirGM9kTZ1l9u4=";
   };
 
+  patches = [
+    ./CVE-2024-28182.patch
+  ];
+
   outputs = [ "bin" "out" "dev" "lib" ]
     ++ lib.optionals (enablePython) [ "python" ];
 
