@@ -170,6 +170,7 @@ stdenv.mkDerivation rec {
 
   passthru.tests = {
     borgbackup-integration = nixosTests.borgbackup;
+    openssh = nixosTests.openssh;
   };
 
   meta = with lib; {
