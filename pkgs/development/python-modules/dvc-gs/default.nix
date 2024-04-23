@@ -21,6 +21,8 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [ setuptools-scm pythonRelaxDepsHook ];
 
+  pythonRelaxDeps = [ "gcsfs" ];
+
   propagatedBuildInputs = [ gcsfs dvc-objects ];
 
   # Network access is needed for tests
