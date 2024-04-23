@@ -27,6 +27,8 @@ buildPythonPackage rec {
     pythonRelaxDepsHook
   ];
 
+  pythonRelaxDeps = [ "gcsfs" ];
+
   propagatedBuildInputs = [
     gcsfs
     dvc-objects
