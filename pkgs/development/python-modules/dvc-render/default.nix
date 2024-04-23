@@ -9,6 +9,7 @@
 , pytest-test-utils
 , pythonOlder
 , setuptools-scm
+, ruamel-yaml
 }:
 
 buildPythonPackage rec {
@@ -30,6 +31,8 @@ buildPythonPackage rec {
   nativeBuildInputs = [
     setuptools-scm
   ];
+
+  propagatedBuildInputs = [ ruamel-yaml ];
 
   passthru.optional-dependencies = {
     table = [
