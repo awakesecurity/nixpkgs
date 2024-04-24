@@ -20,11 +20,13 @@ python3.pkgs.buildPythonApplication rec {
     hash = "sha256-FwJErwAVWFZ95wzBalGi9o+8BTtcGvnC9uQE1qTUaBs=";
   };
 
+  SETUPTOOLS_SCM_PRETEND_VERSION = version;
+
   postPatch = ''
     substituteInPlace pyproject.toml \
       --replace "scmrepo==0.1.6" "scmrepo" \
-      --replace "iterative-telemetry==0.0.6" "iterative-telemetry" \
-      --replace "dvc-data==0.35.1" "dvc-data"
+      --replace "iterative-telemetry==" "iterative-telemetry>=" \
+      --replace "dvclive>=1.2.2" "dvclive"
     substituteInPlace dvc/daemon.py \
       --subst-var-by dvc "$out/bin/dcv"
   '';
@@ -44,6 +46,7 @@ python3.pkgs.buildPythonApplication rec {
     dvc-render
     dvc-studio-client
     dvc-task
+    dvc-http
     flatten-dict
     flufl_lock
     funcy
@@ -91,6 +94,5 @@ python3.pkgs.buildPythonApplication rec {
     homepage = "https://dvc.org";
     license = licenses.asl20;
     maintainers = with maintainers; [ cmcdragonkai fab ];
-    broken = true; # requires new python package: dvc-studio-client
   };
 }
