@@ -95,6 +95,12 @@ stdenv.mkDerivation ({
          & https://github.com/NixOS/nixpkgs/pull/188492#issuecomment-1233802991
       */
       ./reenable_DT_HASH.patch
+
+      /* CVE-2024-2961
+        https://sourceware.org/git/?p=glibc.git;a=blob;f=advisories/GLIBC-SA-2024-0004#l22
+        https://sourceware.org/git/?p=glibc.git;a=commit;h=36280d1ce5e245aabefb877fe4d3c6cff95dabfa
+      */
+      ./cve-2024-2961.patch
     ]
     /* NVCC does not support ARM intrinsics. Since <math.h> is pulled in by almost
        every HPC piece of software, without this patch CUDA compilation on ARM
