@@ -100,6 +100,11 @@ stdenv.mkDerivation ({
          https://sourceware.org/git/?p=glibc.git;a=shortlog;h=refs/heads/release/2.37/master
 	 https://sourceware.org/git/?p=glibc.git;a=commitdiff_plain;h=b4e23c75aea756b4bddc4abcf27a1c6dca8b6bd3
       ./cve-2023-4911.patch
+
+      /* CVE-2024-2961
+        https://sourceware.org/git/?p=glibc.git;a=blob;f=advisories/GLIBC-SA-2024-0004#l22
+        https://sourceware.org/git/?p=glibc.git;a=commit;h=36280d1ce5e245aabefb877fe4d3c6cff95dabfa */
+      ./cve-2024-2961.patch
     ]
     ++ lib.optional stdenv.hostPlatform.isMusl ./fix-rpc-types-musl-conflicts.patch
     ++ lib.optional stdenv.buildPlatform.isDarwin ./darwin-cross-build.patch;
