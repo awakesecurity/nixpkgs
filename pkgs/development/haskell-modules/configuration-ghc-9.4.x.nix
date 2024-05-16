@@ -114,6 +114,9 @@ in {
 
   # needed to build servant
   attoparsec-iso8601 = super.attoparsec-iso8601_1_1_0_0;
+  # Partial revert of https://github.com/NixOS/nixpkgs/commit/bfe0cb4ebdd87f3995af37344c6dc3e19b474ac6
+  # Conflict with `base` package
+  http-api-data = super.http-api-data_0_5_1;
 
   # requires newer versions to work with GHC 9.4
   servant = doJailbreak super.servant;
