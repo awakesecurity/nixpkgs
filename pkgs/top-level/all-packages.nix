@@ -16663,6 +16663,7 @@ with pkgs;
 
     isGNU = cc.isGNU or false;
     isClang = cc.isClang or false;
+    isZig = cc.isZig or false;
 
     inherit cc bintools libc libcxx extraPackages nixSupport zlib;
   } // extraArgs; in self);
