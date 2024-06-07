@@ -12,6 +12,7 @@ buildPythonPackage rec {
   pname = "requests-ratelimiter";
   version = "0.4.2";
   pyproject = true;
+  format = "pyproject";
 
   src = fetchFromGitHub {
     owner = "JWCook";
