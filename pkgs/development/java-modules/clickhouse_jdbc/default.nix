@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   ## Use the `-all` jar to avoid having to fetch clickhouse-client (and perhaps other jars) as transitive dependencies.
   installPhase = ''
     runHook preInstall
-    install -m444 -D $src/share/java/clickhouse-jdbc-${version}.jar $out/share/java/clickhouse-jdbc-all.jar
+    install -m444 -D $src/share/java/clickhouse-jdbc-${version}-all.jar $out/share/java/clickhouse-jdbc-all.jar
     runHook postInstall
   '';
 
