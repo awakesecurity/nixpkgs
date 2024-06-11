@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     runHook preInstall
-    install -m444 -D $src/share/java/*liquibase-clickhouse-${version}.jar $out/share/java/liquibase-clickhouse.jar
+    install -m444 -D $src/share/java/*liquibase-clickhouse-${version}-shaded.jar $out/share/java/liquibase-clickhouse.jar
     runHook postInstall
   '';
 
