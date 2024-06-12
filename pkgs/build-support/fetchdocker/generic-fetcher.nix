@@ -76,7 +76,8 @@ stdenv.mkDerivation {
       ''${DOCKER_TOKEN:+--token "$DOCKER_TOKEN"} \
       ${layerDigestFlag} \
       "${repository}/${imageName}" \
-      "${tag}"
+      "${tag}" \
+      +RTS -N''${NIX_BUILD_CORES} -RTS
   '';
 
   buildInputs = [ haskellPackages.hocker ];
