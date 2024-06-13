@@ -391,7 +391,7 @@ in
         type = types.nullOr (types.listOf types.path);
         default = null;
         example = literalExpression "with pkgs.python3.pkgs; [ numpy ]";
-        description = ''
+        description = lib.mdDoc ''
           Adds additional python packages to PYTHONPATH for postgresql.
           Has no effect unless you set package with plpython language support.
         '';
