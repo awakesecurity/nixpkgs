@@ -65,7 +65,7 @@
     user = lib.mkOption {
       type = lib.types.str;
       default = "nghttpx";
-      description = ''
+      description = lib.mdDoc ''
         User to drop privileges to.
 
         Please see https://nghttp2.org/documentation/nghttpx.1.html#cmdoption-nghttpx--user
@@ -75,7 +75,7 @@
     group = lib.mkOption {
       type = lib.types.str;
       default = "nghttpx";
-      description = ''
+      description = lib.mdDoc ''
         Group to drop privileges to.
       '';
     };
@@ -160,7 +160,7 @@
     backend-read-timeout = lib.mkOption {
       type = lib.types.str;
       default = "1m";
-      description = ''
+      description = lib.mdDoc ''
         Specify read timeout for backend connection.
       '';
     };
@@ -168,7 +168,7 @@
     backend-write-timeout = lib.mkOption {
       type = lib.types.str;
       default = "30s";
-      description = ''
+      description = lib.mdDoc ''
         Specify write timeout for backend connection.
       '';
     };
@@ -176,7 +176,7 @@
     frontend-read-timeout = lib.mkOption {
       type = lib.types.str;
       default = "1m";
-      description = ''
+      description = lib.mdDoc ''
         Specify read timeout for HTTP/1.1 frontend connection
       '';
     };
@@ -184,7 +184,7 @@
     frontend-write-timeout = lib.mkOption {
       type = lib.types.str;
       default = "30s";
-      description = ''
+      description = lib.mdDoc ''
         Specify write timeout for all frontend connections
       '';
     };
