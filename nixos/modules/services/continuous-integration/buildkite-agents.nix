@@ -63,7 +63,7 @@ let
       extraGroups = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = ''
+        description = lib.mdDoc ''
           List of extra groups to add the agent to.
         '';
       };
