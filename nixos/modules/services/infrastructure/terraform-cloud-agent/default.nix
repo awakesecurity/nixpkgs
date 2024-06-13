@@ -6,7 +6,7 @@ let
 in
 {
   options.services.terraform-cloud-agent = {
-    enable = lib.mkEnableOption "terraform-cloud-agent";
+    enable = lib.mkEnableOption (lib.mdDoc "terraform-cloud-agent");
 
     tokenPath = lib.mkOption {
       type = lib.types.str;
