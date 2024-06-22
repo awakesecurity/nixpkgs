@@ -1,4 +1,4 @@
-{ lib, stdenv, stdenvNoCC, lndir, runtimeShell, shellcheck, haskell }:
+{ lib, stdenv, stdenvNoCC, lndir, runtimeShell, shellcheck-minimal }:
 
 let
   inherit (lib)
@@ -356,9 +356,7 @@ rec {
         if checkPhase == null then ''
           runHook preCheck
           ${stdenv.shellDryRun} "$target"
-          # use shellcheck which does not include docs
-          # pandoc takes long to build and documentation isn't needed for in nixpkgs usage
-          ${lib.getExe (haskell.lib.compose.justStaticExecutables shellcheck.unwrapped)} "$target"
+          ${shellcheck-minimal}/bin/shellcheck "$target"
           runHook postCheck
         ''
         else checkPhase;
