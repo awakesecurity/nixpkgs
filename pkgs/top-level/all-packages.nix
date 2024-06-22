@@ -18077,6 +18077,8 @@ with pkgs;
     inherit (__splicedPackages.haskellPackages) ShellCheck;
   };
 
+  shellcheck-minimal = haskell.lib.compose.justStaticExecutables shellcheck.unwrapped;
+
   shellharden = callPackage ../development/tools/shellharden {};
 
   schemaspy = callPackage ../development/tools/database/schemaspy { };

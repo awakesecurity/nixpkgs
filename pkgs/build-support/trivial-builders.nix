@@ -1,4 +1,4 @@
-{ lib, stdenv, stdenvNoCC, lndir, runtimeShell, shellcheck }:
+{ lib, stdenv, stdenvNoCC, lndir, runtimeShell, shellcheck-minimal }:
 
 let
   inherit (lib)
@@ -306,7 +306,7 @@ rec {
         if checkPhase == null then ''
           runHook preCheck
           ${stdenv.shellDryRun} "$target"
-          ${shellcheck.unwrapped}/bin/shellcheck "$target"
+          ${shellcheck-minimal}/bin/shellcheck "$target"
           runHook postCheck
         ''
         else checkPhase;
