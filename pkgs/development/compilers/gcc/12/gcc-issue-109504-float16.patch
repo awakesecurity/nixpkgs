@@ -1,0 +1,240 @@
+diff --git a/gcc/config/i386/i386-builtins.cc b/gcc/config/i386/i386-builtins.cc
+index 8c6d0fe9631..a9094be5fb7 100644
+--- a/gcc/config/i386/i386-builtins.cc
++++ b/gcc/config/i386/i386-builtins.cc
+@@ -1359,7 +1359,7 @@ ix86_register_float16_builtin_type (void)
+   else
+     ix86_float16_type_node = float16_type_node;
+ 
+-  if (!maybe_get_identifier ("_Float16") && TARGET_SSE2)
++  if (!maybe_get_identifier ("_Float16"))
+     lang_hooks.types.register_builtin_type (ix86_float16_type_node,
+ 					    "_Float16");
+ }
+diff --git a/gcc/config/i386/i386-c.cc b/gcc/config/i386/i386-c.cc
+index c73c1b1f594..04de1704fac 100644
+--- a/gcc/config/i386/i386-c.cc
++++ b/gcc/config/i386/i386-c.cc
+@@ -766,6 +766,22 @@ ix86_target_macros (void)
+   if (!TARGET_80387)
+     cpp_define (parse_in, "_SOFT_FLOAT");
+ 
++  /* HFmode/BFmode is supported without depending any isa
++     in scalar_mode_supported_p and libgcc_floating_mode_supported_p,
++     but according to psABI, they're really supported w/ SSE2 and above.
++     Since libstdc++ uses __STDCPP_FLOAT16_T__ and __STDCPP_BFLOAT16_T__
++     for backend support of the types, undef the macros to avoid
++     build failure, see PR109504.  */
++  if (!TARGET_SSE2)
++    {
++      if (c_dialect_cxx () && cxx_dialect > cxx20)
++       {
++         cpp_undef (parse_in, "__STDCPP_FLOAT16_T__");
++         // Note: GCC12 does not have BFLOAT16
++         // cpp_undef (parse_in, "__STDCPP_BFLOAT16_T__");
++       }
++    }
++
+   if (TARGET_LONG_DOUBLE_64)
+     cpp_define (parse_in, "__LONG_DOUBLE_64__");
+ 
+diff --git a/gcc/config/i386/i386.cc b/gcc/config/i386/i386.cc
+index 9dd9fa68722..cbf210230d3 100644
+--- a/gcc/config/i386/i386.cc
++++ b/gcc/config/i386/i386.cc
+@@ -2633,7 +2633,8 @@ construct_container (machine_mode mode, machine_mode orig_mode,
+ 
+   /* We allowed the user to turn off SSE for kernel mode.  Don't crash if
+      some less clueful developer tries to use floating-point anyway.  */
+-  if (needed_sseregs && !TARGET_SSE)
++  if (needed_sseregs
++      && (!TARGET_SSE || (VALID_SSE2_TYPE_MODE (mode) && !TARGET_SSE2)))
+     {
+       /* Return early if we shouldn't raise an error for invalid
+ 	 calls.  */
+@@ -2643,13 +2644,19 @@ construct_container (machine_mode mode, machine_mode orig_mode,
+ 	{
+ 	  if (!issued_sse_ret_error)
+ 	    {
+-	      error ("SSE register return with SSE disabled");
++        if (VALID_SSE2_TYPE_MODE (mode))
++          error ("SSE register return with SSE2 disabled");
++        else
++          error ("SSE register return with SSE disabled");
+ 	      issued_sse_ret_error = true;
+ 	    }
+ 	}
+       else if (!issued_sse_arg_error)
+ 	{
+-	  error ("SSE register argument with SSE disabled");
++    if (VALID_SSE2_TYPE_MODE (mode))
++      error ("SSE register argument with SSE2 disabled");
++    else
++      error ("SSE register argument with SSE disabled");
+ 	  issued_sse_arg_error = true;
+ 	}
+       return NULL;
+@@ -3993,13 +4000,25 @@ function_value_32 (machine_mode orig_mode, machine_mode mode,
+ 
+   /* Return _Float16/_Complex _Foat16 by sse register.  */
+   if (mode == HFmode)
+-    regno = FIRST_SSE_REG;
++    {
++      if (!TARGET_SSE2)
++       {
++         error ("SSE register return with SSE2 disabled");
++         regno = AX_REG;
++       }
++      else
++       regno = FIRST_SSE_REG;
++    }
+   if (mode == HCmode)
+     {
++      if (!TARGET_SSE2)
++       error ("SSE register return with SSE2 disabled");
++
+       rtx ret = gen_rtx_PARALLEL (mode, rtvec_alloc(1));
+       XVECEXP (ret, 0, 0)
+ 	= gen_rtx_EXPR_LIST (VOIDmode,
+-			     gen_rtx_REG (SImode, FIRST_SSE_REG),
++           gen_rtx_REG (SImode,
++                        TARGET_SSE2 ? FIRST_SSE_REG : AX_REG),
+ 			     GEN_INT (0));
+       return ret;
+     }
+@@ -22131,7 +22150,7 @@ ix86_scalar_mode_supported_p (scalar_mode mode)
+     return default_decimal_float_supported_p ();
+   else if (mode == TFmode)
+     return true;
+-  else if (mode == HFmode && TARGET_SSE2)
++  else if (mode == HFmode)
+     return true;
+   else
+     return default_scalar_mode_supported_p (mode);
+@@ -22147,7 +22166,7 @@ ix86_libgcc_floating_mode_supported_p (scalar_float_mode mode)
+      be defined by the C front-end for AVX512FP16 intrinsics.  We will
+      issue an error in ix86_expand_move for HFmode if AVX512FP16 isn't
+      enabled.  */
+-  return ((mode == HFmode && TARGET_SSE2)
++  return ((mode == HFmode)
+ 	  ? true
+ 	  : default_libgcc_floating_mode_supported_p (mode));
+ }
+diff --git a/gcc/config/i386/i386.h b/gcc/config/i386/i386.h
+index 363082ba47b..705aba8f827 100644
+--- a/gcc/config/i386/i386.h
++++ b/gcc/config/i386/i386.h
+@@ -1041,6 +1041,9 @@ extern const char *host_detect_local_cpu (int argc, const char **argv);
+   ((MODE) == V8HFmode || (MODE) == V16HFmode || (MODE) == V32HFmode	\
+    || (MODE) == V2HFmode)
+ 
++#define VALID_SSE2_TYPE_MODE(MODE)             \
++  ((MODE) == HFmode || (MODE) == HCmode)
++
+ #define VALID_SSE2_REG_MODE(MODE)					\
+   ((MODE) == V16QImode || (MODE) == V8HImode || (MODE) == V2DFmode	\
+    || (MODE) == V8HFmode || (MODE) == V4HFmode || (MODE) == V2HFmode	\
+diff --git a/gcc/config/i386/immintrin.h b/gcc/config/i386/immintrin.h
+index 6afd78c2b6f..ea9461dbd19 100644
+--- a/gcc/config/i386/immintrin.h
++++ b/gcc/config/i386/immintrin.h
+@@ -94,11 +94,9 @@
+ 
+ #include <avx512vp2intersectvlintrin.h>
+ 
+-#ifdef __SSE2__
+ #include <avx512fp16intrin.h>
+ 
+ #include <avx512fp16vlintrin.h>
+-#endif
+ 
+ #include <shaintrin.h>
+ 
+diff --git a/gcc/testsuite/gcc.target/i386/pr109504.c b/gcc/testsuite/gcc.target/i386/pr109504.c
+new file mode 100644
+index 00000000000..fe5bcda10ad
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/i386/pr109504.c
+@@ -0,0 +1,6 @@
++/* { dg-do compile } */
++/* { dg-options "-O2 -mno-sse" } */
++
++#pragma GCC target("sse4.1")
++#include <immintrin.h>
++int main(){return 0;}
+diff --git a/gcc/testsuite/gcc.target/i386/sse2-float16-4.c b/gcc/testsuite/gcc.target/i386/sse2-float16-4.c
+new file mode 100644
+index 00000000000..64baf92ff56
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/i386/sse2-float16-4.c
+@@ -0,0 +1,25 @@
++/* { dg-do compile } */
++/* { dg-options "-O2 -mno-sse2" } */
++
++_Float16 a;
++__bf16 c;
++_Complex _Float16 ac;
++
++void
++foo (_Float16* p)
++{
++  a = *p;
++}
++
++void
++foo1 (__bf16 *p)
++{
++  c = *p;
++}
++
++
++void
++foo2 (_Complex _Float16* p)
++{
++  ac = *p;
++}
+diff --git a/gcc/testsuite/gcc.target/i386/sse2-float16-5.c b/gcc/testsuite/gcc.target/i386/sse2-float16-5.c
+new file mode 100644
+index 00000000000..c3ed23b8ab3
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/i386/sse2-float16-5.c
+@@ -0,0 +1,24 @@
++/* { dg-do compile { target ia32} } */
++/* { dg-options "-O2 -mno-sse2" } */
++
++_Float16 a;
++__bf16 c;
++_Complex ac;
++void
++foo (_Float16 p)
++{
++  a = p;
++}
++
++void
++foo1 (__bf16 p)
++{
++  c = p;
++}
++
++
++void
++foo2 (_Complex p)
++{
++  ac = p;
++}
+diff --git a/libgcc/config/i386/t-softfp b/libgcc/config/i386/t-softfp
+index fe2ad8a3c08..011ea49cdbb 100644
+--- a/libgcc/config/i386/t-softfp
++++ b/libgcc/config/i386/t-softfp
+@@ -24,3 +24,10 @@ CFLAGS-trunctfhf2.c += -msse2
+ CFLAGS-eqhf2.c += -msse2
+ CFLAGS-_divhc3.c += -msse2
+ CFLAGS-_mulhc3.c += -msse2
++
++CFLAGS-_hf_to_sd.c += -msse2
++CFLAGS-_hf_to_dd.c += -msse2
++CFLAGS-_hf_to_td.c += -msse2
++CFLAGS-_sd_to_hf.c += -msse2
++CFLAGS-_dd_to_hf.c += -msse2
++CFLAGS-_td_to_hf.c += -msse2

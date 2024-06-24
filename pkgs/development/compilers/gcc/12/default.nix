@@ -64,6 +64,7 @@ let majorVersion = "12";
         ../gnat-cflags-11.patch
         ../gcc-12-gfortran-driving.patch
         ../ppc-musl.patch
+        ./gcc-issue-109504-float16.patch
       ]
       # We only apply this patch when building a native toolchain for aarch64-darwin, as it breaks building
       # a foreign one: https://github.com/iains/gcc-12-branch/issues/18
