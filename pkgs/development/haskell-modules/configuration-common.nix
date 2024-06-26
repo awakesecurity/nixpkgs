@@ -2777,4 +2777,9 @@ self: super: {
 
   # The hackage source is somehow missing a file present in the repo (tests/ListStat.hs).
   sym = dontCheck super.sym;
+
+  # c2hs fails to build intrinsics from gcc{12,13,14}
+  hw-json-simd = lib.pipe super.hw-json-simd ([
+    unmarkBroken
+  ] ++ (lib.optional pkgs.stdenv.cc.isGNU (appendConfigureFlags [ "--with-gcc=${pkgs.gcc11}/bin/gcc" ])));
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
