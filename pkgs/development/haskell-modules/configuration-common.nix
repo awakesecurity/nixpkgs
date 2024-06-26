@@ -3068,4 +3068,10 @@ self: super: {
     tasty = super.tasty_1_5;
     tasty-quickcheck = super.tasty-quickcheck_0_10_3;
   });
+
+  # c2hs fails to build intrinsics from gcc{12,13,14}
+  hw-json-simd = lib.pipe super.hw-json-simd ([
+    unmarkBroken
+  ] ++ (lib.optional pkgs.stdenv.cc.isGNU (appendConfigureFlags [ "--with-gcc=${pkgs.gcc11}/bin/gcc" ])));
+
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
