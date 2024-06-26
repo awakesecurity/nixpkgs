@@ -2662,4 +2662,9 @@ self: super: {
   # Flaky QuickCheck tests
   # https://github.com/Haskell-Things/ImplicitCAD/issues/441
   implicit = dontCheck super.implicit;
+
+  # c2hs fails to build intrinsics from gcc{12,13,14}
+  hw-json-simd = lib.pipe super.hw-json-simd ([
+    unmarkBroken
+  ] ++ (lib.optional pkgs.stdenv.cc.isGNU (appendConfigureFlags [ "--with-gcc=${pkgs.gcc11}/bin/gcc" ])));
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
