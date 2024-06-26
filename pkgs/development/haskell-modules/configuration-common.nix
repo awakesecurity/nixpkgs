@@ -2562,4 +2562,9 @@ self: super: {
   # bytestring <0.11.0, optparse-applicative <0.13.0
   # https://github.com/kseo/sfnt2woff/issues/1
   sfnt2woff = doJailbreak super.sfnt2woff;
+
+  # c2hs fails to build intrinsics from gcc{12,13,14}
+  hw-json-simd = lib.pipe super.hw-json-simd ([
+    unmarkBroken
+  ] ++ (lib.optional pkgs.stdenv.cc.isGNU (appendConfigureFlags [ "--with-gcc=${pkgs.gcc11}/bin/gcc" ])));
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
