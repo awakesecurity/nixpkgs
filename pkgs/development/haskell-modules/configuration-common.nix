@@ -3103,4 +3103,9 @@ self: super: {
     hash = "sha256-tFOWpjGmZANC7H82QapZ36raaNWuZ6F3BgjxnfTXpMs=";
   }) super.proto3-wire;
 
+  # c2hs fails to build intrinsics from gcc{12,13,14}
+  hw-json-simd = lib.pipe super.hw-json-simd ([
+    unmarkBroken
+  ] ++ (lib.optional pkgs.stdenv.cc.isGNU (appendConfigureFlags [ "--with-gcc=${pkgs.gcc11}/bin/gcc" ])));
+
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
