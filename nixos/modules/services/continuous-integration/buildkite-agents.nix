@@ -60,6 +60,12 @@ let
         '';
       };
 
+      user = lib.mkOption {
+        type = lib.types.passwdEntry lib.types.str;
+        default = "buildkite-agent-${name}";
+        description = lib.mdDoc "The username of the agent";
+      };
+
       extraGroups = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
@@ -153,22 +159,22 @@ in
   };
 
   config.users.users = mapAgents (name: cfg: {
-    "buildkite-agent-${name}" = {
-      name = "buildkite-agent-${name}";
+    ${cfg.user} = {
+      name = cfg.user;
       home = cfg.dataDir;
       createHome = true;
       description = "Buildkite agent user";
       extraGroups = [ "keys" ] ++ cfg.extraGroups;
       isSystemUser = true;
-      group = "buildkite-agent-${name}";
+      group = cfg.user;
     };
   });
   config.users.groups = mapAgents (name: cfg: {
-    "buildkite-agent-${name}" = { };
+    ${cfg.user} = { };
   });
 
   config.systemd.services = mapAgents (name: cfg: {
-    "buildkite-agent-${name}" = {
+    ${cfg.user} = {
       description = "Buildkite Agent";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
@@ -206,7 +212,7 @@ in
 
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/buildkite-agent start --config ${cfg.dataDir}/buildkite-agent.cfg";
-        User = "buildkite-agent-${name}";
+        User = cfg.user;
         RestartSec = 5;
         Restart = "on-failure";
         TimeoutSec = 10;
