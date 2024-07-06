@@ -266,6 +266,8 @@ in {
       # This patch disables build-time detection.
       ./3.0/openssl-disable-kernel-detection.patch
 
+      ./3.3/CVE-2024-5535.patch
+
       (if stdenv.hostPlatform.isDarwin
        then ./use-etc-ssl-certs-darwin.patch
        else ./use-etc-ssl-certs.patch)
