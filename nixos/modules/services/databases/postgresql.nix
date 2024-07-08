@@ -456,6 +456,7 @@ in
         log_line_prefix = cfg.logLinePrefix;
         listen_addresses = if cfg.enableTCPIP then "*" else "localhost";
         port = cfg.port;
+      } // lib.optionalAttrs (lib.versionAtLeast cfg.package.version "10") {
         jit = mkDefault (if cfg.enableJIT then "on" else "off");
       };
 
