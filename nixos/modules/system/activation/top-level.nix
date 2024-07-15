@@ -98,6 +98,7 @@ let
     name = "nixos-system-${config.system.name}-${config.system.nixos.label}";
     preferLocalBuild = true;
     allowSubstitutes = false;
+    __snowkiteOmissible = true;
     buildCommand = systemBuilder;
 
     inherit (pkgs) coreutils;
