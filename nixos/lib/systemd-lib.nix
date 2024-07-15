@@ -21,6 +21,7 @@ in rec {
         { preferLocalBuild = true;
           allowSubstitutes = false;
           inherit (unit) text;
+          __snowkiteOmissible = true;
         }
         ''
           name=${shellEscape name}
@@ -31,6 +32,7 @@ in rec {
       pkgs.runCommand "unit-${mkPathSafeName name}-disabled"
         { preferLocalBuild = true;
           allowSubstitutes = false;
+          __snowkiteOmissible = true;
         }
         ''
           name=${shellEscape name}
@@ -138,6 +140,7 @@ in rec {
     in pkgs.runCommand "${type}-units"
       { preferLocalBuild = true;
         allowSubstitutes = false;
+        __snowkiteOmissible = true;
       } ''
       mkdir -p $out
 
