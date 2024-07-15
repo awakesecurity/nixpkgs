@@ -64,6 +64,7 @@ let
               inherit toml;
               allowSubstitutes = false;
               preferLocalBuild = true;
+              __snowkiteOmissible = true;
             }
             ''
               ${pkgs.remarshal}/bin/remarshal \

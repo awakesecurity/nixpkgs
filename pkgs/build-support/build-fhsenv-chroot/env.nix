@@ -255,4 +255,5 @@ in stdenv.mkDerivation {
   '';
   preferLocalBuild = true;
   allowSubstitutes = false;
+  __snowkiteOmissible = true;
 }
