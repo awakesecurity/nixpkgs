@@ -50,6 +50,7 @@ let
     preferLocalBuild = true;
     allowSubstitutes = false;
     passAsFile = [ "extraDependencies" ];
+    __snowkiteOmissible = true;
     buildCommand = systemBuilder;
 
     systemd = config.systemd.package;
