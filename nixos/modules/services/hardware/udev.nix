@@ -46,6 +46,7 @@ let
     { preferLocalBuild = true;
       allowSubstitutes = false;
       packages = unique (map toString udevPackages);
+      __snowkiteOmissible = true;
     }
     ''
       mkdir -p $out
@@ -148,6 +149,7 @@ let
     { preferLocalBuild = true;
       allowSubstitutes = false;
       packages = unique (map toString ([udev] ++ cfg.packages));
+      __snowkiteOmissible = true;
     }
     ''
       mkdir -p etc/udev/hwdb.d

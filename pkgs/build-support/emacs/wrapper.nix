@@ -54,6 +54,7 @@ runCommand
 
     preferLocalBuild = true;
     allowSubstitutes = false;
+    __snowkiteOmissible = true;
 
     # Store all paths we want to add to emacs here, so that we only need to add
     # one path to the load lists
