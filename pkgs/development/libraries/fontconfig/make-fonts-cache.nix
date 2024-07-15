@@ -5,6 +5,7 @@ runCommand "fc-cache"
     nativeBuildInputs = [ fontconfig.bin ];
     preferLocalBuild = true;
     allowSubstitutes = false;
+    __snowkiteOmissible = true;
     passAsFile = [ "fontDirs" ];
     fontDirs = ''
       <!-- Font directories -->
