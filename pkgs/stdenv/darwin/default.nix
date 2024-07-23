@@ -1204,7 +1204,7 @@ in
 
     assert lib.all isBuiltByBootstrapFilesCompiler (with prevStage; [
       autoconf automake bison cmake cmakeMinimal cpio cyrus_sasl db expat flex groff libedit
-      libtool m4 ninja openldap /*openssh*/ patchutils pbzx perl pkg-config.pkg-config python3
+      libtool m4 ninja openldap openssh patchutils pbzx perl pkg-config.pkg-config python3
       python3Minimal scons serf sqlite subversion sysctl.provider texinfo unzip which
     ]);
 
