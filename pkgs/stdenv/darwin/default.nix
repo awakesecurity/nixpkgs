@@ -739,7 +739,7 @@ in
     assert lib.all isBuiltByBootstrapFilesCompiler (with prevStage; [
       autoconf automake bash binutils-unwrapped bison cmake cmakeMinimal coreutils cpio
       cyrus_sasl db ed expat flex gettext gmp gnugrep groff icu libedit libtool m4 ninja
-      openbsm openldap openpam openssh patchutils pbzx perl pkg-config.pkg-config python3
+      openbsm openldap openpam /*openssh*/ patchutils pbzx perl pkg-config.pkg-config python3
       python3Minimal scons serf sqlite subversion sysctl.provider texinfo unzip which xz
     ]);
 
