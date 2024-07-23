@@ -645,7 +645,7 @@ in
     assert lib.all isBuiltByBootstrapFilesCompiler (with prevStage; [
       autoconf automake bash binutils-unwrapped bison brotli cmake cpio curl cyrus_sasl db
       ed expat flex gettext gmp groff icu libedit libffi libiconv libidn2 libkrb5 libssh2
-      libtool libunistring libxml2 m4 ncurses nghttp2 ninja openldap /*openssh*/ openssl
+      libtool libunistring libxml2 m4 ncurses nghttp2 ninja openldap openssh openssl
       patchutils pbzx perl pkg-config.pkg-config python3 python3Minimal scons serf sqlite
       subversion sysctl.provider texinfo unzip which xz zlib zstd
     ]);
