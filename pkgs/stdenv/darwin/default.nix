@@ -1041,7 +1041,7 @@ in
     assert lib.all isBuiltByBootstrapFilesCompiler (with prevStage; [
       autoconf automake bison brotli cmake cmakeMinimal coreutils cpio curl cyrus_sasl
       db ed expat flex gettext gmp gnugrep groff libedit libidn2 libkrb5 libssh2 libtool
-      libunistring m4 nghttp2 ninja openbsm openldap openpam /*openssh*/ openssl patchutils pbzx
+      libunistring m4 nghttp2 ninja openbsm openldap openpam openssh openssl patchutils pbzx
       perl pkg-config.pkg-config python3 python3Minimal scons serf sqlite subversion
       sysctl.provider texinfo unzip which xz zstd
     ]);
