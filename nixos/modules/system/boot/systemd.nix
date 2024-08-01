@@ -189,6 +189,8 @@ let
       "google-guest-agent"
       "google-shutdown-scripts"
       "google-startup-scripts"
+      # here :)
+      "systemd-makefs@"
     ];
 
   proxy_env = config.networking.proxy.envVars;
