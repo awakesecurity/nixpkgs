@@ -192,6 +192,7 @@ let
       "google-startup-scripts"
       # here :)
       "systemd-makefs@"
+      "systemd-mkswap@"
     ];
 
   proxy_env = config.networking.proxy.envVars;
