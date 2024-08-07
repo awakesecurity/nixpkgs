@@ -450,8 +450,7 @@ let
       platforms = with platforms; linux ++ darwin;
       # More vulnerabilities in 2.11.1 really; https://github.com/tensorflow/tensorflow/releases
       knownVulnerabilities = [ "CVE-2023-33976" ];
-      broken = true || # most likely needs dealing with protobuf/abseil updates
-        !(xlaSupport -> cudaSupport) || python.pythonVersion == "3.11";
+      broken = !(xlaSupport -> cudaSupport) || python.pythonVersion == "3.11";
     } // lib.optionalAttrs stdenv.isDarwin {
       timeout = 86400; # 24 hours
       maxSilent = 14400; # 4h, double the default of 7200s
