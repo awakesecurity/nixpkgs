@@ -6,7 +6,6 @@
 , django
 , django-tagging
 , fetchFromGitHub
-, fetchpatch
 , gunicorn
 , mock
 , pyparsing
@@ -21,7 +20,7 @@
 
 buildPythonPackage rec {
   pname = "graphite-web";
-  version = "1.1.10";
+  version = "unstable-2024-07-30";
   format = "setuptools";
 
   disabled = pythonOlder "3.7";
@@ -29,22 +28,9 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "graphite-project";
     repo = pname;
-    rev = version;
-    hash = "sha256-2HgCBKwLfxJLKMopoIdsEW5k/j3kNAiifWDnJ98a7Qo=";
+    rev = "80c999a14b7f8c9e8141270a7e56682632b9161f";
+    hash = "sha256-WjiC8aH9nGWDy8OINPGpAQ8cbHgT+bJgOUzIEq93hys=";
   };
-
-  patches = [
-    (fetchpatch {
-      name = "CVE-2022-4730.CVE-2022-4729.CVE-2022-4728.part-1.patch";
-      url = "https://github.com/graphite-project/graphite-web/commit/9c626006eea36a9fd785e8f811359aebc9774970.patch";
-      hash = "sha256-JMmdhLqsaRhUG2FsH+yPNl+cR7O2YLfKFliL2GU0aAk=";
-    })
-    (fetchpatch {
-      name = "CVE-2022-4730.CVE-2022-4729.CVE-2022-4728.part-2.patch";
-      url = "https://github.com/graphite-project/graphite-web/commit/2f178f490e10efc03cd1d27c72f64ecab224eb23.patch";
-      hash = "sha256-NL7K5uekf3NlLa58aFFRPJT9ktjqBeNlWC4Htd0fRQ0=";
-    })
-  ];
 
   propagatedBuildInputs = [
     cairocffi
@@ -73,6 +59,10 @@ buildPythonPackage rec {
   preConfigure = ''
     substituteInPlace webapp/graphite/settings.py \
       --replace "join(WEBAPP_DIR, 'content')" "join('$out', 'webapp', 'content')"
+    
+    # Django 4 defaults to datetime.tzinfo and it fails on:
+    # AttributeError: 'zoneinfo.ZoneInfo' object has no attribute 'localize'
+    echo "USE_DEPRECATED_PYTZ = True" >>webapp/graphite/settings.py
   '';
 
   checkInputs = [ mock ];
@@ -85,6 +75,8 @@ buildPythonPackage rec {
     # redis not practical in test environment
     substituteInPlace tests/test_tags.py \
       --replace test_redis_tagdb _dont_test_redis_tagdb
+    # No rrdtool package in nixpkgs
+    rm tests/test_readers_rrd.py
 
     DJANGO_SETTINGS_MODULE=tests.settings ${python.interpreter} manage.py test
     popd
