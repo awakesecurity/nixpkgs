@@ -342,6 +342,17 @@ stdenv.mkDerivation rec {
       url = "https://git.savannah.gnu.org/cgit/grub.git/patch/?id=1514678888595ef41a968a0c69b7ff769edd1e9c";
       sha256 = "sha256-tgAEoAtaNKJjscjMFkXXiVn59Pa4c+NiQ3iVW6CMrpo=";
     })
+    # October 2023 security patches
+    (fetchpatch {
+      name = "CVE-2023-4692.patch";
+      url = "https://git.savannah.gnu.org/cgit/grub.git/patch/?id=43651027d24e62a7a463254165e1e46e42aecdea";
+      sha256 = "sha256-/oudbfL8Ph7ZsgsFUI0YIddji+7okFRG12E/rDsgvNM=";
+    })
+    (fetchpatch {
+      name = "CVE-2023-4693.patch";
+      url = "https://git.savannah.gnu.org/cgit/grub.git/patch/?id=0ed2458cc4eff6d9a9199527e2a0b6d445802f94";
+      sha256 = "sha256-6EhLzVapN2n62Lgo+PnB4SRvDkYWFkrKNinCvArRUXk=";
+    })
 
     # fix incompatibility with e2fsprogs 1.47+
     (fetchpatch {
