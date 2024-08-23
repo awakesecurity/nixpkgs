@@ -145,12 +145,12 @@ rec {
       matches = builtins.match "/bin/([^/]+)" destination;
     in
     runCommand name
-      { inherit text executable checkPhase allowSubstitutes preferLocalBuild;
+      ({ inherit text executable checkPhase allowSubstitutes preferLocalBuild;
         passAsFile = [ "text" ];
         meta = lib.optionalAttrs (executable && matches != null) {
           mainProgram = lib.head matches;
         } // meta;
-      }
+      } // lib.optionalAttrs (! allowSubstitutes) { __snowkiteOmissible = true; })
       ''
         target=$out${lib.escapeShellArg destination}
         mkdir -p "$(dirname "$target")"
@@ -536,6 +536,7 @@ rec {
          }:
     let
       args = removeAttrs args_ [ "name" "postBuild" ]
+        // lib.optionalAttrs (! allowSubstitutes) { __snowkiteOmissible = true; }
         // {
           inherit preferLocalBuild allowSubstitutes;
           passAsFile = [ "paths" ];
