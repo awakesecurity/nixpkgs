@@ -755,12 +755,12 @@ in
           previousPgDetect() {
             echo "Trying to detect prevoius PostgreSQL installation, because 'current' symlink does not exist in 'config.services.postgresql.databaseDir'."
 
-            if [[ ! -x /run/current-system/sw/bin/systemctl ]]; then
+            if [[ ! -x /run/current-system/systemd/bin/systemctl ]]; then
               echo "systemctl binary is missing or is not executable. This is ok on fresh deployments. Not running previous PostgreSQL installation detection."
               return
             fi
 
-            prev_postgresql_env="$(/run/current-system/sw/bin/systemctl show postgresql.service --property=Environment --value || true)"
+            prev_postgresql_env="$(/run/current-system/systemd/bin/systemctl show postgresql.service --property=Environment --value || true)"
             if [[ -z "$prev_postgresql_env" ]]; then
               echo "Cannot load old PostgreSQL Environment from systemctl."
               return
