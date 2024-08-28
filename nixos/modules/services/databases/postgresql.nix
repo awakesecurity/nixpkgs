@@ -79,10 +79,20 @@ let
         exit 0
       fi
 
+      while true; do
+        echo "Extending systemd timeout to 2 minutes from now while upgrade is running"
+        ${lib.getExe' pkgs.systemd "systemd-notify"} --status="Running major version upgrade" EXTEND_TIMEOUT_USEC=120000000
+        sleep 60
+      done &
+      timer_pid="$!"
+
       pushd "${cfg.dataDir}"
-      ${postgresql}/bin/pg_upgrade ${lib.cli.toGNUCommandLineShell {} args} ${lib.escapeShellArgs cfg.upgrade.extraArgs}
-      popd
-      touch "${cfg.dataDir}/.post_upgrade"
+      ${postgresql}/bin/pg_upgrade ${lib.cli.toGNUCommandLineShell { } args} ${lib.escapeShellArgs cfg.upgrade.extraArgs}
+      touch .post_upgrade
+
+      # Restore timeout consumed by upgrade
+      kill $timer_pid
+      ${lib.getExe' pkgs.systemd "systemd-notify"} --status="" EXTEND_TIMEOUT_USEC=120000000
     '';
   };
 
@@ -695,7 +705,14 @@ in
           '' + optionalString cfg.upgrade.enable ''
             if test -e "${cfg.dataDir}/.post_upgrade"; then
               ${optionalString cfg.upgrade.runAnalyze ''
-                vacuumdb --port=${toString cfg.port} --all --analyze-in-stages
+                while true; do
+                  echo "Extending systemd timeout to 2 minutes from now while post-upgarde vacuum/analyze is running"
+                  ${lib.getExe' pkgs.systemd "systemd-notify"} --status="Running post-upgrade vacuum/analyze" EXTEND_TIMEOUT_USEC=120000000
+                  sleep 60
+                done &
+                timer_pid="$!"
+                vacuumdb --port=${toString cfg.settings.port} --all --analyze-in-stages
+                kill $timer_pid
               ''}
               rm -f "${cfg.dataDir}/.post_upgrade"
             fi
@@ -736,6 +753,7 @@ in
             Type = if versionAtLeast cfg.package.version "9.6"
                    then "notify"
                    else "simple";
+            NotifyAccess = "all";
 
             # Shut down Postgres using SIGINT ("Fast Shutdown mode").  See
             # https://www.postgresql.org/docs/current/server-shutdown.html
