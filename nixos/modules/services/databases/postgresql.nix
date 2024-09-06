@@ -36,7 +36,7 @@ let
 
   groupAccessAvailable = versionAtLeast postgresql.version "11.0";
 
-  upgradeScript = let 
+  upgradeScript = let
     args = {
       old-bindir = "${cfg.databaseDir}/current/nix-postgresql-bin";
       old-datadir = "${cfg.databaseDir}/current";
@@ -749,10 +749,23 @@ in
         unitConfig.RequiresMountsFor = "${cfg.dataDir}";
       };
 
-      system.activationScripts.detect-previous-postgresql-installation = lib.mkIf (cfg.upgrade.enable && cfg.upgrade.enablePreviousInstallationAutodetection) {
+    system.activationScripts.detect-previous-postgresql-installation =
+      let
+        calls = lib.pipe ({ "" = { inherit config; }; } // config.containers) [
+          (lib.mapAttrs (_: system: system.config.services.postgresql))
+          (lib.filterAttrs (_: cfg: cfg.upgrade.enable && cfg.upgrade.enablePreviousInstallationAutodetection))
+          (lib.mapAttrsToList (container: cfg: ''previousPgDetect "${container}" "${cfg.databaseDir}"''))
+        ];
+      in
+      lib.mkIf (calls != [ ]) {
         deps = [ "etc" ];
         text = ''
           previousPgDetect() {
+            local container="$1"
+            local databaseDir="$2"
+
+            [[ -e "$databaseDir/current" ]] && return
+
             echo "Trying to detect prevoius PostgreSQL installation, because 'current' symlink does not exist in 'config.services.postgresql.databaseDir'."
 
             if [[ ! -x /run/current-system/sw/bin/systemctl ]]; then
@@ -760,9 +773,15 @@ in
               return
             fi
 
-            prev_postgresql_env="$(/run/current-system/sw/bin/systemctl show postgresql.service --property=Environment --value || true)"
+            if [[ -z "$container" ]];
+            then prev_postgresql_env="$(/run/current-system/sw/bin/systemctl show postgresql.service --property=Environment --value || true)"
+            else prev_postgresql_env="$(/run/current-system/sw/bin/systemctl -M "$container" show postgresql.service --property=Environment --value || true)"
+            fi
             if [[ -z "$prev_postgresql_env" ]]; then
-              echo "Cannot load old PostgreSQL Environment from systemctl."
+              if [[ -z "$container" ]]
+              then echo "Cannot load old PostgreSQL Environment from systemctl."
+              else echo "Cannot load old PostgreSQL Environment for container $container from systemctl."
+              fi
               return
             fi
             old_data_dir="$(export $prev_postgresql_env; echo "''${PGDATA:-}")"
@@ -781,16 +800,13 @@ in
             echo "Setting old dataDir to '$old_data_dir'"
             echo "Setting old binDir to '$old_bin_dir'"
 
-            ln -sn "$old_data_dir" "${cfg.databaseDir}/current"
-            ln -sn "$old_bin_dir" "${cfg.databaseDir}/current/nix-postgresql-bin"
+            ln -sn "$old_data_dir" "$databaseDir/current"
+            ln -sn "$old_bin_dir" "$databaseDir/current/nix-postgresql-bin"
           }
 
-          if [[ ! -e "${cfg.databaseDir}/current" ]]; then
-            previousPgDetect
-          fi
+          ${lib.concatStringsSep "\n" calls}
         '';
       };
-
   };
 
   meta.doc = ./postgresql.md;
