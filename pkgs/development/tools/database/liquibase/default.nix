@@ -39,6 +39,8 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ jre ];
 
+  sourceRoot = ".";
+
   installPhase =
     let addJars = dir: ''
       for jar in ${dir}/*.jar; do
