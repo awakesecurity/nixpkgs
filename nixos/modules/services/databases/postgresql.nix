@@ -16,7 +16,7 @@ let
       # works.
       base = if cfg.enableJIT && !cfg.package.jitSupport then cfg.package.withJIT else cfg.package;
     in
-    if cfg.extraPlugins == []
+    if cfg.extraPlugins == null
       then base
       else base.withPackages cfg.extraPlugins;
 
@@ -436,8 +436,8 @@ in
       };
 
       extraPlugins = mkOption {
-        type = with types; coercedTo (listOf path) (path: _ignorePg: path) (functionTo (listOf path));
-        default = _: [];
+        type = with types; nullOr (coercedTo (listOf path) (path: _ignorePg: path) (functionTo (listOf path)));
+        default = null;
         example = literalExpression "ps: with ps; [ postgis pg_repack ]";
         description = lib.mdDoc ''
           List of PostgreSQL plugins.
