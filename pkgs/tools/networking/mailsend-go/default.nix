@@ -21,7 +21,7 @@ buildGoModule {
     hash = "sha256-0coNy7gUhnC9LFVYUrgecmnwq7yW2UzisWc9iQdnh/Q=";
   };
 
-  vendorSha256 = "sha256-Y6aAeMvQtWrTWHeNPymbUvwFQbEgdHy2DWm6emtZuxg=";
+  vendorHash = "sha256-Y6aAeMvQtWrTWHeNPymbUvwFQbEgdHy2DWm6emtZuxg=";
 
   passthru.updateScript = gitUpdater {
     inherit url rev-prefix;
