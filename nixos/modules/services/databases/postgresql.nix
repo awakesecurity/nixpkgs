@@ -43,7 +43,7 @@ let
     then cfg.package.withJIT
     else cfg.package.withoutJIT;
 
-  postgresql = if cfg.extensions == []
+  postgresql = if cfg.extensions == null
     then basePackage
     else basePackage.withPackages cfg.extensions;
 
@@ -424,8 +424,8 @@ in
       };
 
       extensions = mkOption {
-        type = with types; coercedTo (listOf path) (path: _ignorePg: path) (functionTo (listOf path));
-        default = _: [];
+        type = with types; nullOr (coercedTo (listOf path) (path: _ignorePg: path) (functionTo (listOf path)));
+        default = null;
         example = literalExpression "ps: with ps; [ postgis pg_repack ]";
         description = ''
           List of PostgreSQL extensions to install.
