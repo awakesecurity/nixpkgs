@@ -18,14 +18,20 @@
 # files.
 
 let
-  common = { version, sha256, patches ? [], withDocs ? false, extraMeta ? {} }:
+  common = { version, hash, patches ? [], withDocs ? false, extraMeta ? {} }:
    stdenv.mkDerivation (finalAttrs: {
     pname = "openssl";
     inherit version;
 
     src = fetchurl {
-      url = "https://www.openssl.org/source/${finalAttrs.pname}-${version}.tar.gz";
-      inherit sha256;
+      url = if lib.versionOlder version "3.0" then
+        let
+          versionFixed = builtins.replaceStrings ["."] ["_"] version;
+        in
+          "https://github.com/openssl/openssl/releases/download/OpenSSL_${versionFixed}/openssl-${version}.tar.gz"
+      else
+        "https://github.com/openssl/openssl/releases/download/openssl-${version}/openssl-${version}.tar.gz";
+      inherit hash;
     };
 
     inherit patches;
@@ -222,6 +228,7 @@ let
       description = "A cryptographic library that implements the SSL and TLS protocols";
       license = licenses.openssl;
       mainProgram = "openssl";
+      maintainers = with maintainers; [ thillux ];
       pkgConfigModules = [
         "libcrypto"
         "libssl"
@@ -238,7 +245,7 @@ in {
   # and backport this to stable release (23.05).
   openssl_1_1 = common {
     version = "1.1.1w";
-    sha256 = "sha256-zzCYlQy02FOtlcCEHx+cbT3BAtzPys1SHZOSUgi3asg=";
+    hash = "sha256-zzCYlQy02FOtlcCEHx+cbT3BAtzPys1SHZOSUgi3asg=";
     patches = [
       ./1.1/nix-ssl-cert-file.patch
 
@@ -255,8 +262,9 @@ in {
   };
 
   openssl_3 = common {
-    version = "3.0.10";
-    sha256 = "sha256-F2HU9bE6ECi5tvPUuOF/6wztyTcPav5h1xk9LNzoMyM=";
+    version = "3.0.15";
+    hash = "sha256-I8Zm0O3yDxQkmz2PA2isrumrWFsJ4d6CEHxm4fPslTM=";
+
     patches = [
       ./3.0/nix-ssl-cert-file.patch
 
