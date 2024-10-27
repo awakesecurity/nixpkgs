@@ -2771,7 +2771,9 @@ self: super: {
   });
 
   # c2hs fails to build intrinsics from gcc{12,13,14}
-  hw-json-simd = lib.pipe super.hw-json-simd ([
-    unmarkBroken
-  ] ++ (lib.optional pkgs.stdenv.cc.isGNU (appendConfigureFlags [ "--with-gcc=${pkgs.gcc11}/bin/gcc" ])));
+  hw-json-simd = lib.pipe super.hw-json-simd (
+    [ unmarkBroken doJailbreak ]
+    ++ (lib.optional pkgs.stdenv.cc.isGNU (appendConfigureFlags [ "--with-gcc=${pkgs.gcc11}/bin/gcc" ]))
+    ++ (lib.optional pkgs.stdenv.cc.isClang (appendConfigureFlags [ "--with-gcc=${pkgs.clang_11}/bin/clang" ]))
+  );
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
