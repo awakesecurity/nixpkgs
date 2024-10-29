@@ -244,8 +244,7 @@ let
       withPackages = postgresqlWithPackages {
                        inherit makeWrapper buildEnv;
                        postgresql = this;
-                     }
-                     this.pkgs;
+                     };
 
       tests = {
         postgresql-wal-receiver = import ../../../../nixos/tests/postgresql-wal-receiver.nix {
@@ -288,9 +287,9 @@ let
     };
   });
 
-  postgresqlWithPackages = { postgresql, makeWrapper, buildEnv }: pkgs: f: buildEnv {
-    name = "postgresql-and-plugins-${postgresql.version}";
-    paths = f pkgs ++ [
+  postgresqlWithPackages = { postgresql, makeWrapper, buildEnv }: f: buildEnv {
+    name = "${postgresql.pname}-and-plugins-${postgresql.version}";
+    paths = f postgresql.pkgs ++ [
         postgresql
         postgresql.lib
         postgresql.man   # in case user installs this into environment
@@ -315,6 +314,14 @@ let
 
     passthru.version = postgresql.version;
     passthru.psqlSchema = postgresql.psqlSchema;
+    passthru.withJIT = postgresqlWithPackages {
+      inherit buildEnv makeWrapper;
+      postgresql = postgresql.withJIT;
+    } f;
+    passthru.withoutJIT = postgresqlWithPackages {
+      inherit buildEnv makeWrapper;
+      postgresql = postgresql.withoutJIT;
+    } f;
   };
 
 in
