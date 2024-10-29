@@ -1,0 +1,14 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index acd1981..a4e483d 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -83,6 +83,9 @@ write_to = "tldextract/_version.py"
+ [tool.setuptools.dynamic]
+ version = {attr = "setuptools_scm.get_version"}
+
++[tool.setuptools.package-data]
++tldextract = ["py.typed"]
++
+ [tool.mypy]
+ explicit_package_bases = true
+ strict = true

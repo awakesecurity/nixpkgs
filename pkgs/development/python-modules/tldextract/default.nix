@@ -28,6 +28,8 @@ buildPythonPackage rec {
     hash = "sha256-rieDDSCit9UcMpCMs2X3+cCS41Wbrp4WWVMzKj/jwEM=";
   };
 
+  patches = [ ./include_py_typed.patch ];
+
   SETUPTOOLS_SCM_PRETEND_VERSION = version;
 
   nativeBuildInputs = [
