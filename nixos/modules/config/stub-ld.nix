@@ -48,7 +48,7 @@ in
     environment.stub-ld = {
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         example = false;
         description = ''
           Install a stub ELF loader to print an informative error message
