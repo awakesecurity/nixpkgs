@@ -7,7 +7,7 @@ let
       , pkg-config, libxml2, tzdata, libkrb5, substituteAll, darwin
       , linux-pam
 
-      , removeReferencesTo, writeShellApplication
+      , removeReferencesTo, writeShellScriptBin
 
       # This is important to obtain a version of `libpq` that does not depend on systemd.
       , systemdSupport ? lib.meta.availableOn stdenv.hostPlatform systemdLibs && !stdenv.hostPlatform.isStatic
@@ -56,10 +56,7 @@ let
       else
         stdenv;
 
-    pg_config = writeShellApplication {
-      name = "pg_config";
-      text = builtins.readFile ./pg_config.sh;
-    };
+    pg_config = writeShellScriptBin "pg_config" (builtins.readFile ./pg_config.sh);
   in stdenv'.mkDerivation (finalAttrs: {
     inherit version;
     pname = pname + lib.optionalString jitSupport "-jit";
