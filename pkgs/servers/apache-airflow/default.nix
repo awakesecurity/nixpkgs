@@ -81,6 +81,27 @@ let
             --replace '[tool.pytest.ini_options]' '[tool.notpytest.ini_options]'
         '';
       });
+      pendulum = pySuper.pendulum.overridePythonAttrs (o: rec {
+        version = "2.1.2";
+
+        src = fetchPypi {
+          inherit version;
+          inherit (o) pname;
+          sha256 = "b06a0ca1bfe41c990bbf0c029f0b6501a7f2ec4e38bfec730712015e8860f207";
+        };
+        postPatch = "";
+
+        preBuild = ''
+          export HOME=$TMPDIR
+        '';
+
+        nativeBuildInputs = [];
+        build-system = with pySelf; [ poetry-core ];
+        dependencies = with pySelf; [ python-dateutil pytzdata ];
+
+        # No tests
+        doCheck = false;
+      });
       pytest-httpbin = pySuper.pytest-httpbin.overridePythonAttrs (o: rec {
         version = "1.0.2";
         src = fetchFromGitHub {
