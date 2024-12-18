@@ -19,9 +19,6 @@ let
           setuptools
           pythonRelaxDepsHook
         ];
-        pythonRelaxDeps = [
-          "werkzeug"
-        ];
         propagatedBuildInputs = with pySelf; [
           aiohttp
           aiohttp-jinja2
@@ -95,6 +92,33 @@ let
       # apache-airflow doesn't work with sqlalchemy 2.x
       # https://github.com/apache/airflow/issues/28723
       sqlalchemy = pySuper.sqlalchemy_1_4;
+
+      werkzeug = pySuper.werkzeug.overridePythonAttrs (o: rec {
+        version = "2.2.3";
+        format = "setuptools";
+
+        src = fetchPypi {
+          pname = "Werkzeug";
+          inherit version;
+          hash = "sha256-LhzMlBfU2jWLnebxdOOsCUOR6h1PvvLWZ4ZdgZ39Cv4=";
+        };
+
+        nativeBuildInputs = [];
+
+        propagatedBuildInputs = with pySelf; [
+          markupsafe
+        ] ++ lib.optionals (!stdenv.isDarwin) [
+          # watchdog requires macos-sdk 10.13+
+          watchdog
+        ];
+
+        nativeCheckInputs = with pySelf; [
+          ephemeral-port-reserve
+          pytest-timeout
+          pytest-xprocess
+          pytestCheckHook
+        ];
+      });
 
       apache-airflow = pySelf.callPackage ./python-package.nix { };
     };
