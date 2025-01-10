@@ -77,6 +77,10 @@ in {
   };
   config = mkMerge [
     (mkIf cfg.enable {
+      assertions = [{
+        assertion = nscd.enable;
+        message = "sssd currently relies on nscd";
+      }];
       # For `sssctl` to work.
       environment.etc."sssd/sssd.conf".source = settingsFile;
       environment.etc."sssd/conf.d".source = "${dataDir}/conf.d";
