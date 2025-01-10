@@ -124,6 +124,10 @@ in
           assertion = lib.xor (cfg.settings != { }) (cfg.config != "");
           message = "services.sssd.settings and services.sssd.config are mutually exclusive";
         }
+        {
+          assertion = config.services.nscd.enable;
+          message = "sssd currently relies on nscd";
+        }
       ];
 
       # For `sssctl` to work.
