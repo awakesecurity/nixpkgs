@@ -37,7 +37,7 @@ let
   # to the /nix/store path, we still need the subdirectory "journalwatch" inside that
   # to match journalwatch's expectations
   journalwatchConfigDir = pkgs.runCommand "journalwatch-config"
-    { preferLocalBuild = true; allowSubstitutes = false; __snowkiteOmissible = true; }
+    { preferLocalBuild = true; allowSubstitutes = false; }
     ''
       mkdir -p $out/journalwatch
       ln -sf ${journalwatchConfig} $out/journalwatch/config

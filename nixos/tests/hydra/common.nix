@@ -8,7 +8,6 @@
          builder = "/bin/sh";
          allowSubstitutes = false;
          preferLocalBuild = true;
-          __snowkiteOmissible = true;
          args = ["-c" "echo success > $out; exit 0"];
        };
      }
