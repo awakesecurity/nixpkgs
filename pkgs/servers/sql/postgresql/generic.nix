@@ -54,9 +54,12 @@ let
     inherit version;
     pname = pname + lib.optionalString jitSupport "-jit";
 
-    src = fetchurl {
-      url = "mirror://postgresql/source/v${version}/${pname}-${version}.tar.bz2";
-      inherit hash;
+    src = fetchFromGitHub {
+      owner = "postgres";
+      repo = "postgres";
+      # rev, not tag, on purpose: allows updating when new versions
+      # are "stamped" a few days before release (tag).
+      inherit hash rev;
     };
 
     __structuredAttrs = true;
