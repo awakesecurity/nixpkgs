@@ -3,6 +3,7 @@
   pkgs,
   buildPythonPackage,
   fetchFromGitHub,
+  distutils,
   pdm-backend,
   setuptools,
   wheel,
@@ -31,6 +32,7 @@ buildPythonPackage rec {
   ];
 
   nativeBuildInputs = [
+    distutils
     pkg-config
     pdm-backend
     setuptools
@@ -38,6 +40,8 @@ buildPythonPackage rec {
   ];
 
   pythonImportsCheck = [ "hyperscan" ];
+
+  pytestFlagsArray = [ "tests" ];
 
   nativeCheckInputs = [
     pytestCheckHook
