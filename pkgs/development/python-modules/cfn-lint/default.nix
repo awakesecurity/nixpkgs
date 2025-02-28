@@ -68,6 +68,7 @@ buildPythonPackage rec {
     "test_override_parameters"
     "test_positional_template_parameters"
     "test_template_config"
+    "test_quickstart_templates"
   ];
 
   pythonImportsCheck = [ "cfnlint" ];
