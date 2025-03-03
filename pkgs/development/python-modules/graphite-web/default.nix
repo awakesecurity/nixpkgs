@@ -21,7 +21,7 @@
 
 buildPythonPackage rec {
   pname = "graphite-web";
-  version = "unstable-2024-07-30";
+  version = "unstable-2025-03-03";
   format = "setuptools";
 
   disabled = pythonOlder "3.7";
@@ -29,8 +29,8 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "graphite-project";
     repo = pname;
-    rev = "80c999a14b7f8c9e8141270a7e56682632b9161f";
-    hash = "sha256-WjiC8aH9nGWDy8OINPGpAQ8cbHgT+bJgOUzIEq93hys=";
+    rev = "49c28e2015d605ad9ec93524f7076dd924a4731a";
+    hash = "sha256-TxsQPhnI5WhQvKKkDEYZ8xnyg/qf+N9Icej6d6A0jC0=";
   };
 
   propagatedBuildInputs = [
@@ -46,12 +46,6 @@ buildPythonPackage rec {
     urllib3
     whisper
   ];
-
-  postPatch = ''
-    substituteInPlace setup.py \
-      --replace "Django>=1.8,<3.1" "Django" \
-      --replace "django-tagging==0.4.3" "django-tagging"
-  '';
 
   # Carbon-s default installation is /opt/graphite. This env variable ensures
   # carbon is installed as a regular Python module.
