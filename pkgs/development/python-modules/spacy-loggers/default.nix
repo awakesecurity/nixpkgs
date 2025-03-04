@@ -33,7 +33,6 @@ buildPythonPackage (finalAttrs: {
   ];
 
   dependencies = [
-    wandb
     wasabi
   ];
 
