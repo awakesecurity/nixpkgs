@@ -23,6 +23,10 @@
         "version": "4.19.315",
         "hash": "sha256:1j1j8awy0237jp2r211qpa305c10y7rlcbkxkzdvzbgyhwy4spkc"
     },
+    "6.3": {
+        "version": "6.3.9",
+        "hash": "sha256-QezyE5mxerhRY3ULoiNH0JtU+gmbgLY9Di7wBmEpsT4="
+    },
     "6.6": {
         "version": "6.6.32",
         "hash": "sha256:1qbc8dqmk2xs1cz968rysw5xvhq3lj8g0pxp48fr2qbzy3m29a5a"
