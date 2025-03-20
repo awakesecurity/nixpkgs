@@ -314,11 +314,11 @@ let
     passthru.version = postgresql.version;
     passthru.psqlSchema = postgresql.psqlSchema;
     passthru.withJIT = postgresqlWithPackages {
-      inherit buildEnv makeWrapper;
+      inherit buildEnv;
       postgresql = postgresql.withJIT;
     } f;
     passthru.withoutJIT = postgresqlWithPackages {
-      inherit buildEnv makeWrapper;
+      inherit buildEnv;
       postgresql = postgresql.withoutJIT;
     } f;
   };
