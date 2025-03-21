@@ -2,14 +2,14 @@
 
 stdenv.mkDerivation rec {
   pname = "clickhouse_fdw";
-  version = "1.4.0";
+  version = "1.4.0+tiny20241002";
 
   nativeBuildInputs = [ cmake pkg-config ];
   buildInputs = [ postgresql curl libuuid ]
     ++ lib.optional stdenv.isDarwin libossp_uuid;
 
   src = fetchFromGitHub {
-    owner  = "ildus";
+    owner  = "awakesecurity-dev";
     repo   = pname;
     rev    = "refs/tags/${version}";
     sha256 = "sha256-ZjpMS3sgL0LjQI50OOHGotzfMVpWpJCCt4xYLmJhh+g=";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   postPatch = ''
     substituteInPlace CMakeLists.txt \
       --replace 'find_program(PG_REGRESS NAMES pg_regress PATHS ''${PGSQL_PKGLIBDIR}/pgxs/src/test/regress/ REQUIRED)' 'set(PG_REGRESS ${postgresql}/lib/pgxs/src/test/regress/pg_regress)'
-    
+
     substituteInPlace src/CMakeLists.txt \
       --replace 'DESTINATION ''${PGSQL_PKGLIBDIR}' "DESTINATION \"$out/lib\"" \
       --replace 'DESTINATION "''${PGSQL_SHAREDIR}/extension"' "DESTINATION \"$out/share/postgresql/extension\""
