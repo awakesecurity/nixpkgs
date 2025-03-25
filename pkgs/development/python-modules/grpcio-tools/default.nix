@@ -9,13 +9,13 @@
 
 buildPythonPackage rec {
   pname = "grpcio-tools";
-  version = "1.65.1";
+  version = "1.64.1";
   pyproject = true;
 
   src = fetchPypi {
     pname = "grpcio_tools";
     inherit version;
-    hash = "sha256-JM/+i8kPuCN/C88kC9bHAwQlX+J7adsyYBSZoEP4cb4=";
+    hash = "sha256-crNVC5GtuDVGVuzw9tHUYRKZBEuuEfsefMHRu2a4wes=";
   };
 
   outputs = [
