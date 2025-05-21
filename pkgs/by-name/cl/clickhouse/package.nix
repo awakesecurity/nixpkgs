@@ -26,9 +26,9 @@ llvmPackages_19.stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub rec {
     owner = "ClickHouse";
     repo = "ClickHouse";
-    tag = "v${finalAttrs.version}-lts";
+    rev = "v${finalAttrs.version}-lts";
     fetchSubmodules = true;
-    name = "clickhouse-${tag}.tar.gz";
+    name = "clickhouse-${rev}.tar.gz";
     hash = "sha256-VYT6Rnq7LaV9fZc4LJ9YtbWQDgEARYok8MjVfg8itIg=";
     postFetch = ''
       # delete files that make the source too big
