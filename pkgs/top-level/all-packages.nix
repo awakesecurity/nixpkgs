@@ -11609,10 +11609,6 @@ with pkgs;
     autoreconfHook = buildPackages.autoreconfHook269;
   };
 
-  clickhouse = callPackage ../servers/clickhouse {
-    llvmPackages = llvmPackages_16;
-  };
-
   clickhouse-cli = with python3Packages; toPythonApplication clickhouse-cli;
 
   clickhouse_jdbc = callPackage ../development/java-modules/clickhouse_jdbc { };
