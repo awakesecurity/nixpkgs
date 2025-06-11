@@ -93,24 +93,21 @@ let
 
   finalPkgs = if (cfg.scopedOverlays or [ ]) == [ ] then splicedPackages else
     let
-      scope0 = lib.makeScope splicedPackages.newScope (self: extension0 self splicedPackages);
-      extension0 = lib.composeManyExtensions cfg.scopedOverlays;
+      extension = lib.composeManyExtensions ([ extendWithScope ] ++ cfg.scopedOverlays);
 
-      pkgsWithScope = pkgs: scope:
-        let
-          self = pkgs // withScope // lib.fix scope.packages;
+      extendWithScope = scope: basePkgs: {
+        inherit scope;
+        callPackageWith = autoArgs: basePkgs.callPackageWith (scope // autoArgs);
+        callPackagesWith = autoArgs: basePkgs.callPackagesWith (scope // autoArgs);
+        callPackages = basePkgs.callPackagesWith scope;
 
-          withScope = {
-            inherit scope;
-            appendOverlays = fs: pkgsWithScope (pkgs.appendOverlays fs) scope;
-            exten = f: self.appendOverlays [f];
-            appendOverlaysToScope = fs: pkgsWithScope pkgs (scope.overrideScope fs);
-            extendScope = f: self.appendOverlaysToScope [f];
-          };
-        in
-        self;
+        appendOverlays = fs: basePkgs.appendOverlays fs // scope;
+        extend = f: basePkgs.appendOverlays [f];
+        appendOverlaysToScope = fs: basePkgs // scope.overrideScope fs;
+        extendScope = f: scope.appendOverlaysToScope [f];
+      };
     in
-    pkgsWithScope splicedPackages scope0;
+    splicedPackages // lib.makeScope splicedPackages.newScope (self: extension self splicedPackages);
 in
 
 {
