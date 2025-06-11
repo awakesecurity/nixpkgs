@@ -93,6 +93,9 @@ let
 
   finalPkgs = if (cfg.scopedOverlays or [ ]) == [ ] then splicedPackages else
     let
+      overlayScope = pkgs: pkgs // scopeFrom pkgs;
+      scopeFrom = pkgs: lib.makeScope pkgs.newScope (self: extension self pkgs);
+
       extension = lib.composeManyExtensions ([ extendWithScope ] ++ cfg.scopedOverlays);
 
       extendWithScope = scope: basePkgs: {
@@ -101,13 +104,13 @@ let
         callPackagesWith = autoArgs: basePkgs.callPackagesWith (scope // autoArgs);
         callPackages = basePkgs.callPackagesWith scope;
 
-        appendOverlays = fs: basePkgs.appendOverlays fs // scope;
-        extend = f: basePkgs.appendOverlays [f];
+        appendOverlays = fs: overlayScope (basePkgs.appendOverlays fs);
+        extend = f: scope.appendOverlays [f];
         appendOverlaysToScope = fs: basePkgs // scope.overrideScope fs;
         extendScope = f: scope.appendOverlaysToScope [f];
       };
     in
-    splicedPackages // lib.makeScope splicedPackages.newScope (self: extension self splicedPackages);
+    overlayScope splicedPackages;
 in
 
 {
