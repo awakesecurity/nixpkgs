@@ -88,8 +88,29 @@ let
         inherit (cfg) config overlays localSystem crossSystem;
       };
 
-  finalPkgs = if opt.pkgs.isDefined then cfg.pkgs.appendOverlays cfg.overlays else defaultPkgs;
+  overlayedPkgs = if opt.pkgs.isDefined then cfg.pkgs.appendOverlays cfg.overlays else defaultPkgs;
+  splicedPackages = overlayedPkgs.__splicedPackages;
 
+  finalPkgs = if (cfg.scopedOverlays or [ ]) == [ ] then splicedPackages else
+    let
+      scope0 = lib.makeScope splicedPackages.newScope (self: extension0 self splicedPackages);
+      extension0 = lib.composeManyExtensions cfg.scopedOverlays;
+
+      pkgsWithScope = pkgs: scope:
+        let
+          self = pkgs // withScope // lib.fix scope.packages;
+
+          withScope = {
+            inherit scope;
+            appendOverlays = fs: pkgsWithScope (pkgs.appendOverlays fs) scope;
+            exten = f: self.appendOverlays [f];
+            appendOverlaysToScope = fs: pkgsWithScope pkgs (scope.overrideScope fs);
+            extendScope = f: self.appendOverlaysToScope [f];
+          };
+        in
+        self;
+    in
+    pkgsWithScope splicedPackages scope0;
 in
 
 {
@@ -178,6 +199,25 @@ in
         For details, see the [Overlays chapter in the Nixpkgs manual](https://nixos.org/manual/nixpkgs/stable/#chap-overlays).
 
         If the {option}`nixpkgs.pkgs` option is set, overlays specified using `nixpkgs.overlays` will be applied after the overlays that were already included in `nixpkgs.pkgs`.
+      '';
+    };
+
+    scopedOverlays = lib.mkOption {
+      default = [];
+      example = lib.literalExpression
+        ''
+          [
+            (self: super: {
+              # Log commands run in builds of configuration files
+              runCommand = name: args: text: super.runCommand name args '''
+                set +x
+                ''${text}
+              ''';
+          ]
+        '';
+      type = lib.types.listOf overlayType;
+      description = ''
+        List of overlays to apply in a new scope after `nixpkgs.overlays` is applied accessed trough the `pgks` module argument.
       '';
     };
 
@@ -335,8 +375,7 @@ in
         # which is somewhat costly for Nixpkgs. With an explicit priority, we only
         # evaluate the wrapper to find out that the priority is lower, and then we
         # don't need to evaluate `finalPkgs`.
-        lib.mkOverride lib.modules.defaultOverridePriority
-          finalPkgs.__splicedPackages;
+        lib.mkOverride lib.modules.defaultOverridePriority finalPkgs;
     };
 
     assertions = let
