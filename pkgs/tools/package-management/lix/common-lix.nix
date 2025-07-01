@@ -59,7 +59,6 @@ assert lib.assertMsg (
   python3,
   pkg-config,
   rapidcheck,
-  Security,
   sqlite,
   util-linuxMinimal,
   removeReferencesTo,
@@ -183,7 +182,6 @@ stdenv.mkDerivation (finalAttrs: {
     ]
     ++ lib.optionals hasExternalLixDoc [ lix-doc ]
     ++ lib.optionals (!isLegacyParser) [ pegtl ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [ Security ]
     # NOTE(Raito): I'd have expected that the LLVM packaging would inject the
     # libunwind library path directly in the wrappers, but it does inject
     # -lunwind without injecting the library path...
@@ -245,10 +243,7 @@ stdenv.mkDerivation (finalAttrs: {
       # Enable LTO, since it improves eval performance a fair amount
       # LTO is disabled on:
       # - static builds (strange linkage errors)
-      # - darwin builds (install test failures. see fj#568 & fj#832)
-      (lib.mesonBool "b_lto" (
-        !stdenv.hostPlatform.isStatic && !stdenv.hostPlatform.isDarwin && (isLLVMOnly || stdenv.cc.isGNU)
-      ))
+      (lib.mesonBool "b_lto" (!stdenv.hostPlatform.isStatic && (isLLVMOnly || stdenv.cc.isGNU)))
       (lib.mesonEnable "gc" true)
       (lib.mesonBool "enable-tests" true)
       (lib.mesonBool "enable-docs" enableDocumentation)
