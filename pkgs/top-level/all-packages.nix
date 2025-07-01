@@ -18304,7 +18304,6 @@ with pkgs;
   lixPackageSets = recurseIntoAttrs (callPackage ../tools/package-management/lix {
     storeDir = config.nix.storeDir or "/nix/store";
     stateDir = config.nix.stateDir or "/nix/var";
-    inherit (darwin.apple_sdk.frameworks) Security;
   });
 
   lix = lixPackageSets.stable.lix;
