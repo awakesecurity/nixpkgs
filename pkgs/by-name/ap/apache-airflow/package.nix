@@ -173,6 +173,10 @@ let
       # https://github.com/apache/airflow/issues/28723
       sqlalchemy = pySuper.sqlalchemy_1_4;
 
+      valkey = pySuper.valkey.overridePythonAttrs (_: {
+        dontCheckRuntimeDeps = true;
+      });
+
       werkzeug = pySuper.werkzeug.overridePythonAttrs (o: rec {
         version = "2.2.3";
         pyproject = null;
