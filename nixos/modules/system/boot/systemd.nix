@@ -234,6 +234,8 @@ let
       "google-guest-agent"
       "google-shutdown-scripts"
       "google-startup-scripts"
+      # pkgs/by-name/ut/util-linux/package.nix
+      "lastlog2-import"
       # here :)
       "systemd-makefs@"
       "systemd-mkswap@"
