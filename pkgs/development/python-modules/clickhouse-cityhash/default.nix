@@ -18,6 +18,7 @@ buildPythonPackage rec {
     inherit pname version;
     hash = "sha256-ezEl19CqE8LMTnWDqWWmv7CqlqEhMUdbRCVSustV9Pg=";
   };
+  patches = [ ./cython31.patch ];
 
   nativeBuildInputs = [
     cython

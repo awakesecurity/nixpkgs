@@ -1,0 +1,32 @@
+diff --git a/src/cityhash.pyx b/src/cityhash.pyx
+index 3fb5817..40d548e 100644
+--- a/src/cityhash.pyx
++++ b/src/cityhash.pyx
+@@ -52,6 +52,7 @@ from cpython.buffer cimport PyObject_GetBuffer
+ 
+ from cpython.unicode cimport PyUnicode_Check
+ from cpython.unicode cimport PyUnicode_AsUTF8String
++from cpython.long cimport PyLong_FromUnsignedLongLong
+ 
+ from cpython.bytes cimport PyBytes_Check 
+ from cpython.bytes cimport PyBytes_GET_SIZE 
+@@ -152,7 +153,9 @@ cpdef CityHash128(data):
+         result = c_CityHash128(<const char*>buf.buf, buf.len)
+     else:
+         raise _type_error("data", ["basestring", "buffer"], data)
+-    final = 0x10000000000000000L * long(result.first) + long(result.second)
++    first = <object>PyLong_FromUnsignedLongLong(result.first)
++    second = <object>PyLong_FromUnsignedLongLong(result.second)
++    final = 0x10000000000000000L * first + second
+     return final
+ 
+ cpdef CityHash128WithSeed(data, seed=0L):
+@@ -180,5 +183,7 @@ cpdef CityHash128WithSeed(data, seed=0L):
+         result = c_CityHash128WithSeed(<const char*>buf.buf, buf.len, tseed)
+     else:
+         raise _type_error("data", ["basestring", "buffer"], data)
+-    final = 0x10000000000000000L * long(result.first) + long(result.second)
++    first = <object>PyLong_FromUnsignedLongLong(result.first)
++    second = <object>PyLong_FromUnsignedLongLong(result.second)
++    final = 0x10000000000000000L * first + second
+     return final
