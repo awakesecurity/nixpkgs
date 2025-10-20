@@ -273,8 +273,20 @@ let
 
     ${cfg.extraStopCommands}
 
+    N_OUTPUT_RULES="$(iptables --list OUTPUT --line-number | tail -1 | cut -d' ' -f1)"
+    ${lib.optionalString config.networking.enableIPv6 ''
+    N_OUTPUT_RULES_IPv6="$(ip6tables --list OUTPUT --line-number | tail -1 | cut -d' ' -f1)"
+    ''}
+
     if ${startScript}; then
       ip46tables -D INPUT -j nixos-drop 2>/dev/null || true
+
+      # Do not clear OUTPUT rules to avoid dropping connections,
+      # instead drop the old rules in reverse order after reload.
+      for i in $(seq $N_OUTPUT_RULES -1 1); do iptables -D OUTPUT $i ; done
+    ${lib.optionalString config.networking.enableIPv6 ''
+      for i in $(seq $N_OUTPUT_RULES_IPv6 -1 1); do ip6tables -D OUTPUT $i ; done
+    ''}
     else
       echo "Failed to reload firewall... Stopping"
       ${stopScript}
@@ -347,7 +359,7 @@ in
       ];
       conflicts = [ "shutdown.target" ];
 
-      path = [ cfg.package ] ++ cfg.extraPackages;
+      path = [ pkgs.coreutils cfg.package ] ++ cfg.extraPackages;
 
       # FIXME: this module may also try to load kernel modules, but
       # containers don't have CAP_SYS_MODULE.  So the host system had
