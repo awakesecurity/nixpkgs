@@ -282,10 +282,21 @@ let
       ip46tables -D INPUT -j nixos-drop 2>/dev/null || true
 
       # Do not clear OUTPUT rules to avoid dropping connections,
-      # instead drop the old rules in reverse order after reload.
-      for i in $(seq $N_OUTPUT_RULES -1 1); do iptables -D OUTPUT $i ; done
+      # instead drop the old rules after reload. Rules are dropped
+      # in reverse order in order to preserve fallthrough behaviour
+      # while rules are being dropped.
+
+      if [[ "$N_OUTPUT_RULES" != "num" ]]; then # Catch case when chain is empty
+        for i in $(seq $N_OUTPUT_RULES -1 1); do
+          iptables -D OUTPUT $i
+        done
+      fi
     ${lib.optionalString config.networking.enableIPv6 ''
-      for i in $(seq $N_OUTPUT_RULES_IPv6 -1 1); do ip6tables -D OUTPUT $i ; done
+      if [[ "$N_OUTPUT_RULES_IPv6" != "num" ]]; then # Catch case when chain is empty
+        for i in $(seq $N_OUTPUT_RULES_IPv6 -1 1); do
+          ip6tables -D OUTPUT $i
+        done
+      fi
     ''}
     else
       echo "Failed to reload firewall... Stopping"
