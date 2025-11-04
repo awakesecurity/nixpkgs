@@ -1054,14 +1054,7 @@ in
       + optionalString cfg.upgrade.enable ''
         if test -e "${cfg.dataDir}/.post_upgrade"; then
           ${optionalString cfg.upgrade.runAnalyze ''
-            while true; do
-              echo "Extending systemd timeout to 2 minutes from now while post-upgarde vacuum/analyze is running"
-              ${lib.getExe' pkgs.systemd "systemd-notify"} --status="Running post-upgrade vacuum/analyze" EXTEND_TIMEOUT_USEC=120000000
-              sleep 60
-            done &
-            timer_pid="$!"
             vacuumdb --port=${toString cfg.settings.port} --all --analyze-in-stages
-            kill $timer_pid
           ''}
           rm -f "${cfg.dataDir}/.post_upgrade"
         fi
