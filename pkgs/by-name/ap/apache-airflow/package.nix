@@ -59,6 +59,11 @@ let
           inherit version;
           hash = "sha256-7e6bCn/yZiG9WowQ/0hK4oc3okENmbC7mmhQx/uXeqA=";
         };
+        postPatch = ''
+          ${o.postPatch or ""}
+          substituteInPlace tests/test_cli.py \
+            --replace-fail 'CliRunner(mix_stderr=False)' 'CliRunner()'
+        '';
         nativeBuildInputs = (o.nativeBuildInputs or [ ]) ++ [
           pySelf.setuptools
         ];
