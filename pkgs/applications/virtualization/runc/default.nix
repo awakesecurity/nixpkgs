@@ -1,42 +1,59 @@
-{ lib
-, fetchFromGitHub
-, buildGoModule
-, go-md2man
-, installShellFiles
-, pkg-config
-, which
-, libapparmor
-, libseccomp
-, libselinux
-, makeWrapper
-, procps
-, nixosTests
+{
+  lib,
+  fetchFromGitHub,
+  buildGoModule,
+  go-md2man,
+  installShellFiles,
+  pkg-config,
+  which,
+  libapparmor,
+  libseccomp,
+  libselinux,
+  stdenv,
+  makeBinaryWrapper,
+  nixosTests,
 }:
 
-buildGoModule rec {
+buildGoModule (finalAttrs: {
   pname = "runc";
-  version = "1.1.9";
+  version = "1.3.3";
 
   src = fetchFromGitHub {
     owner = "opencontainers";
     repo = "runc";
-    rev = "v${version}";
-    hash = "sha256-9vNzKoG+0Ze4+dhluNM6QtsUjV8/bpkuvEF8ASBfBRo=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-Ci/2otySB7FaFoutmzWeVaTU+tO/lnluQfneFSQM1RE=";
   };
 
   vendorHash = null;
-  outputs = [ "out" "man" ];
+  outputs = [
+    "out"
+    "man"
+  ];
 
-  nativeBuildInputs = [ go-md2man installShellFiles makeWrapper pkg-config which ];
+  nativeBuildInputs = [
+    go-md2man
+    installShellFiles
+    makeBinaryWrapper
+    pkg-config
+    which
+  ];
 
-  buildInputs = [ libselinux libseccomp libapparmor ];
+  buildInputs = [
+    libselinux
+    libseccomp
+    libapparmor
+  ];
 
-  makeFlags = [ "BUILDTAGS+=seccomp" ];
+  makeFlags = [
+    "BUILDTAGS+=seccomp"
+    "SHELL=${stdenv.shell}"
+  ];
 
   buildPhase = ''
     runHook preBuild
     patchShebangs .
-    make ${toString makeFlags} runc man
+    make ${toString finalAttrs.makeFlags} runc man
     runHook postBuild
   '';
 
@@ -45,7 +62,6 @@ buildGoModule rec {
     install -Dm755 runc $out/bin/runc
     installManPage man/*/*.[1-9]
     wrapProgram $out/bin/runc \
-      --prefix PATH : ${lib.makeBinPath [ procps ]} \
       --prefix PATH : /run/current-system/systemd/bin
     runHook postInstall
   '';
@@ -54,9 +70,11 @@ buildGoModule rec {
 
   meta = with lib; {
     homepage = "https://github.com/opencontainers/runc";
-    description = "A CLI tool for spawning and running containers according to the OCI specification";
+    description = "CLI tool for spawning and running containers according to the OCI specification";
     license = licenses.asl20;
-    maintainers = with maintainers; [ offline ] ++ teams.podman.members;
+    maintainers = with maintainers; [ offline ];
+    teams = [ teams.podman ];
     platforms = platforms.linux;
+    mainProgram = "runc";
   };
-}
+})
