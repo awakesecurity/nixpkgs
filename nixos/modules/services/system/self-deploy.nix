@@ -224,10 +224,16 @@ in
         ${toString cfg.preBuildHook}
 
         nix-build${renderNixArgs cfg.nixArgs} ${
-          lib.cli.toCommandLineShellGNU { } {
-            attr = cfg.nixAttribute;
-            out-link = outPath;
-          }
+          lib.cli.toCommandLineShell
+            (optionName: {
+              option = "--${optionName}";
+              sep = null;
+              explicitBool = false;
+            })
+            {
+              attr = cfg.nixAttribute;
+              out-link = outPath;
+            }
         } ${lib.escapeShellArg "${repositoryDirectory}${cfg.nixFile}"}
 
         ${toString cfg.postBuildHook}
