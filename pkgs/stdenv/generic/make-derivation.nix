@@ -854,6 +854,20 @@ let
         "outputHashMode"
       ];
 
+    derivationLazy = drvAttrs:
+      let
+        drv = derivation drvAttrs;
+        outputs = lib.genAttrs drvAttrs.outputs (o: toLazy drv.${o});
+
+        toLazy = drv: outputs // {
+          type = "derivation";
+          all = builtins.attrValues outputs;
+          inherit drvAttrs;
+          inherit (drv) drvPath outPath outputName;
+        };
+      in
+      drvAttrs // toLazy drv;
+
     in
 
     extendDerivation validity.handled (
@@ -863,7 +877,7 @@ let
         # This allows easy building and distributing of all derivations
         # needed to enter a nix-shell with
         #   nix-build shell.nix -A inputDerivation
-        inputDerivation = derivation (
+        inputDerivation = derivationLazy (
           deleteFixedOutputRelatedAttrs derivationArg
           // {
             # Add a name in case the original drv didn't have one
@@ -928,7 +942,7 @@ let
         # should be made available to Nix expressions using the
         # derivation (e.g., in assertions).
         passthru
-    ) (derivation (derivationArg // checkedEnv));
+    ) (derivationLazy (derivationArg // checkedEnv));
 
 in
 {
