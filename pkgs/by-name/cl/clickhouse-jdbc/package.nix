@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation rec {
   pname = "clickhouse-jdbc";
-  version = "0.7.2";
+  version = "0.8.6";
 
   src = fetchMavenArtifact {
     artifactId = "clickhouse-jdbc";
     groupId = "com.clickhouse";
     classifier = "shaded-all";
-    sha256 = "sha256-E+IWL3o0flp2dXe2eGTsB5YL0Ujk7zUvWtC1P6B5fdU=";
+    sha256 = "sha256-/pYYrPFvUQX5HppevFPrlb8btmnz8gEYX8phEr1f1SU=";
     inherit version;
   };
 
