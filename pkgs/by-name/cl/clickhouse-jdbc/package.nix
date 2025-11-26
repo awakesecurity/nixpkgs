@@ -2,20 +2,20 @@
 
 stdenv.mkDerivation rec {
   pname = "clickhouse-jdbc";
-  version = "0.6.0";
+  version = "0.7.2";
 
   src = fetchMavenArtifact {
     artifactId = "clickhouse-jdbc";
     groupId = "com.clickhouse";
-    classifier = "all";
-    sha256 = "sha256-WlNvgX1jwBIMsJOltVkXrvUPHv2hlfg6CaT5gSiFbZw=";
+    classifier = "shaded-all";
+    sha256 = "sha256-E+IWL3o0flp2dXe2eGTsB5YL0Ujk7zUvWtC1P6B5fdU=";
     inherit version;
   };
 
   ## Use the `-all` jar to avoid having to fetch clickhouse-client (and perhaps other jars) as transitive dependencies.
   installPhase = ''
     runHook preInstall
-    install -m444 -D $src/share/java/clickhouse-jdbc-${version}-all.jar $out/share/java/clickhouse-jdbc-all.jar
+    install -m444 -D $src/share/java/clickhouse-jdbc-${version}-shaded-all.jar $out/share/java/clickhouse-jdbc-shaded-all.jar
     runHook postInstall
   '';
 
