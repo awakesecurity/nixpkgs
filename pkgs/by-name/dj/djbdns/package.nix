@@ -38,6 +38,8 @@ stdenv.mkDerivation {
     ./fix-warnings.patch
   ];
 
+  env.NIX_CFLAGS_COMPILE = "-std=gnu17";
+
   postPatch = ''
     echo gcc -O2 -include ${glibc.dev}/include/errno.h -std=gnu17 > conf-cc
     echo $out > conf-home
