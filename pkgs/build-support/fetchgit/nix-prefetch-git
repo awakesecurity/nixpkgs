@@ -360,7 +360,7 @@ clone_user_rev() {
     local rev="${3:-HEAD}"
 
     if [ -n "$fetchLFS" ]; then
-        clean_git lfs install
+        clean_git -C "$dir" lfs install
     fi
 
     # Perform the checkout.
