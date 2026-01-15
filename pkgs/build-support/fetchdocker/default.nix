@@ -21,12 +21,6 @@ in
   image ? "${stripScheme registry}/${repository}/${imageName}:${tag}",
 }:
 
-# Make sure there are *no* slashes in the repository or container
-# names since we use these to make the output derivation name for the
-# nix-store path.
-assert null == lib.findFirst (c: "/" == c) null (lib.stringToCharacters repository);
-assert null == lib.findFirst (c: "/" == c) null (lib.stringToCharacters imageName);
-
 let
   # Abuse paths to collapse possible double slashes
   repoTag0 = toString (/. + "/${stripScheme registry}/${repository}/${imageName}");
