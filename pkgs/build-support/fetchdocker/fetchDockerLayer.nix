@@ -1,12 +1,9 @@
-pkgargs@{
-  stdenv,
-  lib,
-  haskellPackages,
-  writeText,
-  gawk,
+{
+  callPackage,
+  staticCredentialsFile ? "/etc/nix-docker-credentials.txt",
 }:
 let
-  generic-fetcher = import ./generic-fetcher.nix pkgargs;
+  generic-fetcher = callPackage ./generic-fetcher.nix { inherit staticCredentialsFile; };
 in
 
 args@{ layerDigest, ... }:
