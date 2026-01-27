@@ -4,6 +4,7 @@
   haskellPackages,
   writeText,
   gawk,
+  staticCredentialsFile,
 }:
 let
   awk = "${gawk}/bin/awk";
@@ -41,13 +42,14 @@ stdenv.mkDerivation {
 
     declare -A creds
 
+    ${lib.optionalString (staticCredentialsFile != null) ''
     # This is a hack for Hydra since we have no way of adding values
     # to the NIX_PATH for Hydra jobsets!!
-    staticCredentialsFile="/etc/nix-docker-credentials.txt"
-    if [ ! -f "$dockerCredentialsFile" -a -f "$staticCredentialsFile" ]; then
-      echo "credentials file not set, falling back on static credentials file at: $staticCredentialsFile"
-      dockerCredentialsFile=$staticCredentialsFile
+    if [ ! -f "$dockerCredentialsFile" -a -f "${staticCredentialsFile}" ]; then
+      echo "credentials file not set, falling back on static credentials file at: ${staticCredentialsFile}"
+      dockerCredentialsFile="${staticCredentialsFile}"
     fi
+    ''}
 
     if [ -f "$dockerCredentialsFile" ]; then
       echo "using credentials from $dockerCredentialsFile"
