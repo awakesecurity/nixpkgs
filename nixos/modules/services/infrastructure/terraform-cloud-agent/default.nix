@@ -3,6 +3,8 @@ let
   cfg = config.services.terraform-cloud-agent;
 
   packageWithMain = lib.types.addCheck lib.types.package (x: x ? meta.mainProgram);
+
+  renderArgs = args: lib.cli.toCommandLineShell (k: { option = "-${k}"; explicitBool = false; sep = "="; }) args;
 in
 {
   options.services.terraform-cloud-agent = {
@@ -134,7 +136,7 @@ in
         export TFC_AGENT_DATA_DIR=$STATE_DIRECTORY
         export TFC_AGENT_CACHE_DIR=$CACHE_DIRECTORY
     
-        ${lib.getExe pkgs.terraform-cloud-agent} ${lib.cli.toCommandLineShell (k: { option = "-${k}"; }) cfg.flags}
+        ${lib.getExe pkgs.terraform-cloud-agent} ${renderArgs cfg.flags}
       '';
 
       serviceConfig = {
