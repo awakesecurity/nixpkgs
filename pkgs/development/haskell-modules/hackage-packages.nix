@@ -17685,7 +17685,7 @@ self: {
       HDBC,
       mtl,
       time,
-      unixODBC,
+      unixodbc,
       utf8-string,
     }:
     mkDerivation {
@@ -17703,11 +17703,11 @@ self: {
         time
         utf8-string
       ];
-      librarySystemDepends = [ unixODBC ];
+      librarySystemDepends = [ unixodbc ];
       description = "ODBC driver for HDBC";
       license = lib.licenses.bsd3;
     }
-  ) { inherit (pkgs) unixODBC; };
+  ) { inherit (pkgs) unixodbc; };
 
   HDBC-postgresql = callPackage (
     {
@@ -362150,7 +362150,7 @@ self: {
       base,
       hsql,
       old-time,
-      unixODBC,
+      unixodbc,
     }:
     mkDerivation {
       pname = "hsql-odbc";
@@ -362161,12 +362161,12 @@ self: {
         hsql
         old-time
       ];
-      librarySystemDepends = [ unixODBC ];
+      librarySystemDepends = [ unixodbc ];
       description = "A Haskell Interface to ODBC";
       license = lib.licenses.bsd3;
       hydraPlatforms = lib.platforms.none;
     }
-  ) { inherit (pkgs) unixODBC; };
+  ) { inherit (pkgs) unixodbc; };
 
   hsql-postgresql = callPackage (
     {
@@ -495147,7 +495147,7 @@ self: {
       text,
       time,
       transformers,
-      unixODBC,
+      unixodbc,
       unliftio-core,
       weigh,
     }:
@@ -495174,7 +495174,7 @@ self: {
         transformers
         unliftio-core
       ];
-      librarySystemDepends = [ unixODBC ];
+      librarySystemDepends = [ unixodbc ];
       executableHaskellDepends = [
         base
         bytestring
@@ -495201,7 +495201,7 @@ self: {
       license = lib.licenses.bsd3;
       mainProgram = "odbc";
     }
-  ) { inherit (pkgs) unixODBC; };
+  ) { inherit (pkgs) unixodbc; };
 
   odd-jobs = callPackage (
     {
@@ -640697,7 +640697,7 @@ self: {
       logging,
       text,
       transformers,
-      unixODBC,
+      unixodbc,
     }:
     mkDerivation {
       pname = "sqlcli";
@@ -640709,13 +640709,13 @@ self: {
         text
         transformers
       ];
-      librarySystemDepends = [ unixODBC ];
+      librarySystemDepends = [ unixodbc ];
       description = "Bindings for SQL/CLI (ODBC) C API";
       license = lib.licenses.bsd3;
       hydraPlatforms = lib.platforms.none;
       broken = true;
     }
-  ) { inherit (pkgs) unixODBC; };
+  ) { inherit (pkgs) unixodbc; };
 
   sqlcli-odbc = callPackage (
     {
