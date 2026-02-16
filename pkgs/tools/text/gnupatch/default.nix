@@ -17,7 +17,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   # This test is filesystem-dependent - observed failing on ZFS
-  postPatch = lib.optionalString stdenv.hostPlatform.isFreeBSD ''
+  postPatch = lib.optionalString (stdenv.hostPlatform.isFreeBSD || stdenv.hostPlatform.isDarwin) ''
     sed -E -i -e '/bad-filenames/d' tests/Makefile.am
   '';
 
