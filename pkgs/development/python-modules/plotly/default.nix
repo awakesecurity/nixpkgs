@@ -52,6 +52,14 @@ buildPythonPackage rec {
     substituteInPlace pyproject.toml \
       --replace-fail '"hatch", ' "" \
       --replace-fail "jupyter_packaging~=0.10.0" jupyter_packaging
+
+    # `pytest_ignore_collect` takes only `collection_path` starting with
+    # pytest 9. Most of the paths referenced in `plotly/conftest.py`
+    # don't exist anymore and wouldn't be collected anyway, so we can just
+    # remove the file.
+    # https://docs.pytest.org/en/latest/deprecations.html#py-path-local-arguments-for-hooks-replaced-with-pathlib-path
+    # Upstream PR: https://github.com/plotly/plotly.py/pull/5521
+    rm plotly/conftest.py
   '';
 
   env.SKIP_NPM = true;
