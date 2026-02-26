@@ -201,7 +201,9 @@ let
 
       substituteInPlace pyproject.toml \
         --replace-fail "hatchling==1.27.0" "hatchling" \
-        --replace-fail "trove-classifiers==2025.9.11.17" "trove-classifiers"
+        --replace-fail "trove-classifiers==2025.9.11.17" "trove-classifiers" \
+        --replace-fail "GitPython==3.1.45" "GitPython" \
+        --replace-fail "universal-pathlib>=0.2.6,<0.3.0" "universal-pathlib"
 
       # Copy built UI assets
       cp -r ${airflowUi}/share/airflow/ui/dist src/airflow/ui/
@@ -338,7 +340,8 @@ buildPythonPackage rec {
   postPatch = ''
     substituteInPlace pyproject.toml \
       --replace-fail "hatchling==1.27.0" "hatchling" \
-      --replace-fail "trove-classifiers==2025.9.11.17" "trove-classifiers"
+      --replace-fail "trove-classifiers==2025.9.11.17" "trove-classifiers" \
+      --replace-fail "GitPython==3.1.45" "GitPython"
   '';
 
   nativeBuildInputs = [ writableTmpDirAsHomeHook ];
