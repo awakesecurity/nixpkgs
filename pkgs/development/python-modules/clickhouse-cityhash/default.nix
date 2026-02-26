@@ -32,6 +32,10 @@ buildPythonPackage rec {
     })
   ];
 
+  postPatch = ''
+    substituteInPlace pyproject.toml --replace-fail 'Cython>=3.0,<3.1' 'Cython>=3.0,<3.3'
+  '';
+
   doCheck = false;
 
   pythonImportsCheck = [ "clickhouse_cityhash" ];
