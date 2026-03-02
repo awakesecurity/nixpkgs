@@ -50,6 +50,7 @@ buildPythonPackage rec {
 
   disabledTestPaths = [
     "test_version.py" # Requires cstq which is not in nixpkgs
+    "test_pickle.py" # Requires an active DBus connection
   ];
 
   pythonImportsCheck = [ "pystemd" ];
