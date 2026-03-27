@@ -1,0 +1,120 @@
+Without this patch the build of rocksdb reaches out to the internet
+to download dependencies.
+
+There may be additional files to exclude on upgrade.
+
+diff --git a/java/CMakeLists.txt b/java/CMakeLists.txt
+index ffc374102..57d76d095 100644
+--- a/java/CMakeLists.txt
++++ b/java/CMakeLists.txt
+@@ -56,3 +56,2 @@ set(JNI_NATIVE_SOURCES
+         rocksjni/merge_operator.cc
+-        rocksjni/native_comparator_wrapper_test.cc
+         rocksjni/optimistic_transaction_db.cc
+@@ -66,3 +65,2 @@ set(JNI_NATIVE_SOURCES
+         rocksjni/rocks_callback_object.cc
+-        rocksjni/rocksdb_exception_test.cc
+         rocksjni/rocksjni.cc
+@@ -82,3 +80,2 @@ set(JNI_NATIVE_SOURCES
+         rocksjni/table_properties_collector_factory.cc
+-        rocksjni/testable_event_listener.cc
+         rocksjni/thread_status.cc
+@@ -97,3 +94,2 @@ set(JNI_NATIVE_SOURCES
+         rocksjni/write_batch.cc
+-        rocksjni/write_batch_test.cc
+         rocksjni/write_batch_with_index.cc
+@@ -303,7 +299,2 @@ set(JAVA_MAIN_CLASSES
+   src/main/java/org/rocksdb/util/StdErrLogger.java
+-  src/test/java/org/rocksdb/NativeComparatorWrapperTest.java
+-  src/test/java/org/rocksdb/RocksDBExceptionTest.java
+-  src/test/java/org/rocksdb/RocksNativeLibraryResource.java
+-  src/test/java/org/rocksdb/WriteBatchTest.java
+-  src/test/java/org/rocksdb/test/TestableEventListener.java
+   src/test/java/org/rocksdb/util/CapturingWriteBatchHandler.java
+@@ -546,2 +537,3 @@ include_directories(${PROJECT_SOURCE_DIR}/java)
+ 
++if(FALSE)
+ set(JAVA_TEST_LIBDIR ${PROJECT_SOURCE_DIR}/java/test-libs)
+@@ -554,2 +546,3 @@ set(JAVA_ASSERTJ_JAR ${JAVA_TEST_LIBDIR}/assertj-core-${JAVA_ASSERTJ_VERSION}.ja
+ set(JAVA_TESTCLASSPATH ${JAVA_JUNIT_JAR} ${JAVA_HAMCR_JAR} ${JAVA_MOCKITO_JAR} ${JAVA_CGLIB_JAR} ${JAVA_ASSERTJ_JAR})
++endif()
+ message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+@@ -557,2 +550,3 @@ message("MINGW: ${MINGW}")
+ 
++if(FALSE)
+ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+@@ -562,2 +556,3 @@ else()
+ endif()
++endif()
+ 
+@@ -585,3 +580,2 @@ else ()
+   message("Preparing Jar for JDK ${Java_VERSION_STRING}")
+-  message("JAVA_TESTCLASSPATH=${JAVA_TESTCLASSPATH}")
+   add_jar(
+@@ -589,3 +583,3 @@ else ()
+       SOURCES ${JAVA_MAIN_CLASSES}
+-      INCLUDE_JARS ${ROCKSDBJNI_CLASSES_JAR_FILE} ${JAVA_TESTCLASSPATH}
++      INCLUDE_JARS ${ROCKSDBJNI_CLASSES_JAR_FILE}
+       GENERATE_NATIVE_HEADERS rocksdbjni_headers DESTINATION ${JNI_OUTPUT_DIR}
+@@ -596,7 +590,4 @@ endif()
+ add_jar(
+-    rocksdbjni_test_classes
+     SOURCES
+     ${JAVA_MAIN_CLASSES}
+-    ${JAVA_TEST_CLASSES}
+-    INCLUDE_JARS ${JAVA_TESTCLASSPATH}
+     GENERATE_NATIVE_HEADERS rocksdbjni_test_headers DESTINATION ${JNI_OUTPUT_DIR}
+@@ -620,2 +611,3 @@ endif()
+ 
++if(FALSE)
+ if(NOT EXISTS ${JAVA_JUNIT_JAR})
+@@ -670,2 +662,3 @@ if(NOT EXISTS ${JAVA_ASSERTJ_JAR})
+ endif()
++endif()
+ 
+@@ -782,3 +775,3 @@ if(${CMAKE_VERSION} VERSION_LESS "3.11.4")
+     CLASSES ${NATIVE_JAVA_CLASSES}
+-    CLASSPATH rocksdbjni_classes ${JAVA_TESTCLASSPATH}
++    CLASSPATH rocksdbjni_classes
+     OUTPUT_DIR ${JNI_OUTPUT_DIR}
+@@ -886,2 +879,3 @@ add_custom_target(rocksdbjava ALL
+ 
++if(FALSE)
+ enable_testing()
+@@ -901 +895,2 @@ foreach (CLAZZ ${JAVA_TEST_RUNNING_CLASSES})
+ endforeach(CLAZZ)
++endif()
+diff --git a/java/Makefile b/java/Makefile
+index 5e00921c6..ee1889094 100644
+--- a/java/Makefile
++++ b/java/Makefile
+@@ -347,3 +347,3 @@ javadocs: java
+ 
+-javalib: java java_test javadocs
++javalib: java javadocs
+ 
+@@ -450,3 +450,3 @@ resolve_test_deps: $(JAVA_JUNIT_JAR_PATH) $(JAVA_HAMCREST_JAR_PATH) $(JAVA_MOCKI
+ 
+-java_test: java resolve_test_deps
++java_test: java
+ 	$(AM_V_GEN)mkdir -p $(TEST_CLASSES)
+diff --git a/src.mk b/src.mk
+index 5eac64057..7346c247b 100644
+--- a/src.mk
++++ b/src.mk
+@@ -717,3 +717,2 @@ JNI_NATIVE_SOURCES =                                          \
+   java/rocksjni/merge_operator.cc                             \
+-  java/rocksjni/native_comparator_wrapper_test.cc             \
+   java/rocksjni/optimistic_transaction_db.cc                  \
+@@ -730,3 +729,2 @@ JNI_NATIVE_SOURCES =                                          \
+   java/rocksjni/rocksjni.cc                                   \
+-  java/rocksjni/rocksdb_exception_test.cc                     \
+   java/rocksjni/slice.cc                                      \
+@@ -756,3 +754,2 @@ JNI_NATIVE_SOURCES =                                          \
+   java/rocksjni/ttl.cc                                        \
+-  java/rocksjni/testable_event_listener.cc                    \
+   java/rocksjni/wal_filter.cc                                 \
+@@ -761,3 +758,2 @@ JNI_NATIVE_SOURCES =                                          \
+   java/rocksjni/writebatchhandlerjnicallback.cc               \
+-  java/rocksjni/write_batch_test.cc                           \
+   java/rocksjni/write_batch_with_index.cc                     \
