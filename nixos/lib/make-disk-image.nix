@@ -396,7 +396,6 @@ let
       util-linux
       parted
       e2fsprogs
-      lkl
       config.system.build.nixos-install
       nixos-enter
       nix
@@ -616,20 +615,21 @@ let
           # Get start & length of the root partition in sectors to $START and $SECTORS.
           eval $(partx $diskImage -o START,SECTORS --nr ${rootPartition} --pairs)
 
-          mkfs.${fsType} -b ${blockSize} -F -L ${label} $diskImage -E offset=$(sectorsToBytes $START) $(sectorsToKilobytes $SECTORS)K
+          echo "creating filesystem and populating from staging root..."
+          mkfs.${fsType} -b ${blockSize} -F -L ${label} \
+            -d $root${lib.optionalString onlyNixStore builtins.storeDir} \
+            $diskImage -E offset=$(sectorsToBytes $START) $(sectorsToKilobytes $SECTORS)K ||
+            (echo >&2 "ERROR: mkfs -d failed. diskSize might be too small for closure."; exit 1)
         ''
       else
         ''
-          mkfs.${fsType} -b ${blockSize} -F -L ${label} $diskImage
+          echo "creating filesystem and populating from staging root..."
+          mkfs.${fsType} -b ${blockSize} -F -L ${label} \
+            -d $root${lib.optionalString onlyNixStore builtins.storeDir} \
+            $diskImage ||
+            (echo >&2 "ERROR: mkfs -d failed. diskSize might be too small for closure."; exit 1)
         ''
     }
-
-    echo "copying staging root to image..."
-    cptofs -p ${lib.optionalString (partitionTableType != "none") "-P ${rootPartition}"} \
-           -t ${fsType} \
-           -i $diskImage \
-           $root${lib.optionalString onlyNixStore builtins.storeDir}/* / ||
-      (echo >&2 "ERROR: cptofs failed. diskSize might be too small for closure."; exit 1)
   '';
 
   moveOrConvertImage = ''
