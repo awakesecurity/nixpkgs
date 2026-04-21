@@ -19,7 +19,9 @@
   rdma-core,
   doxygen,
   python3,
+  iproute2,
   pciutils,
+  which,
   withExamples ? [ ],
   shared ? false,
   machine ? (
@@ -170,7 +172,7 @@ stdenv.mkDerivation (finalAttrs: {
     rm -rf $out/share/doc/dpdk/html/.doctrees
 
     wrapProgram $out/bin/dpdk-devbind.py \
-      --prefix PATH : "${lib.makeBinPath [ pciutils ]}"
+      --prefix PATH : "${lib.makeBinPath [ iproute2 pciutils which ]}"
   ''
   + lib.optionalString (withExamples != [ ]) ''
     mkdir -p $examples/bin
