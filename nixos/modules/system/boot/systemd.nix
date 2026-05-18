@@ -254,9 +254,12 @@ let
       "lastlog2-import"
       # pkgs/by-name/xf/xfsprogs/package.nix
       "xfs_scrub_all"
+      # pkgs/by-name/po/polkit/package.nix
+      "polkit-agent-helper@"
       # here :)
       "systemd-makefs@"
       "systemd-mkswap@"
+      "sshd-vsock@"
     ];
 
   proxy_env = config.networking.proxy.envVars;
