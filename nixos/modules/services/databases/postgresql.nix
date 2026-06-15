@@ -194,11 +194,13 @@ let
       timer_pid="$!"
 
       pushd "${cfg.dataDir}"
-      ${cfg.finalPackage}/bin/pg_upgrade ${lib.cli.toCommandLineShellGNU { } args} ${lib.escapeShellArgs cfg.upgrade.extraArgs}
+      # Unset NOTIFY_SOCKET so that postgres instances spawned internally by pg_upgrade
+      # do not send READY=1 to systemd, which would prevent the real ExecStart from notifying.
+      env -u NOTIFY_SOCKET ${cfg.finalPackage}/bin/pg_upgrade ${lib.cli.toCommandLineShellGNU { } args} ${lib.escapeShellArgs cfg.upgrade.extraArgs}
       touch .post_upgrade
 
       # Restore timeout consumed by upgrade
-      kill $timer_pid
+      kill "$timer_pid"
       ${lib.getExe' pkgs.systemd "systemd-notify"} --status="" EXTEND_TIMEOUT_USEC=120000000
     '';
   };
