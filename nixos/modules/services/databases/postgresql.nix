@@ -181,11 +181,16 @@ let
         exit 0
       fi
 
-      while true; do
-        echo "Extending systemd timeout to 2 minutes from now while upgrade is running"
-        ${lib.getExe' pkgs.systemd "systemd-notify"} --status="Running major version upgrade" EXTEND_TIMEOUT_USEC=120000000
-        sleep 60
-      done &
+      # Track the sleep PID so the SIGTERM trap can kill it explicitly.
+      # Without this, killing the subshell leaves the sleep child as an orphan in the cgroup.
+      ( trap 'kill "$sleep_pid" 2>/dev/null; exit' TERM
+        while true; do
+          echo "Extending systemd timeout to 2 minutes from now while upgrade is running"
+          ${lib.getExe' pkgs.systemd "systemd-notify"} --status="Running major version upgrade" EXTEND_TIMEOUT_USEC=120000000
+          sleep 60 &
+          sleep_pid=$!
+          wait "$sleep_pid"
+        done ) &
       timer_pid="$!"
 
       pushd "${cfg.dataDir}"
