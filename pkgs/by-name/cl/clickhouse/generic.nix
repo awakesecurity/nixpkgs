@@ -104,10 +104,6 @@ llvmStdenv.mkDerivation (finalAttrs: {
     python3
     perl
     llvmPackages.lld
-    # Provides llvm-ar/llvm-objcopy.
-    # Required by cmake/strip_rust_symbols.sh to match the LLVM toolchain
-    # Otherwise it corrupts .eh_frame in the Rust staticlibs
-    llvmPackages.bintools
     removeReferencesTo
     zstd
   ]
@@ -116,6 +112,7 @@ llvmStdenv.mkDerivation (finalAttrs: {
     yasm
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
+    llvmPackages.bintools
     findutils
     darwin.bootstrap_cmds
   ]
