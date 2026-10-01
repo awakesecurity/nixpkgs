@@ -63,14 +63,45 @@ let
     in
     "${qemu} ${flagsStr}";
 
-  iso =
+  isoConfig =
     (import ../lib/eval-config.nix {
       inherit system;
       modules = [
         ../modules/installer/cd-dvd/installation-cd-minimal.nix
         ../modules/testing/test-instrumentation.nix
       ];
-    }).config.system.build.isoImage;
+    }).config;
+
+  iso = isoConfig.system.build.isoImage;
+
+  customGrubRootSearchFile = "/EFI/custom-nixos-installer-image";
+
+  customIsoConfig =
+    (import ../lib/eval-config.nix {
+      inherit system;
+      modules = [
+        ../modules/installer/cd-dvd/installation-cd-minimal.nix
+        {
+          isoImage.grubRootSearchFile = customGrubRootSearchFile;
+          isoImage.showConfiguration = false;
+        }
+      ];
+    }).config;
+
+  customEfiDir =
+    (lib.findFirst (entry: entry.target == "/EFI") null customIsoConfig.isoImage.contents).source;
+
+  grubRootSearchFileAccepted =
+    grubRootSearchFile:
+    (builtins.tryEval (
+      (import ../lib/eval-config.nix {
+        inherit system;
+        modules = [
+          ../modules/installer/cd-dvd/installation-cd-minimal.nix
+          { isoImage.grubRootSearchFile = grubRootSearchFile; }
+        ];
+      }).config.isoImage.grubRootSearchFile
+    )).success;
 
   sd =
     (import ../lib/eval-config.nix {
@@ -154,6 +185,16 @@ let
     };
 in
 {
+  isoGrubRootSearchFile = pkgs.runCommand "iso-grub-root-search-file" { } ''
+    test ${lib.escapeShellArg isoConfig.isoImage.grubRootSearchFile} = /EFI/nixos-installer-image
+    test ${lib.boolToString (grubRootSearchFileAccepted "/not-efi/marker")} = false
+    test ${lib.boolToString (grubRootSearchFileAccepted "/EFI/BOOT")} = false
+    test ${lib.boolToString (grubRootSearchFileAccepted "/EFI/BOOT/grub-theme/marker")} = false
+    test -e ${customEfiDir}/custom-nixos-installer-image
+    grep -F 'search --set=root --file ${customGrubRootSearchFile}' ${customEfiDir}/BOOT/grub.cfg
+    touch $out
+  '';
+
   uefiCdrom = makeBootTest "uefi-cdrom" {
     uefi = true;
     cdrom = "${iso}/iso/${iso.isoName}";

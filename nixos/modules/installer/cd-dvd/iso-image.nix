@@ -238,7 +238,7 @@ let
     #
 
     # Search using a "marker file"
-    search --set=root --file /EFI/nixos-installer-image
+    search --set=root --file ${config.isoImage.grubRootSearchFile}
 
     insmod gfxterm
     insmod png
@@ -327,7 +327,7 @@ let
         mkdir -p $out/EFI/BOOT
 
         # Add a marker so GRUB can find the filesystem.
-        touch $out/EFI/nixos-installer-image
+        install -DTm644 /dev/null "$out${config.isoImage.grubRootSearchFile}"
 
         # ALWAYS required modules.
         MODULES=(
@@ -589,6 +589,18 @@ in
         Specifies the label or volume ID of the generated ISO image.
         Note that the label is used by stage 1 of the boot process to
         mount the CD, so it should be reasonably distinctive.
+      '';
+    };
+
+    isoImage.grubRootSearchFile = lib.mkOption {
+      default = "/EFI/nixos-installer-image";
+      type = lib.types.addCheck
+        (lib.types.strMatching "/EFI/[A-Za-z0-9_+-][A-Za-z0-9._+-]*")
+        (path: path != "/EFI/BOOT");
+      description = ''
+        The path to the marker file used by GRUB to locate the ISO filesystem.
+        The path must be directly under {file}`/EFI`, using only
+        characters that do not require quoting as a GRUB argument.
       '';
     };
 
