@@ -927,6 +927,7 @@ optionalAttrs allowAliases aliases
                   |& sed -e 's/^warning:/error:/' \
                   | (! grep '${if checkAllErrors then "^error:" else "^error: unknown setting"}')
                 # set -o pipefail
+                exit 35
               ''
           );
         };
