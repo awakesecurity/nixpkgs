@@ -8,7 +8,7 @@
 {
   lib,
   stdenv,
-  llvmPackages_22,
+  llvmPackages_21,
   fetchFromGitHub,
   fetchpatch,
   cmake,
@@ -31,7 +31,7 @@
   versionCheckHook,
 }:
 let
-  llvmPackages = llvmPackages_22;
+  llvmPackages = llvmPackages_21;
   llvmStdenv = llvmPackages.stdenv;
 in
 llvmStdenv.mkDerivation (finalAttrs: {
