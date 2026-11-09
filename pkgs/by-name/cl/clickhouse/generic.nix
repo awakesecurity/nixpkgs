@@ -194,7 +194,6 @@ llvmStdenv.mkDerivation (finalAttrs: {
     "-DENABLE_DELTA_KERNEL_RS=0"
     "-DENABLE_XRAY=OFF"
     "-DCOMPILER_CACHE=disabled"
-    "-DDISABLE_HERMETIC_BUILD=ON"
   ]
   ++ lib.optional (stdenv.hostPlatform.isLinux && stdenv.hostPlatform.isx86_64) "-DX86_ARCH_LEVEL=1"
   ++ lib.optional (
